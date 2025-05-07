@@ -1,0 +1,27 @@
+development: &development
+  adapter: mysql2
+  encoding: utf8
+  database: <%= ENV["OAK_MYSQL_NAME"] %>_development
+  pool: 5
+  username: <%= ENV["OAK_MYSQL_USER"] %>
+  password: <%= ENV["OAK_MYSQL_PASSWORD"] %>
+  host: <%= ENV["OAK_MYSQL_HOST"] %>
+  port: <%= ENV["OAK_MYSQL_PORT"] %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &test
+  <<: *development
+  database: <%= ENV["OAK_MYSQL_NAME"] %>_test
+
+test_readonly:
+  <<: *test
+
+production: &production
+  <<: *development
+  username: <%= ENV["OAK_MYSQL_USER"] %>
+  password: <%= ENV["OAK_MYSQL_PASSWORD"] %>
+  host: <%= ENV["OAK_MYSQL_HOST"] %>
+  port: <%= ENV["OAK_MYSQL_PORT"] %>
+  database: <%= ENV["OAK_MYSQL_NAME"] %>

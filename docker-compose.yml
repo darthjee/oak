@@ -1,0 +1,66 @@
+version: '3'
+services:
+  oak_mysql:
+    image: mysql:5.7
+    container_name: oak_mysql
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: oak
+    ports:
+      - 127.0.0.1:$OAK_MYSQL_PORT:3306
+  #################### Base  ####################
+
+  base: &base
+    image: darthjee/oak
+    volumes:
+      - ./source:/home/app/app
+    links:
+      - oak_mysql:mysql
+    env_file: .env
+
+
+  base_build:
+    <<: *base
+    build:
+      context: .
+      dockerfile: Dockerfile.oak
+    command: echo done
+
+  #################### CONTAINERS ####################
+
+  oak_app:
+    <<: *base
+    container_name: oak_app
+    command: /bin/bash bin/server.sh
+    depends_on: [base_build]
+    ports:
+      - 127.0.0.1:3000:3000
+    environment:
+      - RAILS_ENV=development
+      - OAK_MYSQL_PORT=3306
+
+  oak_tests:
+    <<: *base
+    container_name: oak_tests
+    command: /bin/bash bin/tests.sh
+    depends_on: [base_build]
+    environment:
+      - RAILS_ENV=test
+
+  oak_root:
+    <<: *base
+    user: root
+    container_name: oak_root
+    command: /bin/bash
+    depends_on: [base_build]
+
+  oak_production:
+    env_file: .env.production
+    container_name: oak_production
+    image: darthjee/production_oak
+    build:
+      context: .
+      dockerfile: Dockerfile.production_oak
+    command: bin/server.sh
+    ports:
+      - 127.0.0.1:3002:3000
