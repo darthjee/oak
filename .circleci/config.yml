@@ -59,9 +59,6 @@ jobs:
       - run:
           name: RSpec
           command: bundle exec rspec
-      - run:
-          name: Coverage Test Report
-          command: cc-test-reporter after-build --exit-code $?
 
   checks:
     docker:
