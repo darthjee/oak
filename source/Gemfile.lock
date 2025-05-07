@@ -309,7 +309,7 @@ GEM
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
     strscan (3.1.0)
-    tarquinn (0.2.0)
+    tarquinn (0.3.0)
       activesupport
     thor (1.2.2)
     thread_safe (0.3.6)
@@ -393,7 +393,7 @@ DEPENDENCIES
   sinclair (~> 2.1.1)
   sprockets-rails
   stimulus-rails
-  tarquinn (~> 0.2.0)
+  tarquinn (~> 0.3.0)
   timecop (= 0.9.6)
   turbo-rails
   tzinfo-data

@@ -1,3 +1,5 @@
+.PHONY: build-base push-base build push dev
+
 PROJECT?=oak
 IMAGE?=$(PROJECT)
 BASE_VERSION?=0.0.1
@@ -31,3 +33,6 @@ push:
 	make build
 	docker push $(PUSH_IMAGE)
 	docker push $(PUSH_IMAGE):$(BASE_VERSION)
+
+dev:
+	docker-compose run $(PROJECT)_tests /bin/bash
