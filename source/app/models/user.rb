@@ -2,7 +2,7 @@
 
 class User < ApplicationRecord
   validates_presence_of :name, :login, :email, :encrypted_password
-  
+
   has_many :sessions
   has_many :subscriptions, class_name: 'Oak::Subscription', dependent: :destroy
   has_many :categories, through: :subscriptions, source: :category
