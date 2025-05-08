@@ -50,7 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
 
   create_table "photos", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "item_id", null: false
-    t.integer "order", limit: 1
+    t.integer "order", limit: 1, default: 127
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "fk_rails_874663793d"
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_f7d582e93e"
-    t.index %w[user_id category_id], name: "index_subscriptions_on_user_id_and_category_id", unique: true
+    t.index ["user_id", "category_id"], name: "index_subscriptions_on_user_id_and_category_id", unique: true
   end
 
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
