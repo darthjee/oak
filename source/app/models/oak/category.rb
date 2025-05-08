@@ -12,11 +12,6 @@ module Oak
       self.slug = value&.to_s&.underscore
     end
 
-    private
-
     # Private setter for slug
-    def slug=(value)
-      super(value)
-    end
   end
 end
