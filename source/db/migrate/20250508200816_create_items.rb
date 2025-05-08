@@ -3,9 +3,10 @@
 class CreateItems < ActiveRecord::Migration[7.0]
   def change
     create_table :items do |t|
-      t.bigint :user_id, null: false
-      t.string :name
-      t.bigint :category_id
+      t.bigint :user_id,     null: false
+      t.string :name,        null: false
+      t.bigint :category_id, null: false
+      t.bigint :kind_id,     null: false
 
       t.timestamps
 

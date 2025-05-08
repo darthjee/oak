@@ -20,8 +20,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
   end
 
   create_table "categories", charset: "utf8mb3", force: :cascade do |t|
-    t.string "name", limit: 40
-    t.string "slug", limit: 40
+    t.string "name", limit: 40, null: false
+    t.string "slug", limit: 40, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_categories_on_slug", unique: true
@@ -29,8 +29,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
 
   create_table "items", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "name"
-    t.bigint "category_id"
+    t.string "name", null: false
+    t.bigint "category_id", null: false
+    t.bigint "kind_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_89fb86dc8b"
@@ -38,8 +39,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
   end
 
   create_table "kinds", charset: "utf8mb3", force: :cascade do |t|
-    t.string "name", limit: 40
-    t.string "slug", limit: 40
+    t.string "name", limit: 40, null: false
+    t.string "slug", limit: 40, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_kinds_on_name", unique: true

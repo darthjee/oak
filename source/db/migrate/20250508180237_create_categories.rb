@@ -3,8 +3,8 @@
 class CreateCategories < ActiveRecord::Migration[7.0]
   def change
     create_table :categories do |t|
-      t.string :name, limit: 40
-      t.string :slug, limit: 40
+      t.string :name, limit: 40, null: false
+      t.string :slug, limit: 40, null: false
 
       t.timestamps
 
