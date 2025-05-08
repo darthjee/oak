@@ -3,11 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Oak::Item, type: :model do
-  subject(:item) { build(:oak_item, name:, user:, category:) }
+  subject(:item) { build(:oak_item, name:, user:, category:, kind:) }
 
   let(:name) { SecureRandom.hex(10) }
   let(:user) { build(:user) }
   let(:category) { build(:oak_category) }
+  let(:kind) { build(:oak_kind) }
 
   describe 'validations' do
     it 'is valid with valid attributes' do
