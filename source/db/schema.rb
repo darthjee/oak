@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_08_142755) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_08_152419) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -33,6 +33,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_142755) do
     t.string "token", limit: 64, null: false
     t.index ["token"], name: "index_sessions_on_token", unique: true
     t.index ["user_id"], name: "fk_rails_758836b4f0"
+  end
+
+  create_table "universes", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", limit: 40
+    t.string "slug", limit: 40
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_universes_on_name", unique: true
+    t.index ["slug"], name: "index_universes_on_slug", unique: true
   end
 
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
