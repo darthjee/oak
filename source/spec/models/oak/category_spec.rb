@@ -40,4 +40,24 @@ RSpec.describe Oak::Category, type: :model do
       end
     end
   end
+
+  describe 'slug behavior' do
+    context 'when name is updated' do
+      let(:new_name) { SecureRandom.hex(10) }
+  
+      it 'updates the slug to match the new name' do
+        expect { category.name = new_name }
+          .to change(category, :slug).to(new_name.underscore)
+      end
+    end
+  
+    context 'when name is updated to nil' do
+      let(:new_name) { nil }
+  
+      it 'updates the slug to nil' do
+        expect { category.name = new_name }
+          .to change(category, :slug).to(nil)
+      end
+    end
+  end
 end
