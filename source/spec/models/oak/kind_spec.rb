@@ -27,6 +27,19 @@ RSpec.describe Oak::Kind, type: :model do
       end
     end
 
+    context 'when name exceeds the maximum length' do
+      let(:name) { 'a' * 41 } # 41 characters
+
+      it 'is not valid' do
+        expect(kind).not_to be_valid
+      end
+
+      it 'adds an error on name' do
+        kind.valid? # Trigger validations
+        expect(kind.errors[:name]).to include('is too long (maximum is 40 characters)')
+      end
+    end
+
     context 'when slug is not unique' do
       let(:name) { "NAME #{SecureRandom.hex(10)}" }
 
