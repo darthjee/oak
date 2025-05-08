@@ -1,0 +1,6 @@
+FactoryBot.define do
+  factory :oak_universe, class: 'Oak::Universe' do
+    name { SecureRandom.hex(10) }
+    slug { SecureRandom.hex(10) }
+  end
+end
