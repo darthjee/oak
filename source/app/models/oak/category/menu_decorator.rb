@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Oak
   class Category
     class MenuDecorator < Azeroth::Decorator
