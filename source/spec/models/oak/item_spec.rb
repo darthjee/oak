@@ -50,5 +50,17 @@ RSpec.describe Oak::Item, type: :model do
         expect(item.tap(&:valid?).errors[:category]).to include('must exist')
       end
     end
+
+    context 'when missing kind' do
+      let(:kind) { nil }
+
+      it 'is not valid without a kind' do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds a proper error message' do
+        expect(item.tap(&:valid?).errors[:kind]).to include('must exist')
+      end
+    end
   end
 end
