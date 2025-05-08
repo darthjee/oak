@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :oak_universe, class: 'Oak::Universe' do
     name { SecureRandom.hex(10) }

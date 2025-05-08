@@ -1,5 +1,9 @@
-class Oak::Item < ApplicationRecord
-  belongs_to :user
+# frozen_string_literal: true
 
-  validates :name, presence: true
+module Oak
+  class Item < ApplicationRecord
+    belongs_to :user
+
+    validates :name, presence: true
+  end
 end

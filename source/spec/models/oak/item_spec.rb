@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Oak::Item, type: :model do
@@ -11,7 +13,7 @@ RSpec.describe Oak::Item, type: :model do
       expect(item).to be_valid
     end
 
-    context "when missing name" do
+    context 'when missing name' do
       let(:name) { nil }
 
       it 'is not valid without a name' do
@@ -20,12 +22,12 @@ RSpec.describe Oak::Item, type: :model do
       end
     end
 
-    context "when missing user" do
+    context 'when missing user' do
       let(:user) { nil }
 
       it 'is not valid without a user' do
         expect(item).not_to be_valid
-        expect(item.errors[:user]).to include("must exist")
+        expect(item.errors[:user]).to include('must exist')
       end
     end
   end
