@@ -24,7 +24,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_195208) do
     t.string "slug", limit: 40
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_categories_on_name", unique: true
     t.index ["slug"], name: "index_categories_on_slug", unique: true
   end
 

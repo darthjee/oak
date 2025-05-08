@@ -8,7 +8,6 @@ class CreateCategories < ActiveRecord::Migration[7.0]
 
       t.timestamps
 
-      t.index :name, unique: true
       t.index :slug, unique: true
     end
   end
