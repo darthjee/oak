@@ -1,0 +1,21 @@
+module Slugable
+  extend ActiveSupport::Concern
+
+  included do
+    # Validates the presence and uniqueness of slug
+    validates :slug, presence: true, uniqueness: true
+
+    # Overrides the name= method to update the slug
+    def name=(value)
+      super(value)
+      self.slug = value
+    end
+
+    private
+
+    # Private setter for slug
+    def slug=(value)
+      super(value&.to_s&.underscore)
+    end
+  end
+end
