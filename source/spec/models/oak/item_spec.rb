@@ -95,11 +95,11 @@ RSpec.describe Oak::Item, type: :model do
       end
 
       context 'when there are two photos with order' do
-        let!(:photo1) { create(:oak_photo, item:, order: 1) }
-        let!(:photo2) { create(:oak_photo, item:, order: 2) }
+        let!(:photo1) { create(:oak_photo, item:, order: 2) }
+        let!(:photo2) { create(:oak_photo, item:, order: 1) }
 
         it 'returns the photo with the lowest order' do
-          expect(item.main_photo).to eq(photo1)
+          expect(item.main_photo).to eq(photo2)
         end
       end
 
