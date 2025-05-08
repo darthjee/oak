@@ -27,6 +27,19 @@ RSpec.describe Oak::Item, type: :model do
       end
     end
 
+    context 'when name exceeds the maximum length' do
+      let(:name) { 'a' * 101 } # 41 characters
+
+      it 'is not valid' do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds an error on name' do
+        item.valid? # Trigger validations
+        expect(item.errors[:name]).to include('is too long (maximum is 100 characters)')
+      end
+    end
+
     context 'when missing user' do
       let(:user) { nil }
 

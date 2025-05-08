@@ -6,6 +6,6 @@ module Oak
     belongs_to :category
     belongs_to :kind
 
-    validates :name, presence: true
+    validates :name, presence: true, length: { maximum: 100 }
   end
 end

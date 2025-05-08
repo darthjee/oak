@@ -29,7 +29,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
 
   create_table "items", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "name", null: false
+    t.string "name", limit: 100, null: false
     t.bigint "category_id", null: false
     t.bigint "kind_id", null: false
     t.datetime "created_at", null: false
