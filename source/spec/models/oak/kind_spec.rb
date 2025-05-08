@@ -22,8 +22,7 @@ RSpec.describe Oak::Kind, type: :model do
       end
 
       it 'adds an error on name' do
-        kind.valid? # Trigger validations
-        expect(kind.errors[:name]).to include("can't be blank")
+        expect(kind.tap(&:valid?).errors[:name]).to include("can't be blank")
       end
     end
 
@@ -35,8 +34,7 @@ RSpec.describe Oak::Kind, type: :model do
       end
 
       it 'adds an error on name' do
-        kind.valid? # Trigger validations
-        expect(kind.errors[:name]).to include('is too long (maximum is 40 characters)')
+        expect(kind.tap(&:valid?).errors[:name]).to include('is too long (maximum is 40 characters)')
       end
     end
 
@@ -50,8 +48,7 @@ RSpec.describe Oak::Kind, type: :model do
       end
 
       it 'adds an error on slug' do
-        kind.valid? # Trigger validations
-        expect(kind.errors[:slug]).to include('has already been taken')
+        expect(kind.tap(&:valid?).errors[:slug]).to include('has already been taken')
       end
     end
   end

@@ -35,8 +35,8 @@ RSpec.describe Oak::Item, type: :model do
       end
 
       it 'adds an error on name' do
-        item.valid? # Trigger validations
-        expect(item.errors[:name]).to include('is too long (maximum is 100 characters)')
+        expect(item.tap(&:valid?).errors[:name])
+          .to include('is too long (maximum is 100 characters)')
       end
     end
 
