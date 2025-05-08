@@ -9,9 +9,13 @@ module Oak
     # Overrides the name= method to update the slug
     def name=(value)
       super(value)
-      self.slug = value&.to_s&.underscore
+      self.slug = value
     end
 
-    # Private setter for slug
+    private
+
+    def slug=(value)
+      super(value&.to_s&.underscore)
+    end
   end
 end
