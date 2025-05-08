@@ -86,29 +86,37 @@ RSpec.describe Oak::Item, type: :model do
       end
 
       context 'when there are multiple photos and one has an order' do
-        let!(:photo_with_order) { create(:oak_photo, item:, order: 1) }
-        let!(:photo_without_order) { create(:oak_photo, item:, order: nil) }
+        let!(:main_photo) { create(:oak_photo, item:, order: 1) }
+
+        before do
+          create(:oak_photo, item:, order: nil)
+        end
 
         it 'returns the photo with the lowest order' do
-          expect(item.main_photo).to eq(photo_with_order)
+          expect(item.main_photo).to eq(main_photo)
         end
       end
 
       context 'when there are two photos with order' do
-        let!(:photo1) { create(:oak_photo, item:, order: 2) }
-        let!(:photo2) { create(:oak_photo, item:, order: 1) }
+        let!(:other_photo) { create(:oak_photo, item:, order: 2) }
+        let!(:main_photo) do
+          create(:oak_photo, item:, order: other_photo.order - 1)
+        end
 
         it 'returns the photo with the lowest order' do
-          expect(item.main_photo).to eq(photo2)
+          expect(item.main_photo).to eq(main_photo)
         end
       end
 
       context 'when there are two photos without order' do
-        let!(:photo1) { create(:oak_photo, item:) }
-        let!(:photo2) { create(:oak_photo, item:) }
+        let!(:main_photo) { create(:oak_photo, item:) }
+
+        before do
+          create(:oak_photo, item:)
+        end
 
         it 'returns the photo with the lowest order' do
-          expect(item.main_photo).to eq(photo1)
+          expect(item.main_photo).to eq(main_photo)
         end
       end
     end

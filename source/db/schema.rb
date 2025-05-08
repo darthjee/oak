@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_f7d582e93e"
-    t.index ["user_id", "category_id"], name: "index_subscriptions_on_user_id_and_category_id", unique: true
+    t.index %w[user_id category_id], name: "index_subscriptions_on_user_id_and_category_id", unique: true
   end
 
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
