@@ -76,4 +76,41 @@ RSpec.describe Oak::Item, type: :model do
       end
     end
   end
+
+  describe 'associations' do
+    describe '#main_photo' do
+      context 'when there are no photos' do
+        it 'returns nil' do
+          expect(item.main_photo).to be_nil
+        end
+      end
+
+      context 'when there are multiple photos and one has an order' do
+        let!(:photo_with_order) { create(:oak_photo, item:, order: 1) }
+        let!(:photo_without_order) { create(:oak_photo, item:, order: nil) }
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(photo_with_order)
+        end
+      end
+
+      context 'when there are two photos with order' do
+        let!(:photo1) { create(:oak_photo, item:, order: 1) }
+        let!(:photo2) { create(:oak_photo, item:, order: 2) }
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(photo1)
+        end
+      end
+
+      context 'when there are two photos without order' do
+        let!(:photo1) { create(:oak_photo, item:) }
+        let!(:photo2) { create(:oak_photo, item:) }
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(photo1)
+        end
+      end
+    end
+  end
 end
