@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_08_194231) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_08_195208) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -36,6 +36,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_194231) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_89fb86dc8b"
     t.index ["user_id"], name: "fk_rails_d4b6334db2"
+  end
+
+  create_table "kinds", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", limit: 40
+    t.string "slug", limit: 40
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_kinds_on_name", unique: true
+    t.index ["slug"], name: "index_kinds_on_slug", unique: true
   end
 
   create_table "sessions", charset: "utf8mb3", force: :cascade do |t|
