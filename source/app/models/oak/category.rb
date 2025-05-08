@@ -3,7 +3,7 @@
 module Oak
   class Category < ApplicationRecord
     # Validates the presence and uniqueness of name and slug
-    validates :name, presence: true, uniqueness: true
+    validates :name, presence: true
     validates :slug, presence: true, uniqueness: true
 
     # Overrides the name= method to update the slug

@@ -27,19 +27,6 @@ RSpec.describe Oak::Category, type: :model do
       end
     end
 
-    context 'when name is not unique' do
-      before { create(:oak_category, name:) }
-
-      it 'is not valid' do
-        expect(category).not_to be_valid
-      end
-
-      it 'adds an error on name' do
-        category.valid? # Trigger validations
-        expect(category.errors[:name]).to include('has already been taken')
-      end
-    end
-
     context 'when slug is not unique' do
       let(:name) { "NAME #{SecureRandom.hex(10)}" }
 
