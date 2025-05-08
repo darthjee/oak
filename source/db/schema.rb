@@ -31,8 +31,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_194231) do
   create_table "items", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
+    t.bigint "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "fk_rails_89fb86dc8b"
     t.index ["user_id"], name: "fk_rails_d4b6334db2"
   end
 
@@ -57,6 +59,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_194231) do
     t.index ["login"], name: "index_users_on_login", unique: true
   end
 
+  add_foreign_key "items", "categories"
   add_foreign_key "items", "users"
   add_foreign_key "sessions", "users"
 end
