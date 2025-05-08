@@ -35,8 +35,8 @@ RSpec.describe Oak::Item, type: :model do
       end
 
       it 'adds an error on name' do
-        item.valid? # Trigger validations
-        expect(item.errors[:name]).to include('is too long (maximum is 100 characters)')
+        expect(item.tap(&:valid?).errors[:name])
+          .to include('is too long (maximum is 100 characters)')
       end
     end
 
@@ -73,6 +73,51 @@ RSpec.describe Oak::Item, type: :model do
 
       it 'adds a proper error message' do
         expect(item.tap(&:valid?).errors[:kind]).to include('must exist')
+      end
+    end
+  end
+
+  describe 'associations' do
+    describe '#main_photo' do
+      context 'when there are no photos' do
+        it 'returns nil' do
+          expect(item.main_photo).to be_nil
+        end
+      end
+
+      context 'when there are multiple photos and one has an order' do
+        let!(:main_photo) { create(:oak_photo, item:, order: 1) }
+
+        before do
+          create(:oak_photo, item:, order: nil)
+        end
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(main_photo)
+        end
+      end
+
+      context 'when there are two photos with order' do
+        let!(:other_photo) { create(:oak_photo, item:, order: 2) }
+        let!(:main_photo) do
+          create(:oak_photo, item:, order: other_photo.order - 1)
+        end
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(main_photo)
+        end
+      end
+
+      context 'when there are two photos without order' do
+        let!(:main_photo) { create(:oak_photo, item:) }
+
+        before do
+          create(:oak_photo, item:)
+        end
+
+        it 'returns the photo with the lowest order' do
+          expect(item.main_photo).to eq(main_photo)
+        end
       end
     end
   end
