@@ -10,13 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_22_014647) do
+ActiveRecord::Schema[7.0].define(version: 2025_05_08_142755) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_active_settings_on_key", unique: true
+  end
+
+  create_table "items", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "fk_rails_d4b6334db2"
   end
 
   create_table "sessions", charset: "utf8mb3", force: :cascade do |t|
@@ -40,5 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_22_014647) do
     t.index ["login"], name: "index_users_on_login", unique: true
   end
 
+  add_foreign_key "items", "users"
   add_foreign_key "sessions", "users"
 end
