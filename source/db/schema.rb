@@ -19,12 +19,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_142755) do
     t.index ["key"], name: "index_active_settings_on_key", unique: true
   end
 
-  create_table "items", charset: "utf8mb3", force: :cascade do |t|
+  create_table "oak_items", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "fk_rails_d4b6334db2"
+    t.index ["user_id"], name: "fk_rails_983cbba859"
   end
 
   create_table "sessions", charset: "utf8mb3", force: :cascade do |t|
@@ -48,6 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_142755) do
     t.index ["login"], name: "index_users_on_login", unique: true
   end
 
-  add_foreign_key "items", "users"
+  add_foreign_key "oak_items", "users"
   add_foreign_key "sessions", "users"
 end
