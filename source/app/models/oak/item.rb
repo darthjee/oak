@@ -6,6 +6,8 @@ module Oak
     belongs_to :category
     belongs_to :kind
 
+    has_many :photos, class_name: 'Oak::Photo', dependent: :destroy
+
     validates :name, presence: true, length: { maximum: 100 }
   end
 end
