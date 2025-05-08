@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
-class CreateUniverse < ActiveRecord::Migration[7.0]
+class CreateCategories < ActiveRecord::Migration[7.0]
   def change
-    create_table :universes do |t|
+    create_table :categories do |t|
       t.string :name, limit: 40
       t.string :slug, limit: 40
 
