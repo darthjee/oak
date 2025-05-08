@@ -8,6 +8,9 @@ module Oak
 
     has_many :photos, class_name: 'Oak::Photo', dependent: :destroy
 
+    # Defines a main photo as the first photo based on the default scope of photos
+    has_one :main_photo, -> { order(:order) }, class_name: 'Oak::Photo'
+
     validates :name, presence: true, length: { maximum: 100 }
   end
 end
