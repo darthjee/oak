@@ -16,6 +16,9 @@ RSpec.describe Oak::Item, type: :model do
 
       it 'is not valid without a name' do
         expect(item).not_to be_valid
+      end
+
+      it do
         expect(item.errors[:name]).to include("can't be blank")
       end
     end
@@ -25,6 +28,9 @@ RSpec.describe Oak::Item, type: :model do
 
       it 'is not valid without a user' do
         expect(item).not_to be_valid
+      end
+
+      it do
         expect(item.errors[:user]).to include("must exist")
       end
     end
