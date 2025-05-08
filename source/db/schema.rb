@@ -35,6 +35,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_89fb86dc8b"
+    t.index ["kind_id"], name: "fk_rails_6d24077082"
     t.index ["user_id"], name: "fk_rails_d4b6334db2"
   end
 
@@ -69,6 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_200816) do
   end
 
   add_foreign_key "items", "categories"
+  add_foreign_key "items", "kinds"
   add_foreign_key "items", "users"
   add_foreign_key "sessions", "users"
 end

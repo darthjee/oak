@@ -12,6 +12,7 @@ class CreateItems < ActiveRecord::Migration[7.0]
 
       t.foreign_key :users
       t.foreign_key :categories
+      t.foreign_key :kinds
     end
   end
 end
