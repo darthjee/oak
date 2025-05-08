@@ -50,7 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
 
   create_table "photos", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "item_id", null: false
-    t.integer "order", limit: 1, default: 127
+    t.integer "order", limit: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "fk_rails_874663793d"
