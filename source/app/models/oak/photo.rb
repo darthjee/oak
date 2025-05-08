@@ -10,7 +10,7 @@ module Oak
     validates :order,
       numericality: {
         only_integer: true,
-        greater_than_or_equal_to: 0,
+        greater_than_or_equal_to: -127,
         less_than_or_equal_to: 128
       },
       allow_nil: true
