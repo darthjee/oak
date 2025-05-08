@@ -15,7 +15,6 @@ module Oak
               },
               allow_nil: true
 
-    # Default scope to order by 'order'
-    default_scope { order(:order) }
+    default_scope { order(Arel.sql('photos.order IS NULL, photos.order ASC')) }
   end
 end
