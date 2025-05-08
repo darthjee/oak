@@ -1,5 +1,5 @@
 (function(angular) {
-  var module = angular.module("sidewinder");
+  var module = angular.module("oak");
 
   module.config(["johtoProvider", function(provider) {
     provider.defaultConfig = {
