@@ -16,6 +16,7 @@ RUN /bin/bash bundle_builder.sh
 
 USER root
 COPY --chown=circleci:circleci --from=scripts /home/scripts/builder/yarn_builder.sh /usr/local/sbin/yarn_builder.sh
+ENV APP_DIR /home/circleci/project
 RUN /bin/bash yarn_builder.sh
 USER circleci
 
