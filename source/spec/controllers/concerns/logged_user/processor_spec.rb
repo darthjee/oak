@@ -52,7 +52,7 @@ describe LoggedUser::Processor do
       it 'creates a session with expiration date' do
         expect(session.expiration)
           .to be_between(
-            (Settings.session_period.from_now - 1.second),
+            Settings.session_period.from_now - 1.second,
             Settings.session_period.from_now
           )
       end

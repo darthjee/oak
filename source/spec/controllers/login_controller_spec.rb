@@ -59,7 +59,7 @@ describe LoginController do
 
         it 'creates a session that will expire' do
           expect(created_session.expiration)
-            .to be_in((Time.now..Settings.session_period.from_now))
+            .to be_in(Time.now..Settings.session_period.from_now)
         end
 
         it 'stores session in cookies' do
