@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_08_214110) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_05_08_214110) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "fk_rails_f7d582e93e"
-    t.index %w[user_id category_id], name: "index_subscriptions_on_user_id_and_category_id", unique: true
+    t.index ["user_id", "category_id"], name: "index_subscriptions_on_user_id_and_category_id", unique: true
   end
 
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
