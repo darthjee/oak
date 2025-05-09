@@ -1,4 +1,4 @@
-FROM darthjee/production_oak-base:0.0.1 as base
+FROM darthjee/production_oak-base:0.0.2 as base
 
 ####################################
 
