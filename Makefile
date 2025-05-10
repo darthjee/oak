@@ -34,8 +34,11 @@ push:
 	docker push $(PUSH_IMAGE)
 	docker push $(PUSH_IMAGE):$(BASE_VERSION)
 
-dev:
+tests:
 	docker-compose run $(PROJECT)_tests /bin/bash
+
+dev:
+	docker-compose run $(PROJECT)_app /bin/bash
 
 dev-up:
 	docker-compose up $(PROJECT)_app
