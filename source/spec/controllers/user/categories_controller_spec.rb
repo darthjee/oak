@@ -10,8 +10,10 @@ RSpec.describe User::CategoriesController, type: :controller do
       Oak::Category::MenuDecorator.new(categories).as_json
     end
 
+    let(:parameters) { { ajax: true, format: :json } }
+
     before do
-      get :index
+      get :index, params: parameters
     end
 
     it 'returns a successful response' do
