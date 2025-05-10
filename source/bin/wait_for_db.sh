@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Tempo máximo de espera (em segundos)
 MAX_RETRIES=${MAX_RETRIES:-30}
