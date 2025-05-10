@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
-class User::CategoriesController < ApplicationController
-  include OnePageApplication
+module User
+  class CategoriesController < ApplicationController
+    include OnePageApplication
 
-  protect_from_forgery except: %i[index]
+    protect_from_forgery except: %i[index]
 
-  resource_for Oak::Category,
-               only: :index,
-               decorator: Oak::Category::MenuDecorator,
-               paginated: false
+    resource_for Oak::Category,
+                 only: :index,
+                 decorator: Oak::Category::MenuDecorator,
+                 paginated: false
+  end
 end
