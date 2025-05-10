@@ -27,7 +27,6 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
-  config.fixture_path = "#{Rails.root}/spec/fixtures"
   config.infer_spec_type_from_file_location!
 
   # rspec-expectations config goes here. You can use an alternate
@@ -115,7 +114,6 @@ RSpec.configure do |config|
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
 
-    ActiveRecord::Migration.check_pending!
     ActiveRecord::Migration.maintain_test_schema!
   end
 

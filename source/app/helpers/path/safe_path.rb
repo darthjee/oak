@@ -15,9 +15,11 @@ module Path
       safe_path(*) if MATCHER =~ method && does_respond_to?
     end
 
+    # rubocop:disable Naming/PredicateName
     def does_respond_to?
       controller.respond_to?(path_method) if MATCHER.match?(method)
     end
+    # rubocop:enable Naming/PredicateName
 
     private
 
