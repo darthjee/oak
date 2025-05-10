@@ -30,4 +30,4 @@ COPY --chown=app:app --from=builder /home/app/app/ /home/app/app/
 RUN bundle install --without development test
 USER root
 RUN mkdir tmp/pids
-FROM base
+USER app
