@@ -2,4 +2,7 @@
   <li class="nav-item p-2">
     <a class="nav-link" href="#">First Link</a>
   </li>
+  <li class="nav-item p-2" ng-repeat="category in menuController.data">
+    {{category.name}} - {{category.slug}}
+  </li>
 </ul>
