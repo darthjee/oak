@@ -7,7 +7,6 @@ class User::CategoriesController < ApplicationController
 
   resource_for Oak::Category,
                only: :index,
-               klass: Oak::Category,
                decorator: Oak::Category::MenuDecorator,
                paginated: false
 end
