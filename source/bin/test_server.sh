@@ -5,6 +5,7 @@
 
 rm -f  /home/app/app/tmp/pids/server.pid
 if [ "$RACK_ENV" != "production" ]; then
+  bin/wait_for_db.sh
   bundle exec rake db:create
 fi
 
