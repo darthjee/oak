@@ -5,7 +5,7 @@ class User::CategoriesController < ApplicationController
 
   protect_from_forgery except: %i[index]
 
-  resource_for :category,
+  resource_for Oak::Category,
                only: :index,
                klass: Oak::Category,
                decorator: Oak::Category::MenuDecorator,
