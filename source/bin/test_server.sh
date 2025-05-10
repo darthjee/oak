@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # install dependencies and clean old ones at the same time
 # rake bower:install
