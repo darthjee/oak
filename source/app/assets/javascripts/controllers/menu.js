@@ -5,6 +5,7 @@
 
   var options = {
     routeParams: {},
+    path: '/user/categories',
     route: '/user/categories'
   };
 
