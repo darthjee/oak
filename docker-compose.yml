@@ -7,6 +7,15 @@ services:
       MYSQL_ROOT_PASSWORD: oak
     ports:
       - 127.0.0.1:$OAK_MYSQL_PORT:3306
+
+  oak_prod_test_mysql:
+    image: mysql:9.3.0
+    container_name: oak_prod_test_mysql
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: oak
+    ports:
+      - 127.0.0.1:$OAK_MYSQL_PORT:3306
   #################### Base  ####################
 
   base: &base
@@ -63,3 +72,18 @@ services:
     command: bin/server.sh
     ports:
       - 127.0.0.1:3002:3000
+
+  oak_prod_test:
+    env_file: .env
+    container_name: oak_production
+    image: darthjee/production_oak
+    build:
+      context: .
+      dockerfile: Dockerfile.production_oak
+    command: bin/server.sh
+    ports:
+      - 127.0.0.1:3002:3000
+    environment:
+      RAILS_ENV: production
+    links:
+      - oak_prod_test_mysql:mysql
