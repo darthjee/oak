@@ -36,3 +36,6 @@ push:
 
 dev:
 	docker-compose run $(PROJECT)_tests /bin/bash
+
+dev-up:
+	docker-compose up $(PROJECT)_app
