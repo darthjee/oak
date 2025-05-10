@@ -31,6 +31,10 @@ Style/StringLiterals:
   Exclude:
     - 'db/schema.rb'
 
+Style/WordArray:
+  Exclude:
+    - 'db/schema.rb'
+
 Layout/LineLength:
   Exclude:
     - 'bin/bundle'
