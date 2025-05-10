@@ -39,7 +39,7 @@ services:
   oak_app:
     <<: *base
     container_name: oak_app
-    command: /bin/bash bin/server.sh
+    command: /bin/bash bin/test_server.sh
     depends_on: [base_build]
     ports:
       - 127.0.0.1:3000:3000
@@ -80,7 +80,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.production_oak
-    command: bin/server.sh
+    command: bin/test_server.sh
     ports:
       - 127.0.0.1:3002:3000
     environment:
