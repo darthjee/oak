@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module User
+class User < ApplicationRecord
   class CategoriesController < ApplicationController
     include OnePageApplication
 
