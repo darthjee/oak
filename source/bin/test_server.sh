@@ -9,6 +9,7 @@ if [ "$RACK_ENV" != "production" ]; then
   bundle exec rake db:create
 fi
 
+yarn
 FORCE_SEED=true bundle exec rake db:migrate db:seed
 
 # bundle exec rails s -b 0.0.0.0
