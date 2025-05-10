@@ -7,7 +7,7 @@ RETRY_INTERVAL=${RETRY_INTERVAL:-2}
 echo "Waiting for database in $OAK_MYSQL_HOST:$OAK_MYSQL_PORT ..."
 
 for ((i=1; i<=MAX_RETRIES; i++)); do
-  if mysqladmin ping -h"$OAK_MYSQL_HOST" -P"$OAK_MYSQL_PORT" -u"$OAK_MYSQL_USER" --password="$OAK_MYSQL_PASSWORD" --silent; then
+  if echo "" | telnet $OAK_MYSQL_HOST $OAK_MYSQL_PORT; then
     exit 0
   fi
 
