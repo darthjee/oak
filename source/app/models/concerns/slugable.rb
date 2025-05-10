@@ -9,7 +9,7 @@ module Slugable
 
     # Overrides the name= method to update the slug
     def name=(value)
-      super(value)
+      super
       self.slug = value
     end
 
