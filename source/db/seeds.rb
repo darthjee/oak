@@ -5,8 +5,6 @@ return if Rails.env.production? && ENV['FORCE_SEED'].nil?
 Zyra
   .register(User, find_by: :email)
   .on(:build) do |user|
-    return if user.encrypted_password.present?
-
     user.password = SecureRandom.hex(10)
   end
 
