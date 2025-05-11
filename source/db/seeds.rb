@@ -15,7 +15,6 @@ Zyra.find_or_create(
   name: 'user'
 ) { |u| u.password = '123456' }
 
-Zyra.find_or_create(
-  :oak_category,
-  name: 'Arduino'
-)
+%w[Arduino Pokemon Games Miniatures Packages Photos].each do |name|
+  Zyra.find_or_create(:oak_category, name:)
+end
