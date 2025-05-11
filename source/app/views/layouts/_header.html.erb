@@ -14,11 +14,9 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav">
-        <li class="nav-item p-2">
-          <a class="nav-link" href="#">First Link</a>
-        </li>
-      </ul>
+
+      <%= render 'layouts/header_menu' %>
+
       <ul class="nav navbar-nav">
         <li ng-hide="headerController.logged">
           <a
