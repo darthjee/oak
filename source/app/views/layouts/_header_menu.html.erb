@@ -8,9 +8,13 @@
       <%= angular_safe_link_to(:categories, {}, class: 'dropdown-item') do %>
         All
       <% end %>
-      <a class="dropdown-item" ng-repeat="category in menuController.data">
-        {{category.name}} - {{category.slug}}
-      </a>
+      <%= angular_safe_link_to(
+        :category_items,
+        { category_slug: '{{category.slug}}'},
+        class: 'dropdown-item',
+        "ng-repeat": "category in menuController.data") do %>
+        {{category.name}}
+      <% end %>
     </div>
   </li>
 </ul>
