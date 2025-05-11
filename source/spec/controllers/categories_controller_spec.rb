@@ -8,7 +8,7 @@ RSpec.describe CategoriesController, type: :controller do
       let!(:categories) { create_list(:oak_category, 3) }
 
       let(:expected) do
-        Oak::Category::MenuDecorator.new(categories).as_json
+        Oak::Category::IndexDecorator.new(categories).as_json
       end
 
       let(:parameters) { { ajax: true, format: :json } }
