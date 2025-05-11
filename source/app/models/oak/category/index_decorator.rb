@@ -6,7 +6,7 @@ module Oak
       expose :snap_url
 
       def snap_url
-        return snap_url_components.join('/')
+        snap_url_components.join('/')
       end
 
       private
