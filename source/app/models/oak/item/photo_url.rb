@@ -17,7 +17,7 @@ module Oak
         [
           Settings.photos_server_url,
           user.id,
-          type,
+          type.to_s.pluralize,
           :items,
           category.slug,
           "#{id}.png"

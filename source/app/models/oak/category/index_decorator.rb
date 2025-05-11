@@ -8,7 +8,7 @@ module Oak
       def snap_url
         return [base_url, 'category.png'].join('/') unless object.items.any?
 
-        Item::PhotoUrl.call(item, :snaps)
+        Item::PhotoUrl.call(item, :snap)
       end
 
       private

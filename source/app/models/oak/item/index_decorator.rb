@@ -8,7 +8,7 @@ module Oak
       expose :snap_url
 
       def snap_url
-        Item::PhotoUrl.call(object, :snaps)
+        Item::PhotoUrl.call(object, :snap)
       end
 
       private
