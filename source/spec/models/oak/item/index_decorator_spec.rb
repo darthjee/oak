@@ -7,10 +7,12 @@ RSpec.describe Oak::Item::IndexDecorator do
 
   let(:item) { create(:oak_item, name:) }
   let(:name) { 'Sample Item' }
+  let(:user) { item.user }
+  
   let(:snap_url) do
     [
       Settings.photos_server_url,
-      item.id,
+      user.id,
       :snaps,
       :items,
       item.category.slug,

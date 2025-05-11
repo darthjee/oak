@@ -14,7 +14,7 @@ module Oak
       private
 
       def snap_url_components
-        [base_url, id, :snaps, :items, category.slug, "#{id}.png"]
+        [base_url, user.id, :snaps, :items, category.slug, "#{id}.png"]
       end
 
       def base_url

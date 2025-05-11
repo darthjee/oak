@@ -14,7 +14,7 @@ module Oak
       def snap_url_components
         return [base_url, 'category.png'] unless object.items.any?
 
-        [base_url, item.id, :snaps, :items, slug, "#{item.id}.png"]
+        [base_url, item.user.id, :snaps, :items, slug, "#{item.id}.png"]
       end
 
       def item
