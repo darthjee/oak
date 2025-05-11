@@ -28,10 +28,10 @@ RSpec.describe ItemsController, type: :controller do
     end
 
     context 'when format is HTML and request is AJAX' do
-      let(:paramters) { { category_slug: category.slug, format: :html, ajax: true } }
+      let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
 
       before do
-        get :index, params: paramters, xhr: true
+        get :index, params: parameters, xhr: true
       end
 
       it 'returns a successful response' do
@@ -44,8 +44,10 @@ RSpec.describe ItemsController, type: :controller do
     end
 
     context 'when format is HTML and request is not AJAX' do
+      let(:parameters) { { category_slug: category.slug } }
+
       before do
-        get :index, params: { category_slug: category.slug }
+        get :index, params: parameters
       end
 
       it 'returns a redirect response' do
@@ -79,11 +81,13 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
 
-    context 'when format is HTML' do
-      let(:params) { { category_slug: category.slug, id: item.id } }
-      
+    context 'when format is HTML and request is AJAX' do
+      let(:params) do
+        { category_slug: category.slug, id: item.id, ajax: true }
+      end
+
       before do
-        get :show, params: params
+        get :show, params: params, xhr: true
       end
 
       it 'returns a successful response' do
@@ -92,6 +96,23 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'renders the correct template' do
         expect(response).to render_template(:show)
+      end
+    end
+
+    context 'when format is HTML and request is not AJAX' do
+      let(:params) { { category_slug: category.slug, id: item.id } }
+
+      before do
+        get :show, params: params
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response)
+        .to redirect_to("#/categories/#{category.slug}/items/#{item.id}")
       end
     end
   end
