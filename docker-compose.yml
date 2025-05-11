@@ -16,6 +16,13 @@ services:
       MYSQL_ROOT_PASSWORD: oak
     ports:
       - 127.0.0.1:$OAK_MYSQL_PORT:3306
+
+  oak_photos:
+    image: httpd:latest
+    volumes:
+      - ./dev_public_files:/usr/local/apache2/htdocs
+    ports:
+      - 127.0.0.1:3001:80
   #################### Base  ####################
 
   base: &base
