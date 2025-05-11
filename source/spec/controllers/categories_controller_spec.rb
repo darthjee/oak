@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe CategoriesController, type: :controller do
   describe 'GET #index' do
-    let!(:categories) { create_list(:oak_category, 3) }
-
     context 'when format is JSON' do
+      let!(:categories) { create_list(:oak_category, 3) }
+
       let(:expected) do
         Oak::Category::MenuDecorator.new(categories).as_json
       end
