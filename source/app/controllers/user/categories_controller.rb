@@ -9,6 +9,7 @@ class User < ApplicationRecord
     resource_for Oak::Category,
                  only: :index,
                  decorator: Oak::Category::MenuDecorator,
-                 paginated: false
+                 paginated: false,
+                 per_page: 5
   end
 end
