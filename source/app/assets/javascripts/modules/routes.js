@@ -21,6 +21,8 @@
       routes: ["/forbidden"]
     }, {
       routes: ["/categories"]
+    }, {
+      routes: ["/categories/:category_slug/items"]
     }];
     provider.$get().bindRoutes();
   }]);
