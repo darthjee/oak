@@ -47,7 +47,7 @@ services:
     <<: *base
     container_name: oak_app
     command: /bin/bash bin/test_server.sh
-    depends_on: [base_build]
+    depends_on: [base_build, oak_photos]
     ports:
       - 127.0.0.1:3000:3000
     environment:
