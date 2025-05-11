@@ -6,7 +6,7 @@ class CategoriesController < ApplicationController
   protect_from_forgery except: %i[index]
 
   resource_for Oak::Category,
-                only: index
+                only: :index,
                 decorator: Oak::Category::MenuDecorator,
                 paginated: true,
                 per_page: 20
