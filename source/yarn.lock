@@ -17,10 +17,10 @@ bootstrap@4.6.2:
   resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-4.6.2.tgz"
   integrity sha512-51Bbp/Uxr9aTuy6ca/8FbFloBUJZLHwnhTcnjIeRn2suQWsWzcuJhGjKDB5eppVte/8oCdOL3VuwxvZDUggwGQ==
 
-cyberhawk@0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/cyberhawk/-/cyberhawk-0.8.1.tgz#814c02a3bc6b6e3d837ad3a3bd4705f73e304146"
-  integrity sha512-g8dXvu7GQH8Zp3XKRBf9ptS5OS4cxZXF7QRVL6ArPfYpmJ/YxVnV6/hXQnH2f24PnPttQ73dcm19XmwPhBVD/w==
+cyberhawk@0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/cyberhawk/-/cyberhawk-0.8.2.tgz#53013ea527d84d07cf20934aa24eee8a9f3adec2"
+  integrity sha512-hjP22FYIIVr3kNQI/uEQiINT328SKWW0a28DcaBUF3q1tgrsD9XE2qf43kIMWTNlOeUB1VFLqerGMLhdTfLGuA==
   dependencies:
     angular "1.4.8"
     angular-route "1.4.8"
