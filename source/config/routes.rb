@@ -22,5 +22,7 @@ Rails.application.routes.draw do
     resources :categories, only: :index
   end
 
-  resources :categories, only: :index
+  resources :categories, only: :index do
+    resources :items, only: %i[index show]
+  end
 end
