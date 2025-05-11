@@ -5,14 +5,25 @@ require 'spec_helper'
 RSpec.describe Oak::Item::IndexDecorator do
   subject(:decorator) { described_class.new(item) }
 
-  let(:item) { build(:oak_item, name:) }
+  let(:item) { create(:oak_item, name:) }
   let(:name) { 'Sample Item' }
+  let(:snap_url) do
+    [
+      Settings.photos_server_url,
+      item.id,
+      :snaps,
+      :items,
+      item.category.slug,
+      "#{item.id}.png"
+    ].join("/")
+  end
 
   describe '#as_json' do
     let(:expected) do
       {
         id: item.id,
-        name:
+        name:,
+        snap_url:
       }.stringify_keys
     end
 
