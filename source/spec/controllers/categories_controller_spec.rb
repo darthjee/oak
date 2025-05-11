@@ -26,7 +26,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
 
-    context 'when format is HTML and request is not AJAX' do
+    context 'when format is HTML and request is AJAX' do
       before do
         get :index, params: { format: :html, ajax: true }, xhr: true
       end
