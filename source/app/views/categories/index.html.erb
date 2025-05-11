@@ -2,8 +2,13 @@
   <div class="row">
     <div class="col-md-3 mb-4" ng-repeat="category in gnc.data">
       <div class="card-body">
-        <h5 class="card-title">{{category.name}}</h5>
-        <img src="{{category.snap_url}}" class="img-fluid" alt="Snapshot">
+
+        <%= angular_safe_link_to(
+          :category_items,
+          { category_slug: '{{category.slug}}'}) do %>
+          <h5 class="card-title">{{category.name}}</h5>
+          <img src="{{category.snap_url}}" class="img-fluid" alt="Snapshot">
+        <% end %>
       </div>
     </div>
   </div>
