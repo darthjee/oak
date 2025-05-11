@@ -27,5 +27,18 @@ RSpec.describe Oak::Category::IndexDecorator do
         expect(decorator.as_json).to eq(expected)
       end
     end
+
+    context 'when there are items' do
+      let!(:item) { create(:oak_item, category:) }
+      let(:snap_url) do
+        [
+          Settings.photos_server_url, item.id, :snaps, :items, slug, "#{item.id}.png"
+        ].join('/')
+      end
+
+      it 'includes the name' do
+        expect(decorator.as_json).to eq(expected)
+      end
+    end
   end
 end
