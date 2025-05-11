@@ -26,9 +26,9 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
 
-    context 'when format is HTML' do
+    context 'when format is HTML and request is not AJAX' do
       before do
-        get :index, params: { format: :html, ajax: true }
+        get :index, params: { format: :html, ajax: true }, xhr: true
       end
 
       it 'returns a successful response' do
@@ -37,6 +37,20 @@ RSpec.describe CategoriesController, type: :controller do
 
       it 'renders the correct template' do
         expect(response).to render_template(:index)
+      end
+    end
+
+    context 'when format is HTML and request is not AJAX' do
+      before do
+        get :index
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/categories')
       end
     end
   end
