@@ -3,10 +3,9 @@
 module Oak
   class Item < ApplicationRecord
     class PhotoUrl
-      def self.call(*args)
-        new(*args).call
+      def self.call(*)
+        new(*).call
       end
-
 
       def initialize(item, type)
         @item = item
@@ -27,6 +26,7 @@ module Oak
       private
 
       attr_reader :item, :type
+
       delegate :id, :user, :category, to: :item
     end
   end

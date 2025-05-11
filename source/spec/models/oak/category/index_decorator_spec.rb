@@ -31,7 +31,7 @@ RSpec.describe Oak::Category::IndexDecorator do
     context 'when there are items' do
       let!(:item) { create(:oak_item, category:) }
       let(:user) { item.user }
-      
+
       let(:snap_url) do
         [
           Settings.photos_server_url, user.id, :snaps, :items, slug, "#{item.id}.png"

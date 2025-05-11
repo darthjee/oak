@@ -9,7 +9,7 @@ RSpec.describe Oak::Item::PhotoUrl do
   let(:name) { 'Sample Item' }
   let(:user) { item.user }
   let(:type) { %i[snap photo].sample }
-  
+
   let(:expected) do
     [
       Settings.photos_server_url,
@@ -18,7 +18,7 @@ RSpec.describe Oak::Item::PhotoUrl do
       :items,
       item.category.slug,
       "#{item.id}.png"
-    ].join("/")
+    ].join('/')
   end
 
   describe '.call' do

@@ -8,7 +8,7 @@ RSpec.describe Oak::Item::IndexDecorator do
   let(:item) { create(:oak_item, name:) }
   let(:name) { 'Sample Item' }
   let(:user) { item.user }
-  
+
   let(:snap_url) do
     [
       Settings.photos_server_url,
@@ -17,7 +17,7 @@ RSpec.describe Oak::Item::IndexDecorator do
       :items,
       item.category.slug,
       "#{item.id}.png"
-    ].join("/")
+    ].join('/')
   end
 
   describe '#as_json' do
