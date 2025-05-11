@@ -27,8 +27,10 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context 'when format is HTML and request is AJAX' do
+      let(:parameters) { { format: :html, ajax: true } }
+        
       before do
-        get :index, params: { format: :html, ajax: true }, xhr: true
+        get :index, params: parameters, xhr: true
       end
 
       it 'returns a successful response' do
@@ -41,8 +43,10 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context 'when format is HTML and request is not AJAX' do
+      let(:parameters) { {} }
+    
       before do
-        get :index
+        get :index, params: parameters
       end
 
       it 'returns a redirect response' do
