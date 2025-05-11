@@ -1,8 +1,13 @@
-<ul class="navbar-nav" ng-controller="Menu.Controller as menuController">
+<ul class="navbar-nav dropdown" ng-controller="Menu.Controller as menuController">
   <li class="nav-item p-2">
-    <a class="nav-link" href="#">First Link</a>
-  </li>
-  <li class="nav-item p-2" ng-repeat="category in menuController.data">
-    {{category.name}} - {{category.slug}}
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+      href="#" role="button" aria-expanded="false">
+      Categories
+    </a>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" ng-repeat="category in menuController.data">
+        {{category.name}} - {{category.slug}}
+      </a>
+    </div>
   </li>
 </ul>
