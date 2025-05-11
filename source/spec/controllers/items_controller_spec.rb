@@ -58,15 +58,16 @@ RSpec.describe ItemsController, type: :controller do
     end
   end
 
-  xdescribe 'GET #show' do
+  describe 'GET #show' do
     let(:category) { create(:oak_category) }
     let(:item) { create(:oak_item, category:) }
 
     context 'when format is JSON' do
       let(:expected) { Oak::Item::IndexDecorator.new(item).as_json }
+      let(:params) { { category_slug: category.slug, id: item.id, format: :json } }
 
       before do
-        get :show, params: { category_slug: category.slug, id: item.id, format: :json }
+        get :show, params: params
       end
 
       it 'returns a successful response' do
@@ -79,8 +80,10 @@ RSpec.describe ItemsController, type: :controller do
     end
 
     context 'when format is HTML' do
+      let(:params) { { category_slug: category.slug, id: item.id } }
+      
       before do
-        get :show, params: { category_slug: category.slug, id: item.id, format: :html }
+        get :show, params: params
       end
 
       it 'returns a successful response' do
