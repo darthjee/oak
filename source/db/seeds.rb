@@ -8,7 +8,7 @@ Zyra
 
 Zyra.register(Oak::Category, find_by: :name)
 
-user = Zyra.find_or_create(
+Zyra.find_or_create(
   :user,
   email: 'email@srv.com',
   login: 'user',
@@ -17,5 +17,5 @@ user = Zyra.find_or_create(
 
 Zyra.find_or_create(
   :oak_category,
-  name: "Arduino"
+  name: 'Arduino'
 )
