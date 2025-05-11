@@ -112,7 +112,7 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'redirects to the correct path' do
         expect(response)
-        .to redirect_to("#/categories/#{category.slug}/items/#{item.id}")
+          .to redirect_to("#/categories/#{category.slug}/items/#{item.id}")
       end
     end
   end

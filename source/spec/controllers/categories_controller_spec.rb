@@ -28,7 +28,7 @@ RSpec.describe CategoriesController, type: :controller do
 
     context 'when format is HTML and request is AJAX' do
       let(:parameters) { { format: :html, ajax: true } }
-        
+
       before do
         get :index, params: parameters, xhr: true
       end
@@ -44,7 +44,7 @@ RSpec.describe CategoriesController, type: :controller do
 
     context 'when format is HTML and request is not AJAX' do
       let(:parameters) { {} }
-    
+
       before do
         get :index, params: parameters
       end
