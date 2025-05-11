@@ -21,4 +21,6 @@ Rails.application.routes.draw do
   namespace :user do
     resources :categories, only: :index
   end
+
+  resources :categories, only: :index
 end

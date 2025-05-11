@@ -3,10 +3,10 @@
 class CategoriesController < ApplicationController
   include OnePageApplication
 
-  protect_from_forgery except: %i[index show]
+  protect_from_forgery except: %i[index]
 
   resource_for Oak::Category,
-                only: %i[index show]
+                only: index
                 decorator: Oak::Category::MenuDecorator,
                 paginated: true,
                 per_page: 20
