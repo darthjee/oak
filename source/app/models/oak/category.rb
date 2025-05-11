@@ -6,5 +6,7 @@ module Oak
 
     # Validates the presence and uniqueness of name
     validates :name, presence: true, length: { maximum: 40 }
+
+    has_many :items, class_name: 'Oak::Item', foreign_key: :category_id, dependent: :destroy
   end
 end

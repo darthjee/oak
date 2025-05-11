@@ -5,13 +5,14 @@ require 'spec_helper'
 RSpec.describe Oak::Category::MenuDecorator do
   subject(:decorator) { described_class.new(category) }
 
-  let(:category) { build(:oak_category, name: 'Sample Category') }
+  let(:category) { build(:oak_category, name:) }
   let(:slug) { category.slug }
+  let(:name) { 'Sample Category' }
 
   describe '#as_json' do
     let(:expected) do
       {
-        name: 'Sample Category',
+        name:,
         slug:
       }.stringify_keys
     end

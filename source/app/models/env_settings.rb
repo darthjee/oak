@@ -11,6 +11,7 @@ class EnvSettings
     :session_period,
     :cache_age,
     :title,
-    :favicon
+    :favicon,
+    :photos_server_url
   )
 end

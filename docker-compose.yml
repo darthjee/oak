@@ -16,6 +16,13 @@ services:
       MYSQL_ROOT_PASSWORD: oak
     ports:
       - 127.0.0.1:$OAK_MYSQL_PORT:3306
+
+  oak_photos:
+    image: httpd:latest
+    volumes:
+      - ./dev_public_files:/usr/local/apache2/htdocs
+    ports:
+      - 127.0.0.1:3001:80
   #################### Base  ####################
 
   base: &base
@@ -40,7 +47,7 @@ services:
     <<: *base
     container_name: oak_app
     command: /bin/bash bin/test_server.sh
-    depends_on: [base_build]
+    depends_on: [base_build, oak_photos]
     ports:
       - 127.0.0.1:3000:3000
     environment:
