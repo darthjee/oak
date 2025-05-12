@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return if Rails.env.production? && ENV['FORCE_SEED'].nil?
+
 Zyra
   .register(User, find_by: :email)
   .on(:build) do |user|
