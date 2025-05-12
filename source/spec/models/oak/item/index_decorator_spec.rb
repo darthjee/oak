@@ -20,14 +20,7 @@ RSpec.describe Oak::Item::IndexDecorator do
 
     context "when the item has no photos" do
       let(:snap_url) do
-        [
-          Settings.photos_server_url,
-          user.id,
-          :snaps,
-          :items,
-          item.category.slug,
-          "#{item.id}.png"
-        ].join('/')
+        [Settings.photos_server_url, 'category.png'].join('/')
       end
 
       it 'includes the id and name' do
