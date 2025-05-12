@@ -22,7 +22,7 @@ workflows:
 jobs:
   test:
     docker:
-      - image: darthjee/circleci_oak-base:0.0.3
+      - image: darthjee/circleci_oak-base:0.0.4
         environment:
           OAK_MYSQL_HOST: mysql
           OAK_MYSQL_PORT: 3306
@@ -62,7 +62,7 @@ jobs:
 
   checks:
     docker:
-      - image: darthjee/circleci_oak-base:0.0.3
+      - image: darthjee/circleci_oak-base:0.0.4
         environment:
           OAK_MYSQL_HOST: mysql
           OAK_MYSQL_PORT: 3306
