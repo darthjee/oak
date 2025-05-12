@@ -28,14 +28,6 @@ ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
   Zyra.find_or_create(:oak_category, name:)
 end
 
-Zyra.find_or_create(
-  :oak_item,
-  name: 'Wi-Fi',
-  user_id: user.id,
-  category_id: category.id,
-  kind_id: ohter_kind.id
-)
-
 item = Zyra.find_or_create(
   :oak_item,
   name: 'Arduino',
@@ -48,4 +40,12 @@ Zyra.find_or_create(
   :oak_photo,
   file_name: 'arduino.png',
   item_id: item.id
+)
+
+Zyra.find_or_create(
+  :oak_item,
+  name: 'Wi-Fi',
+  user_id: user.id,
+  category_id: category.id,
+  kind_id: ohter_kind.id
 )
