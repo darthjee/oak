@@ -43,7 +43,7 @@ RSpec.describe Oak::Category::IndexDecorator do
 
     context 'when there are items with photo' do
       let!(:item) { create(:oak_item, category:) }
-      let!(:photo) { create(:photo, item:) }
+      let!(:photo) { create(:oak_photo, item:) }
       let(:user) { item.user }
 
       let(:snap_url) do
