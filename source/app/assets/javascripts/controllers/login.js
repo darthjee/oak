@@ -40,13 +40,13 @@
     this.notifier.notify("login-success", user);
     this.password = null;
 
-    $("#loginModal").modal("hide");
+    $("#login-modal").modal("hide");
   };
 
   fn._error = function(_body, status) {
     this.password = null;
 
-    this.notifier.notify("login-errror", {
+    this.notifier.notify("login-error", {
       status
     });
 
