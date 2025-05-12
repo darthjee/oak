@@ -8,6 +8,6 @@ module Oak
     validates :name, presence: true, length: { maximum: 40 }
 
     has_many :items, class_name: 'Oak::Item', foreign_key: :category_id, dependent: :destroy
-    has_one :sample_item, class_name: 'Oak::Item', foreign_key: :category_id
+    has_one :sample_item, -> { order(:id) }, class_name: 'Oak::Item'
   end
 end
