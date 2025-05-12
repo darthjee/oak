@@ -12,18 +12,38 @@ RSpec.describe ItemsController, type: :controller do
         Oak::Item::IndexDecorator.new(items).as_json
       end
 
-      let(:parameters) { { category_slug: category.slug, format: :json } }
+      context 'when requesting for the correct category' do
+        let(:parameters) { { category_slug: category.slug, format: :json } }
 
-      before do
-        get :index, params: parameters
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        end
       end
 
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
+      context 'when requesting for the another category' do
+        let(:other_category) { create(:oak_category) }
+        let(:parameters) { { category_slug: other_category.slug, format: :json } }
+        let(:expected) { [] }
 
-      it 'renders the correct JSON using the decorator' do
-        expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        end
       end
     end
 

@@ -9,4 +9,6 @@ class ItemsController < ApplicationController
                only: %i[index show],
                decorator: Oak::Item::IndexDecorator,
                paginated: true
+  
+  private
 end
