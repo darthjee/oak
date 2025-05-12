@@ -18,7 +18,7 @@ RSpec.describe Oak::Item::IndexDecorator do
       }.stringify_keys
     end
 
-    context "when the item has no photos" do
+    context 'when the item has no photos' do
       let(:snap_url) do
         [Settings.photos_server_url, 'category.png'].join('/')
       end
@@ -28,7 +28,7 @@ RSpec.describe Oak::Item::IndexDecorator do
       end
     end
 
-    context "when the item has a main photo" do
+    context 'when the item has a main photo' do
       let!(:photo) { create(:oak_photo, item:) }
       let(:snap_url) do
         [
