@@ -17,6 +17,6 @@ module Oak
     validates :file_name, presence: true, uniqueness: { scope: :item_id }
 
     # Scopes
-    default_scope { order(Arel.sql('photos.order IS NULL')).order(order: :asc) }
+    default_scope { order(Arel.sql('photos.order IS NULL')).order(order: :asc, id: :asc) }
   end
 end
