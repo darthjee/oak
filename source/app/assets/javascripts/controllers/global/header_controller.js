@@ -33,6 +33,7 @@
   fn._completeLogoff = function() {
     this.user = null;
     this.logged = false;
+    this.notifier.notify("logoff-success", {});
   };
 
   fn._login = function(user) {
