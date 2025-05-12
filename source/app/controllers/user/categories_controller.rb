@@ -14,13 +14,14 @@ class User < ApplicationRecord
                  per_page: 5
 
     private
-  
+
     def categories
       @categories ||= fetch_categories
     end
-  
+
     def fetch_categories
       return Oak::Category.all unless logged_user
+
       logged_user.categories
     end
   end

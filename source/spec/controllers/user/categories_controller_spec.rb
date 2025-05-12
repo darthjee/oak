@@ -12,7 +12,7 @@ RSpec.describe User::CategoriesController, type: :controller do
 
     let(:parameters) { { ajax: true, format: :json } }
 
-    context "when user is not logged in" do
+    context 'when user is not logged in' do
       before do
         get :index, params: parameters
       end
@@ -26,7 +26,7 @@ RSpec.describe User::CategoriesController, type: :controller do
       end
     end
 
-    context "when user is logged in" do
+    context 'when user is logged in' do
       let(:session) { create(:session, user: create(:user)) }
       let(:user) { session.user }
 
@@ -34,7 +34,7 @@ RSpec.describe User::CategoriesController, type: :controller do
         controller.send(:cookies).signed[:session] = session.id
       end
 
-      context "when there is no subscription" do
+      context 'when there is no subscription' do
         let(:expected) { [] }
 
         before do
@@ -54,7 +54,7 @@ RSpec.describe User::CategoriesController, type: :controller do
         end
       end
 
-      context "when there are subscriptions" do
+      context 'when there are subscriptions' do
         let!(:subscribed_categories) { create_list(:oak_category, 2) }
 
         let(:expected) do
