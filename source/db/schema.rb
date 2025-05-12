@@ -55,7 +55,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_12_184628) do
     t.datetime "updated_at", null: false
     t.string "file_name", null: false
     t.index ["item_id", "file_name"], name: "index_photos_on_item_id_and_file_name", unique: true
-    t.index ["item_id"], name: "fk_rails_874663793d"
   end
 
   create_table "sessions", charset: "utf8mb3", force: :cascade do |t|
