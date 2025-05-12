@@ -28,13 +28,33 @@ RSpec.describe Oak::Category::IndexDecorator do
       end
     end
 
-    context 'when there are items' do
+    context 'when there are items without photos' do
       let!(:item) { create(:oak_item, category:) }
       let(:user) { item.user }
 
       let(:snap_url) do
+        [Settings.photos_server_url, 'category.png'].join('/')
+      end
+
+      it 'includes the name' do
+        expect(decorator.as_json).to eq(expected)
+      end
+    end
+
+    context 'when there are items with photo' do
+      let!(:item) { create(:oak_item, category:) }
+      let!(:photo) { create(:photo, item:) }
+      let(:user) { item.user }
+
+      let(:snap_url) do
         [
-          Settings.photos_server_url, user.id, :snaps, :items, slug, "#{item.id}.png"
+          Settings.photos_server_url,
+          user.id,
+          :snaps,
+          :items,
+          slug,
+          item.id,
+          photo.file_name
         ].join('/')
       end
 
