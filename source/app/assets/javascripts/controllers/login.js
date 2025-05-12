@@ -46,7 +46,7 @@
   fn._error = function(_body, status) {
     this.password = null;
 
-    this.notifier.notify("login-errror", {
+    this.notifier.notify("login-error", {
       status
     });
 
