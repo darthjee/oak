@@ -6,16 +6,12 @@ module Oak
       expose :snap_url
 
       def snap_url
-        return [base_url, 'category.png'].join('/') unless object.items.any?
+        return [base_url, 'category.png'].join('/') if sample_item.nil?
 
-        Item::PhotoUrl.call(item, :snap)
+        Item::PhotoUrl.call(sample_item, :snap)
       end
 
       private
-
-      def item
-        object.items.first
-      end
 
       def base_url
         Settings.photos_server_url
