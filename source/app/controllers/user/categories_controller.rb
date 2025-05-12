@@ -12,4 +12,8 @@ class User < ApplicationRecord
                  paginated: true,
                  per_page: 5
   end
+
+  def categories
+    Oak::Category.all
+  end
 end

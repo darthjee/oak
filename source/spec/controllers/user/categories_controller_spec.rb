@@ -12,16 +12,44 @@ RSpec.describe User::CategoriesController, type: :controller do
 
     let(:parameters) { { ajax: true, format: :json } }
 
-    before do
-      get :index, params: parameters
+    context "when user is not logged in" do
+      before do
+        get :index, params: parameters
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct JSON using the decorator' do
+        expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+      end
     end
 
-    it 'returns a successful response' do
-      expect(response).to have_http_status(:ok)
-    end
+    context "when user is logged in" do
+      let(:session) { create(:session, user: create(:user)) }
+      let(:user) { session.user }
 
-    it 'renders the correct JSON using the decorator' do
-      expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+      context "when there is no subscription" do
+        let(:expected) { [] }
+        
+        before do
+          controller.send(:cookies).signed[:session] = session.id
+          get :index, params: parameters
+        end
+
+        after do
+          controller.send(:cookies).signed[:session] = nil
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        end
+      end
     end
   end
 end
