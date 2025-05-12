@@ -32,7 +32,7 @@ RSpec.describe User::CategoriesController, type: :controller do
 
       context "when there is no subscription" do
         let(:expected) { [] }
-        
+
         before do
           controller.send(:cookies).signed[:session] = session.id
           get :index, params: parameters

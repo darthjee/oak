@@ -4,7 +4,7 @@ module Oak
   class Subscription < ApplicationRecord
     # Associations
     belongs_to :user
-    belongs_to :category
+    belongs_to :category, class_name: 'Oak::Category'
 
     # Validations
     validates :user, presence: true

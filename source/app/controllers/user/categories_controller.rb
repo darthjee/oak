@@ -3,6 +3,7 @@
 class User < ApplicationRecord
   class CategoriesController < ApplicationController
     include OnePageApplication
+    include LoggedUser
 
     protect_from_forgery except: %i[index]
 
@@ -11,9 +12,16 @@ class User < ApplicationRecord
                  decorator: Oak::Category::MenuDecorator,
                  paginated: true,
                  per_page: 5
-  end
 
-  def categories
-    Oak::Category.all
+    private
+  
+    def categories
+      @categories ||= fetch_categories
+    end
+  
+    def fetch_categories
+      return Oak::Category.all unless logged_user
+      logged_user.categories
+    end
   end
 end
