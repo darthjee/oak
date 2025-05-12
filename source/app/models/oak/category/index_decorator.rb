@@ -2,20 +2,18 @@
 
 module Oak
   class Category
-    class IndexDecorator < MenuDecorator
+    class IndexDecorator < Azeroth::Decorator
+      expose :name
+      expose :slug
       expose :snap_url
 
       def snap_url
-        return [base_url, 'category.png'].join('/') unless object.items.any?
+        return [base_url, 'category.png'].join('/') if main_photo.nil?
 
-        Item::PhotoUrl.call(item, :snap)
+        Photo::FileUrl.call(main_photo, :snap)
       end
 
       private
-
-      def item
-        object.items.first
-      end
 
       def base_url
         Settings.photos_server_url

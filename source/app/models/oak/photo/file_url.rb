@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Oak
-  class Item < ApplicationRecord
-    class PhotoUrl
+  class Photo < ApplicationRecord
+    class FileUrl
       def self.call(*)
         new(*).call
       end
 
-      def initialize(item, type)
-        @item = item
+      def initialize(photo, type)
+        @photo = photo
         @type = type
       end
 
@@ -19,15 +19,17 @@ module Oak
           type.to_s.pluralize,
           :items,
           category.slug,
-          "#{id}.png"
+          item.id,
+          file_name
         ].join('/')
       end
 
       private
 
-      attr_reader :item, :type
+      attr_reader :photo, :type
 
-      delegate :id, :user, :category, to: :item
+      delegate :item, :file_name, to: :photo
+      delegate :user, :category, to: :item
     end
   end
 end

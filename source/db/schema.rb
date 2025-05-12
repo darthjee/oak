@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_08_214110) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_12_184628) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -53,7 +53,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_08_214110) do
     t.integer "order", limit: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "fk_rails_874663793d"
+    t.string "file_name", null: false
+    t.index ["item_id", "file_name"], name: "index_photos_on_item_id_and_file_name", unique: true
   end
 
   create_table "sessions", charset: "utf8mb3", force: :cascade do |t|

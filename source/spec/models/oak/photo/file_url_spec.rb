@@ -2,11 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Item::PhotoUrl do
-  subject(:photo_url) { described_class.call(item, type) }
+RSpec.describe Oak::Photo::FileUrl do
+  subject(:file_url) { described_class.call(photo, type) }
 
+  let(:photo) { create(:oak_photo, item:, file_name:) }
   let(:item) { create(:oak_item, name:) }
   let(:name) { 'Sample Item' }
+  let(:file_name) { 'example.jpg' }
   let(:user) { item.user }
   let(:type) { %i[snap photo].sample }
 
@@ -17,13 +19,14 @@ RSpec.describe Oak::Item::PhotoUrl do
       type.to_s.pluralize,
       :items,
       item.category.slug,
-      "#{item.id}.png"
+      item.id,
+      file_name
     ].join('/')
   end
 
   describe '.call' do
-    it 'includes the id and name' do
-      expect(photo_url).to eq(expected)
+    it 'returns the correct file URL' do
+      expect(file_url).to eq(expected)
     end
   end
 end

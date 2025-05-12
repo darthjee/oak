@@ -9,17 +9,6 @@ RSpec.describe Oak::Item::IndexDecorator do
   let(:name) { 'Sample Item' }
   let(:user) { item.user }
 
-  let(:snap_url) do
-    [
-      Settings.photos_server_url,
-      user.id,
-      :snaps,
-      :items,
-      item.category.slug,
-      "#{item.id}.png"
-    ].join('/')
-  end
-
   describe '#as_json' do
     let(:expected) do
       {
@@ -29,8 +18,33 @@ RSpec.describe Oak::Item::IndexDecorator do
       }.stringify_keys
     end
 
-    it 'includes the id and name' do
-      expect(decorator.as_json).to eq(expected)
+    context 'when the item has no photos' do
+      let(:snap_url) do
+        [Settings.photos_server_url, 'category.png'].join('/')
+      end
+
+      it 'includes the id and name' do
+        expect(decorator.as_json).to eq(expected)
+      end
+    end
+
+    context 'when the item has a main photo' do
+      let!(:photo) { create(:oak_photo, item:) }
+      let(:snap_url) do
+        [
+          Settings.photos_server_url,
+          user.id,
+          :snaps,
+          :items,
+          item.category.slug,
+          item.id,
+          photo.file_name
+        ].join('/')
+      end
+
+      it 'includes the id and name' do
+        expect(decorator.as_json).to eq(expected)
+      end
     end
   end
 end

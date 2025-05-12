@@ -75,4 +75,32 @@ RSpec.describe Oak::Category, type: :model do
       end
     end
   end
+
+  describe 'associations' do
+    describe '#main_photo' do
+      context 'when there are no items' do
+        it 'returns nil' do
+          expect(category.main_photo).to be_nil
+        end
+      end
+
+      context 'when there are items with photos' do
+        let!(:item_with_photo) { create(:oak_item, category:) }
+        let!(:main_photo) { create(:oak_photo, item: item_with_photo) }
+
+        it 'returns the main photo of the first item' do
+          expect(category.main_photo).to eq(main_photo)
+        end
+      end
+
+      context 'when there are items with and without photos' do
+        let!(:items) { create_list(:oak_item, 3, category:) }
+        let!(:main_photo) { create(:oak_photo, item: items.sample) }
+
+        it 'returns the main photo of the first item with a photo' do
+          expect(category.main_photo).to eq(main_photo)
+        end
+      end
+    end
+  end
 end

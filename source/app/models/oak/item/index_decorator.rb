@@ -8,7 +8,9 @@ module Oak
       expose :snap_url
 
       def snap_url
-        Item::PhotoUrl.call(object, :snap)
+        return [base_url, 'category.png'].join('/') if main_photo.nil?
+
+        Photo::FileUrl.call(main_photo, :snap)
       end
 
       private
