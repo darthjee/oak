@@ -15,6 +15,7 @@ class CategoriesController < ApplicationController
                only: %i[new create show],
                decorator: Oak::Category::IndexDecorator,
                paginated: false
+
   private
 
   def categories

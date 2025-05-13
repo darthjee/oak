@@ -94,7 +94,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
   end
-  
+
   describe 'POST #create' do
     let(:category_params) { { name: 'New Category' } }
     let(:parameters) { { category: category_params, format: :json } }
