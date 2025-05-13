@@ -12,9 +12,9 @@ class CategoriesController < ApplicationController
                per_page: 20
 
   resource_for Oak::Category,
-               only: %[new create],
+               only: %i[new create],
                decorator: Oak::Category::IndexDecorator,
-               paginated: false,
+               paginated: false
   private
 
   def categories
