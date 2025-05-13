@@ -10,4 +10,10 @@ class CategoriesController < ApplicationController
                decorator: Oak::Category::IndexDecorator,
                paginated: true,
                per_page: 20
+
+  private
+
+  def categories
+    @categories ||= Oak::Category.eager_load(:main_photo)
+  end
 end

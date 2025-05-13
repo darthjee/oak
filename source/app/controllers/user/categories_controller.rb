@@ -16,7 +16,7 @@ class User < ApplicationRecord
     private
 
     def categories
-      @categories ||= fetch_categories
+      @categories ||= fetch_categories.eager_load(:main_photo)
     end
 
     def fetch_categories
