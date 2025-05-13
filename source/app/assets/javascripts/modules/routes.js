@@ -20,7 +20,7 @@
     }, {
       routes: ["/forbidden"]
     }, {
-      routes: ["/categories"]
+      routes: ["/categories", "/categories/new", "/categories/:category_slug"]
     }, {
       routes: ["/categories/:category_slug/items"]
     }];
