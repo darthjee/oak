@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe CategoriesController, type: :controller do
+  let(:response_json) { JSON.parse(response.body) }
+  
   describe 'GET #index' do
     context 'when format is JSON' do
       let!(:categories) { create_list(:oak_category, 3) }
@@ -22,7 +24,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'renders the correct JSON using the decorator' do
-        expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        expect(response_json).to eq(expected.map(&:stringify_keys))
       end
     end
 
@@ -88,7 +90,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'renders the correct JSON using the decorator' do
-        expect(JSON.parse(response.body)).to eq(expected.stringify_keys)
+        expect(response_json).to eq(expected.stringify_keys)
       end
     end
   end
