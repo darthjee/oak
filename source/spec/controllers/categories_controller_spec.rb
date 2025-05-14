@@ -145,4 +145,63 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
   end
+
+  describe 'GET #show' do
+    context 'when format is JSON' do
+      let!(:category) { create(:oak_category) }
+      let(:slug) { category.slug }
+
+      let(:expected) do
+        Oak::Category::IndexDecorator.new(category).as_json
+      end
+
+      let(:parameters) { { ajax: true, format: :json, slug: slug } }
+
+      before do
+        get :show, params: parameters
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct JSON using the decorator' do
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when format is HTML and request is AJAX' do
+      let(:slug) { SecureRandom.hex(5) }
+      let(:parameters) { { format: :html, ajax: true, slug: slug } }
+
+      before do
+        get :show, params: parameters, xhr: true
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct template' do
+        expect(response).to render_template(:show)
+      end
+    end
+
+    context 'when format is HTML and request is not AJAX' do
+      let(:slug) { SecureRandom.hex(5) }
+      let(:parameters) { { slug: slug } }
+
+      before do
+        get :show, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to("#/categories/#{slug}")
+      end
+    end
+  end
 end
