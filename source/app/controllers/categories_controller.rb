@@ -3,7 +3,7 @@
 class CategoriesController < ApplicationController
   include OnePageApplication
 
-  protect_from_forgery except: %i[index]
+  protect_from_forgery except: %i[index create]
 
   resource_for Oak::Category,
                only: :index,
