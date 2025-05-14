@@ -120,9 +120,9 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
 
-    context "when passing slug" do
+    context 'when passing slug' do
       let(:category_params) { { name: 'New Category', slug: nil } }
-      
+
       it 'creates a new Oak::Category' do
         expect { post :create, params: parameters }
           .to change(Oak::Category, :count).by(1)
