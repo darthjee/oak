@@ -15,10 +15,10 @@ RSpec.describe Oak::Photo::FileUrl do
   let(:expected) do
     [
       Settings.photos_server_url,
-      user.id,
       type.to_s.pluralize,
+      :users,
+      user.id,
       :items,
-      item.category.slug,
       item.id,
       file_name
     ].join('/')

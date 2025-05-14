@@ -3,11 +3,28 @@
 class CategoriesController < ApplicationController
   include OnePageApplication
 
-  protect_from_forgery except: %i[index]
+  protect_from_forgery except: %i[index create]
 
   resource_for Oak::Category,
                only: :index,
                decorator: Oak::Category::IndexDecorator,
                paginated: true,
                per_page: 20
+
+  resource_for Oak::Category,
+               only: %i[new create show],
+               decorator: Oak::Category::IndexDecorator,
+               id_key: :slug,
+               param_key: :slug,
+               paginated: false
+
+  private
+
+  def categories
+    @categories ||= Oak::Category.eager_load(:main_photo)
+  end
+
+  def category_params
+    params.require(:category).permit(:name)
+  end
 end

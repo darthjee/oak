@@ -49,10 +49,10 @@ RSpec.describe Oak::Category::IndexDecorator do
       let(:snap_url) do
         [
           Settings.photos_server_url,
-          user.id,
           :snaps,
+          :users,
+          user.id,
           :items,
-          slug,
           item.id,
           photo.file_name
         ].join('/')

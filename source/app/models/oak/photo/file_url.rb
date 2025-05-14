@@ -15,10 +15,10 @@ module Oak
       def call
         [
           Settings.photos_server_url,
-          user.id,
           type.to_s.pluralize,
+          :users,
+          user.id,
           :items,
-          category.slug,
           item.id,
           file_name
         ].join('/')

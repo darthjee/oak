@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     resources :categories, only: :index
   end
 
-  resources :categories, only: :index, param: :slug do
+  resources :categories, only: %i[index new create show], param: :slug do
     resources :items, only: %i[index show]
   end
 end
