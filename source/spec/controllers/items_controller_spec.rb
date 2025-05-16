@@ -138,6 +138,40 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
   end
+  
+  describe 'GET #new' do
+    context 'when format is HTML and it is ajax' do
+      before do
+        get :new, params: { format: :html, ajax: true }, xhr: true
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct template' do
+        expect(response).to render_template(:new)
+      end
+    end
+
+    context 'when format is JSON' do
+      let(:expected) do
+        Oak::Category::IndexDecorator.new(Oak::Category.new).as_json
+      end
+
+      before do
+        get :new, params: { format: :json }
+      end
+
+      it 'returns an emppty json' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct JSON using the decorator' do
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+  end
 
   describe 'POST #create' do
     let!(:kind) { create(:oak_kind) }
