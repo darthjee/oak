@@ -22,7 +22,7 @@
     }, {
       routes: ["/categories", "/categories/new", "/categories/:category_slug"]
     }, {
-      routes: ["/categories/:category_slug/items", "/categories/:category_slug/new"]
+      routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"]
     }, {
     }];
     provider.$get().bindRoutes();
