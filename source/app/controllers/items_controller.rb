@@ -13,7 +13,7 @@ class ItemsController < ApplicationController
 
   model_for Oak::Category,
             id_key: :slug,
-            param_key: :slug
+            param_key: :category_slug
 
   private
 
