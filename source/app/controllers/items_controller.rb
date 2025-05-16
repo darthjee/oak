@@ -2,6 +2,7 @@
 
 class ItemsController < ApplicationController
   include OnePageApplication
+  include LoggedUser
 
   protect_from_forgery except: %i[index show]
 
@@ -22,6 +23,17 @@ class ItemsController < ApplicationController
 
   def category
     @category ||= Oak::Category.find_by(slug: params[:category_slug])
+  end
+
+  def kind
+    @kind ||= Oak::Kind.find_by(slug: params.require(:item)[:kind_slug])
+  end
+
+  def item_params
+    params
+    .require(:item)
+    .permit(:name)
+    .merge(category:, kind:, user: logged_user)
   end
 
   def category_slug
