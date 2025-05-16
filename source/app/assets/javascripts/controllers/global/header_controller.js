@@ -42,6 +42,7 @@
     this.timeout(function() {
       that.user = user;
       that.logged = true;
+      that.notifier.notify("logged", {});
     }, 1);
   };
 

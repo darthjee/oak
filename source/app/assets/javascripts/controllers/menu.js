@@ -22,6 +22,7 @@
       _.extend(this, Methods);
       _.bindAll(this, "login", "logoff");
       this.notifier.register("login-success", this.login);
+      this.notifier.register("logged", this.login);
       this.notifier.register("logoff-success", this.logoff);
     }
   };
