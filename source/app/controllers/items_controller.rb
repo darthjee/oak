@@ -11,6 +11,10 @@ class ItemsController < ApplicationController
                decorator: Oak::Item::IndexDecorator,
                paginated: true
 
+  model_for Oak::Category,
+            id_key: :slug,
+            param_key: :slug
+
   private
 
   def items
@@ -19,10 +23,6 @@ class ItemsController < ApplicationController
 
   def fetch_items
     category.items
-  end
-
-  def category
-    @category ||= Oak::Category.find_by(slug: params[:category_slug])
   end
 
   def kind
