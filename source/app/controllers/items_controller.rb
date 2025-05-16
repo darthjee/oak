@@ -6,7 +6,7 @@ class ItemsController < ApplicationController
   protect_from_forgery except: %i[index show]
 
   resource_for Oak::Item,
-               only: %i[index show],
+               only: %i[index show new create],
                decorator: Oak::Item::IndexDecorator,
                paginated: true
 

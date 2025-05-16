@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   end
 
   namespace :user do
-    resources :categories, only: :index
+    resources :categories, only: %i[index show new create]
   end
 
   resources :categories, only: %i[index new create show], param: :slug do
