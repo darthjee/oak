@@ -5,7 +5,7 @@
       Categories
     </a>
     <div class="dropdown-menu">
-      <%= angular_safe_link_to(:new_category, {}, class: 'dropdown-item') do %>
+      <%= angular_safe_link_to(:new_category, {}, class: 'dropdown-item', "ng-show" => "menuController.logged") do %>
         New
       <% end %>
       <%= angular_safe_link_to(:categories, {}, class: 'dropdown-item') do %>
