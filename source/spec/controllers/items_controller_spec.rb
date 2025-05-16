@@ -138,11 +138,13 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
   end
-  
+
   describe 'GET #new' do
-    context 'when format is HTML and it is ajax' do
+    let(:category) { create(:oak_category) }
+
+    context 'when format is HTML and it is AJAX' do
       before do
-        get :new, params: { format: :html, ajax: true }, xhr: true
+        get :new, params: { category_slug: category.slug, format: :html, ajax: true }, xhr: true
       end
 
       it 'returns a successful response' do
@@ -156,14 +158,14 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Category::IndexDecorator.new(Oak::Category.new).as_json
+        Oak::Item::IndexDecorator.new(Oak::Item.new(category:)).as_json
       end
 
       before do
-        get :new, params: { format: :json }
+        get :new, params: { category_slug: category.slug, format: :json }
       end
 
-      it 'returns an emppty json' do
+      it 'returns an empty JSON' do
         expect(response).to have_http_status(:ok)
       end
 
