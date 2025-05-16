@@ -144,7 +144,7 @@ RSpec.describe ItemsController, type: :controller do
     let(:category) { create(:oak_category) }
     let(:item_params) { { name: 'New Item', kind_slug: kind.slug } }
     let(:parameters) do
-      { item: item_params, category_slug: category.slug , format: :json }
+      { item: item_params, category_slug: category.slug, format: :json }
     end
     let(:created_item) { Oak::Item.last }
     let(:expected) { Oak::Item::IndexDecorator.new(created_item).as_json }

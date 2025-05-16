@@ -31,9 +31,9 @@ class ItemsController < ApplicationController
 
   def item_params
     params
-    .require(:item)
-    .permit(:name)
-    .merge(category:, kind:, user: logged_user)
+      .require(:item)
+      .permit(:name)
+      .merge(category:, kind:, user: logged_user)
   end
 
   def category_slug
