@@ -7,6 +7,8 @@ RSpec.describe Oak::Item::IndexDecorator do
 
   let(:item) { create(:oak_item, name:) }
   let(:name) { 'Sample Item' }
+  let(:category_slug) { item.category.slug }
+  let(:kind_slug) { item.kind.slug }
   let(:user) { item.user }
 
   describe '#as_json' do
@@ -14,6 +16,8 @@ RSpec.describe Oak::Item::IndexDecorator do
       {
         id: item.id,
         name:,
+        category_slug:,
+        kind_slug:,
         snap_url:
       }.stringify_keys
     end

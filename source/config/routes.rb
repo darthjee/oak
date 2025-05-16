@@ -23,6 +23,6 @@ Rails.application.routes.draw do
   end
 
   resources :categories, only: %i[index new create show], param: :slug do
-    resources :items, only: %i[index show]
+    resources :items, only: %i[index show new create]
   end
 end
