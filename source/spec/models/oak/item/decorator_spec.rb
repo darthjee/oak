@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Item::IndexDecorator do
+RSpec.describe Oak::Item::Decorator do
   subject(:decorator) { described_class.new(item) }
 
   let(:item) { create(:oak_item, name:) }

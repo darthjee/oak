@@ -9,7 +9,7 @@ class User < ApplicationRecord
 
     resource_for Oak::Category,
                  only: :index,
-                 decorator: Oak::Category::IndexDecorator,
+                 decorator: Oak::Category::Decorator,
                  paginated: true,
                  per_page: 5
 

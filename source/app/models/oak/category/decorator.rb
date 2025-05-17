@@ -2,7 +2,7 @@
 
 module Oak
   class Category
-    class IndexDecorator < Azeroth::Decorator
+    class Decorator < Azeroth::Decorator
       expose :name
       expose :slug
       expose :snap_url

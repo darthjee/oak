@@ -2,7 +2,7 @@
 
 module Oak
   class Item
-    class IndexDecorator < Azeroth::Decorator
+    class Decorator < Azeroth::Decorator
       expose :id
       expose :name
       expose :category_slug
