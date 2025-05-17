@@ -31,10 +31,6 @@ RSpec.describe Oak::Category::Decorator do
       let!(:item) { create(:oak_item, category:) }
       let(:user) { item.user }
 
-      let(:snap_url) do
-        [Settings.photos_server_url, 'category.png'].join('/')
-      end
-
       it 'includes the name' do
         expect(decorator.as_json).to eq(expected)
       end

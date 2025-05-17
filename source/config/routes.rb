@@ -25,4 +25,6 @@ Rails.application.routes.draw do
   resources :categories, only: %i[index new create show], param: :slug do
     resources :items, only: %i[index show new create]
   end
+
+  resources :kinds, only: %i[index new create show], param: :slug
 end

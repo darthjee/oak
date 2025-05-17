@@ -19,18 +19,23 @@ user = Zyra.find_or_create(
   email: 'email@srv.com',
   login: 'user',
   name: 'user'
-) { |u| u.password = '123456' }
+)
+user.password = '123456'
+user.save
 
 category = Zyra.find_or_create(:oak_category, name: 'Arduino')
+other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
+pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
+
 Zyra.find_or_create(
   :oak_subscription,
   user_id: user.id,
   category_id: category.id
 )
 
-%w[Pokemon Games Miniatures Packages Photos].each do |name|
+%w[Games Miniatures Packages Photos].each do |name|
   Zyra.find_or_create(:oak_category, name:)
 end
 
@@ -54,4 +59,12 @@ Zyra.find_or_create(
   user_id: user.id,
   category_id: category.id,
   kind_id: ohter_kind.id
+)
+
+Zyra.find_or_create(
+  :oak_item,
+  name: 'Ditto',
+  user_id: user.id,
+  category_id: other_category.id,
+  kind_id: pokemon_kind.id
 )
