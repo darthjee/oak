@@ -16,6 +16,12 @@
         controllerAs: "hc"
       }
     }, {
+      routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"],
+      config: {
+        controller: "Item.Controller",
+        controllerAs: "gnc"
+      }
+    }, {
       routes: ["/admin/users/new", "/admin/users/:id", "/admin/users", "/admin/users/:id/edit"]
     }, {
       routes: ["/forbidden"]
@@ -23,8 +29,6 @@
       routes: ["/categories", "/categories/new", "/categories/:category_slug"]
     }, {
       routes: ["/kinds", "/kinds/new", "/kinds/:kind_slug"]
-    }, {
-      routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"]
     }];
     provider.$get().bindRoutes();
   }]);
