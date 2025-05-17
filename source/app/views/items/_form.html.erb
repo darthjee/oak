@@ -9,7 +9,11 @@
     <%= form.input(:name, placeholder: "Item name") %>
     <%=
       form.ng_select(
-        :kind_slug, options: "gnc.kinds", reference_key: :slug, text_field: :name
+        :kind_slug,
+        options: "gnc.kinds",
+        reference_key: :slug,
+        text_field: :name,
+        ng_errors: "gnc.errors.kind",
       )
     %>
 
