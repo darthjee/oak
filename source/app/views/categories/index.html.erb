@@ -1,4 +1,13 @@
 <div class="container">
+  <%=
+    angular_safe_link_to(
+      :new_category, {},
+      class: 'btn btn-primary'
+    ) do
+      'New'
+    end
+  %>
+
   <div class="row">
     <div class="col-md-3 mb-4" ng-repeat="category in gnc.data">
       <div class="card-body">
