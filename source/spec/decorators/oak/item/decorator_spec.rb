@@ -3,13 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Oak::Item::Decorator do
-  subject(:decorator) { described_class.new(item) }
+  subject(:decorator) { described_class.new(item.tap(&:validate)) }
 
-  let(:item) { create(:oak_item, name:) }
+  let(:item) { build(:oak_item, name:) }
   let(:name) { 'Sample Item' }
   let(:category_slug) { item.category.slug }
   let(:kind_slug) { item.kind.slug }
   let(:user) { item.user }
+  let(:snap_url) do
+    [Settings.photos_server_url, 'category.png'].join('/')
+  end
 
   describe '#as_json' do
     let(:expected) do
@@ -23,10 +26,6 @@ RSpec.describe Oak::Item::Decorator do
     end
 
     context 'when the item has no photos' do
-      let(:snap_url) do
-        [Settings.photos_server_url, 'category.png'].join('/')
-      end
-
       it 'includes the id and name' do
         expect(decorator.as_json).to eq(expected)
       end
@@ -44,6 +43,25 @@ RSpec.describe Oak::Item::Decorator do
           item.id,
           photo.file_name
         ].join('/')
+      end
+
+      it 'includes the id and name' do
+        expect(decorator.as_json).to eq(expected)
+      end
+    end
+
+    context 'when the item is invalid' do
+      let(:name) { '' }
+      let(:errors) { { name: ["can't be blank"] } }
+      let(:expected) do
+        {
+          id: item.id,
+          name:,
+          category_slug:,
+          kind_slug:,
+          snap_url:,
+          errors:
+        }.deep_stringify_keys
       end
 
       it 'includes the id and name' do

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Oak::Kind::Decorator do
-  subject(:decorator) { described_class.new(kind) }
+  subject(:decorator) { described_class.new(kind.tap(&:validate)) }
 
   let(:kind) { build(:oak_kind, name:) }
   let(:slug) { kind.slug }
@@ -25,11 +25,15 @@ RSpec.describe Oak::Kind::Decorator do
 
     context 'when kind is invalid' do
       let(:name) { nil }
+      let(:errors) do
+        { name: ["can't be blank"], slug: ["can't be blank"] }
+      end
       let(:expected) do
         {
           name:,
-          slug:
-        }.stringify_keys
+          slug:,
+          errors: 
+        }.deep_stringify_keys
       end
       
       it 'includes the errors' do
