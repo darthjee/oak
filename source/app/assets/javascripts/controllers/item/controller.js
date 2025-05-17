@@ -1,4 +1,4 @@
-(function(_, angular, Cyberhawk) {
+(function(_, angular) {
   var app = angular.module("item/controller", [
     "cyberhawk/builder"
   ]);
@@ -82,4 +82,4 @@
 
     }
   ]);
-}(window._, window.angular, window.Cyberhawk));
+}(window._, window.angular));
