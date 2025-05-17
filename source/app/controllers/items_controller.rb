@@ -22,7 +22,7 @@ class ItemsController < ApplicationController
   end
 
   def fetch_items
-    category.items
+    category.items.includes(:main_photo)
   end
 
   def kind
