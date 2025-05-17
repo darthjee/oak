@@ -21,7 +21,7 @@ class KindsController < ApplicationController
   private
 
   def kinds
-    @kinds ||= Oak::Kind.eager_load(:main_photo)
+    @kinds ||= Oak::Kind.all
   end
 
   def kind_params

@@ -26,5 +26,5 @@ Rails.application.routes.draw do
     resources :items, only: %i[index show new create]
   end
 
-  resources :kind, only: %i[index new create show], param: :slug
+  resources :kinds, only: %i[index new create show], param: :slug
 end
