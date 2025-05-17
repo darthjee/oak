@@ -32,10 +32,10 @@ RSpec.describe Oak::Kind::Decorator do
         {
           name:,
           slug:,
-          errors: 
+          errors:
         }.deep_stringify_keys
       end
-      
+
       it 'includes the errors' do
         expect(decorator.as_json).to eq(expected)
       end

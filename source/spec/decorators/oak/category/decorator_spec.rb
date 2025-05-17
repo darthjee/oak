@@ -64,7 +64,7 @@ RSpec.describe Oak::Category::Decorator do
 
     context 'when category is invalid' do
       let(:name) { nil }
-      let(:errors) { { name: ["can't be blank"], slug: ["can't be blank"]} }
+      let(:errors) { { name: ["can't be blank"], slug: ["can't be blank"] } }
       let(:expected) do
         {
           name:,
