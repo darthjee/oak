@@ -7,13 +7,13 @@ class CategoriesController < ApplicationController
 
   resource_for Oak::Category,
                only: :index,
-               decorator: Oak::Category::IndexDecorator,
+               decorator: Oak::Category::Decorator,
                paginated: true,
                per_page: 20
 
   resource_for Oak::Category,
                only: %i[new create show],
-               decorator: Oak::Category::IndexDecorator,
+               decorator: Oak::Category::Decorator,
                id_key: :slug,
                param_key: :slug,
                paginated: false

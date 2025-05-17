@@ -8,7 +8,7 @@ class ItemsController < ApplicationController
 
   resource_for Oak::Item,
                only: %i[index show new create],
-               decorator: Oak::Item::IndexDecorator,
+               decorator: Oak::Item::Decorator,
                paginated: true
 
   model_for Oak::Category,

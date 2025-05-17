@@ -7,7 +7,7 @@ RSpec.describe User::CategoriesController, type: :controller do
     let!(:categories) { create_list(:oak_category, 3) }
 
     let(:expected) do
-      Oak::Category::IndexDecorator.new(categories).as_json
+      Oak::Category::Decorator.new(categories).as_json
     end
 
     let(:parameters) { { ajax: true, format: :json } }
@@ -58,7 +58,7 @@ RSpec.describe User::CategoriesController, type: :controller do
         let!(:subscribed_categories) { create_list(:oak_category, 2) }
 
         let(:expected) do
-          Oak::Category::IndexDecorator.new(subscribed_categories).as_json
+          Oak::Category::Decorator.new(subscribed_categories).as_json
         end
 
         before do

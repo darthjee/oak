@@ -10,7 +10,7 @@ RSpec.describe CategoriesController, type: :controller do
       let!(:categories) { create_list(:oak_category, 3) }
 
       let(:expected) do
-        Oak::Category::IndexDecorator.new(categories).as_json
+        Oak::Category::Decorator.new(categories).as_json
       end
 
       let(:parameters) { { ajax: true, format: :json } }
@@ -78,7 +78,7 @@ RSpec.describe CategoriesController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Category::IndexDecorator.new(Oak::Category.new).as_json
+        Oak::Category::Decorator.new(Oak::Category.new).as_json
       end
 
       before do
@@ -99,7 +99,7 @@ RSpec.describe CategoriesController, type: :controller do
     let(:category_params) { { name: 'New Category' } }
     let(:parameters) { { category: category_params, format: :json } }
     let(:created_category) { Oak::Category.last }
-    let(:expected) { Oak::Category::IndexDecorator.new(created_category).as_json }
+    let(:expected) { Oak::Category::Decorator.new(created_category).as_json }
 
     context 'when the request is valid' do
       it 'creates a new Oak::Category' do
@@ -145,7 +145,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:category_params) { { name: '' } }
       let(:expected_category) { Oak::Category.new(category_params) }
       let(:expected) do
-        Oak::Category::IndexDecorator.new(expected_category).as_json
+        Oak::Category::Decorator.new(expected_category).tap(&:validate).as_json
       end
 
       it 'does not create a new Oak::Category' do
@@ -173,7 +173,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:slug) { category.slug }
 
       let(:expected) do
-        Oak::Category::IndexDecorator.new(category).as_json
+        Oak::Category::Decorator.new(category).as_json
       end
 
       let(:parameters) { { ajax: true, format: :json, slug: slug } }

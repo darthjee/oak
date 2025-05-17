@@ -11,7 +11,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Item::IndexDecorator.new(items).as_json
+        Oak::Item::Decorator.new(items).as_json
       end
 
       context 'when requesting for the correct category' do
@@ -87,7 +87,7 @@ RSpec.describe ItemsController, type: :controller do
     let(:item) { create(:oak_item, category:) }
 
     context 'when format is JSON' do
-      let(:expected) { Oak::Item::IndexDecorator.new(item).as_json }
+      let(:expected) { Oak::Item::Decorator.new(item).as_json }
       let(:params) { { category_slug: category.slug, id: item.id, format: :json } }
 
       before do
@@ -158,7 +158,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Item::IndexDecorator.new(Oak::Item.new(category:)).as_json
+        Oak::Item::Decorator.new(Oak::Item.new(category:)).as_json
       end
 
       before do
@@ -183,7 +183,7 @@ RSpec.describe ItemsController, type: :controller do
       { item: item_params, category_slug: category.slug, format: :json }
     end
     let(:created_item) { Oak::Item.last }
-    let(:expected) { Oak::Item::IndexDecorator.new(created_item).as_json }
+    let(:expected) { Oak::Item::Decorator.new(created_item).as_json }
     let(:session) { create(:session, user:) }
     let(:user) { create(:user) }
 
@@ -213,11 +213,11 @@ RSpec.describe ItemsController, type: :controller do
     context 'when the request is invalid' do
       let(:item_params) { { name: '', kind_slug: kind.slug } }
       let(:expected_item_params) do
-        { name: '', kind:, category: }
+        { name: '', kind:, category:, user: }
       end
       let(:expected_item) { Oak::Item.new(expected_item_params) }
       let(:expected) do
-        Oak::Item::IndexDecorator.new(expected_item).as_json
+        Oak::Item::Decorator.new(expected_item.tap(&:validate)).as_json
       end
 
       it 'does not create a new Oak::Item' do
