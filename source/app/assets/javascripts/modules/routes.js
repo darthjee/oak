@@ -3,7 +3,7 @@
 
   module.config(["johtoProvider", function(provider) {
     provider.defaultConfig = {
-      controller: "Cyberhawk.Controller",
+      controller: "Global.GenericController",
       controllerAs: "gnc",
       templateBuilder: function(route, params) {
         return route + "?ajax=true";
