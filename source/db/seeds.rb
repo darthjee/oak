@@ -35,7 +35,7 @@ Zyra.find_or_create(
   category_id: category.id
 )
 
-20.times do |i|
+40.times do |i|
   %w[Games Miniatures Packages Photos].each do |prefix|
     name = "#{prefix} #{i}"
     Zyra.find_or_create(:oak_category, name:)
@@ -64,7 +64,7 @@ Zyra.find_or_create(
   kind_id: ohter_kind.id
 )
 
-40.times do |i|
+100.times do |i|
   Zyra.find_or_create(
     :oak_item,
     name: 'Poke #{i}',
