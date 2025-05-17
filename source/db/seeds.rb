@@ -64,6 +64,16 @@ Zyra.find_or_create(
   kind_id: ohter_kind.id
 )
 
+20.times do |i|
+  Zyra.find_or_create(
+    :oak_item,
+    name: "Component #{i}",
+    user_id: user.id,
+    category_id: category.id,
+    kind_id: ohter_kind.id
+  )
+end
+
 100.times do |i|
   Zyra.find_or_create(
     :oak_item,
