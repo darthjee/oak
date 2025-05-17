@@ -1,7 +1,7 @@
 <div class="container">
   <%=
     angular_safe_link_to(
-      :new_category_item, { id: "{{gnc.data.id}}" },
+      :new_category_item, { category_slug: "{{gnc.category.slug}}" },
       class: 'btn btn-primary'
     ) do
       'New'
