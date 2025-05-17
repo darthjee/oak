@@ -7,4 +7,11 @@
       </div>
     </div>
   </div>
+
+  <%= magicka_display('gnc') do |display|
+    display.pagination(
+      'pagination',
+      path_method: :category_items
+    )
+  end %>
 </div>
