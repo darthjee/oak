@@ -51,6 +51,7 @@
   
     _setCategory: function(response) {
       this.category = response.data;
+      console.info(this.category);
       this.loaded = true;
       this.constructor.trigger(this, this.route, "loaded");
     },
@@ -64,10 +65,10 @@
     },
   
     _buildCategoryRequester: function() {
-      console.info(this.location)
+      var path = this.location.$$url.replace(/\/items$/, "");
       this.categoryRequester = this.requesterBuilder.build({
         search: this.location.$$search,
-        path: "/category"
+        path: path
       });
       this.categoryRequester.bind(this);
     }
