@@ -51,7 +51,6 @@
   
     _setCategory: function(response) {
       this.category = response.data;
-      console.info(this.category);
       this.loaded = true;
       this.constructor.trigger(this, this.route, "loaded");
     },
