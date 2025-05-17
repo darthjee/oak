@@ -19,12 +19,35 @@ RSpec.describe CategoriesController, type: :controller do
         get :index, params: parameters
       end
 
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
+      context 'when there are categories without photo' do
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(response_json).to eq(expected.map(&:stringify_keys))
+        end
       end
 
-      it 'renders the correct JSON using the decorator' do
-        expect(response_json).to eq(expected.map(&:stringify_keys))
+      context 'when one category has photo' do
+        let(:first_category) { categories.first }
+        let(:second_category) { categories.second }
+        let(:item) { create(:oak_item, category: first_category) }
+
+        before do
+          create(:oak_photo, item:)
+          create(:oak_item, category: second_category)
+          categories.each(&:reload)
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(response_json).to eq(expected.map(&:stringify_keys))
+        end
       end
     end
 
