@@ -81,6 +81,7 @@
       _.extend(this, LoginMethods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
       _.bindAll(this, "requestCategory", "_setCategory", "_getCategoryRequester", "_buildCategoryRequester");
+      _.bindAll(this, "login", "logoff");
 
       this.notifier.register("login-success", this.login);
       this.notifier.register("logged", this.login);

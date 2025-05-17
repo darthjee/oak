@@ -3,11 +3,10 @@
     angular_safe_link_to(
       :new_category_item, { category_slug: "{{gnc.category.slug}}" },
       class: 'btn btn-primary',
-      "ng-show" => "gnc.logged",
+      "ng-show" => "gnc.logged"
     ) do
       'New'
     end
-
   %>
   
   <div class="row">
