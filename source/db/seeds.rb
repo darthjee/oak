@@ -67,7 +67,7 @@ Zyra.find_or_create(
 100.times do |i|
   Zyra.find_or_create(
     :oak_item,
-    name: 'Poke #{i}',
+    name: "Poke #{i}",
     user_id: user.id,
     category_id: other_category.id,
     kind_id: pokemon_kind.id
