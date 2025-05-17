@@ -5,7 +5,14 @@
     </h4>
   </div>
   <div class="card-body">
+
     <%= form.input(:name, placeholder: "Item name") %>
+    <%=
+      form.ng_select(
+        :kind_slug, options: "gnc.kinds", reference_key: :slug, text_field: :name
+      )
+    %>
+
     <div class="form-group row">
       <div class="offset-2 col-10">
         <%= form.only(:form) do
