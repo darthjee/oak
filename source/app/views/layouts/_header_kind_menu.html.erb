@@ -1,0 +1,16 @@
+<ul class="navbar-nav dropdown" ng-controller="Menu.Controller as menuController">
+  <li class="nav-item p-2">
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+      role="button" aria-expanded="false">
+      Kinds
+    </a>
+    <div class="dropdown-menu">
+      <%= angular_safe_link_to(:new_kind, {}, class: 'dropdown-item', "ng-show" => "menuController.logged") do %>
+        New
+      <% end %>
+      <%= angular_safe_link_to(:kinds, {}, class: 'dropdown-item') do %>
+        All
+      <% end %>
+    </div>
+  </li>
+</ul>
