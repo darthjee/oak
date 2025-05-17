@@ -1,0 +1,22 @@
+<div class="card shadow-sm">
+  <div class="card-header">
+    <h4 class="my-0 font-weight-normal">
+      Kind
+    </h4>
+  </div>
+  <div class="card-body">
+    <%= form.input(:name, placeholder: "Kind name") %>
+    <div class="form-group row">
+      <div class="offset-2 col-10">
+        <%= form.only(:form) do
+          form.button(
+            ng_click: 'gnc.save()',
+            ng_disabled: 'gnc.ongoing',
+            classes: 'btn-primary',
+            text: 'Save'
+          )
+        end %>
+      </div>
+    </div>
+  </div>
+</div>
