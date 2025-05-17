@@ -3,7 +3,7 @@
     "cyberhawk/builder"
   ]);
 
-  var Methods = {
+  var KindMethods = {
     requestKinds: function() {
       var promise = this._getKindsRequester().request();
       promise.then(this._setKinds);
@@ -38,6 +38,49 @@
       _.extend(this, Methods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
       this.requestKinds();
+    }
+  };
+
+  var CategoryMethods = {
+    requestCategory: function() {
+      var promise = this._getCategoryRequester().request();
+      promise.then(this._setCategory);
+  
+      this.constructor.trigger(this, this.route, "request");
+    },
+  
+    _setCategory: function(response) {
+      this.category = response.data;
+      this.loaded = true;
+      this.constructor.trigger(this, this.route, "loaded");
+    },
+  
+    _getCategoryRequester: function() {
+      if (!this.categoryRequester) {
+        this._buildCategoryRequester();
+      }
+  
+      return this.categoryRequester;
+    },
+  
+    _buildCategoryRequester: function() {
+      console.info(this.location)
+      this.categoryRequester = this.requesterBuilder.build({
+        search: this.location.$$search,
+        path: "/category"
+      });
+      this.categoryRequester.bind(this);
+    }
+  };
+
+  var options = {
+    callback: function(){
+      _.extend(this, KindMethods);
+      _.extend(this, CategoryMethods);
+      _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
+      _.bindAll(this, "requestCategory", "_setCategory", "_getCategoryRequester", "_buildCategoryRequester");
+      this.requestKinds();
+      this.requestCategory();
     }
   };
 
