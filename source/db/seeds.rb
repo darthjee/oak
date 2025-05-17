@@ -19,7 +19,9 @@ user = Zyra.find_or_create(
   email: 'email@srv.com',
   login: 'user',
   name: 'user'
-) { |u| u.password = '123456' }
+)
+user.password = '123456'
+user.save
 
 category = Zyra.find_or_create(:oak_category, name: 'Arduino')
 other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
