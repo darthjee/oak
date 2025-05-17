@@ -4,4 +4,4 @@
   angular.module("menu", [
     "menu/controller"
   ])
-}(window.angular));  
+}(window.angular));
