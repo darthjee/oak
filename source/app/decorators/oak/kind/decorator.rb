@@ -2,7 +2,7 @@
 
 module Oak
   class Kind
-    class Decorator < Azeroth::Decorator
+    class Decorator < ModelDecorator
       expose :name
       expose :slug
     end
