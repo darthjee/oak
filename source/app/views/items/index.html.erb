@@ -1,4 +1,13 @@
 <div class="container">
+  <%=
+    angular_safe_link_to(
+      :new_category_item, { category_slug: "{{gnc.category.slug}}" },
+      class: 'btn btn-primary'
+    ) do
+      'New'
+    end
+  %>
+  
   <div class="row">
     <div class="col-md-3 mb-4" ng-repeat="item in gnc.data">
       <div class="card-body">
@@ -7,4 +16,11 @@
       </div>
     </div>
   </div>
+
+  <%= magicka_display('gnc') do |display|
+    display.pagination(
+      'pagination',
+      path_method: :category_items
+    )
+  end %>
 </div>

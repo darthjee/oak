@@ -1,7 +1,8 @@
 (function(angular) {
   window.Home = {};
 
-  angular.module("menu", [
-    "menu/controller"
+  angular.module("item", [
+    "item/controller"
   ])
 }(window.angular));
+

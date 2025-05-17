@@ -5,7 +5,8 @@
     'johto',
     'home',
     'login',
-    'menu'
+    'menu',
+    'item'
   ]);
 
   module.config(['$httpProvider', function($httpProvider) {
