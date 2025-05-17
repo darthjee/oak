@@ -25,7 +25,6 @@
       routes: ["/kinds", "/kinds/new", "/kinds/:kind_slug"]
     }, {
       routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"]
-    }, {
     }];
     provider.$get().bindRoutes();
   }]);
