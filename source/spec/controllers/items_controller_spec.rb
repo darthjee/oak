@@ -213,11 +213,11 @@ RSpec.describe ItemsController, type: :controller do
     context 'when the request is invalid' do
       let(:item_params) { { name: '', kind_slug: kind.slug } }
       let(:expected_item_params) do
-        { name: '', kind:, category: }
+        { name: '', kind:, category:, user: }
       end
       let(:expected_item) { Oak::Item.new(expected_item_params) }
       let(:expected) do
-        Oak::Item::Decorator.new(expected_item).as_json
+        Oak::Item::Decorator.new(expected_item.tap(&:validate)).as_json
       end
 
       it 'does not create a new Oak::Item' do

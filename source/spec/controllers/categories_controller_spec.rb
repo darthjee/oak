@@ -145,7 +145,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:category_params) { { name: '' } }
       let(:expected_category) { Oak::Category.new(category_params) }
       let(:expected) do
-        Oak::Category::Decorator.new(expected_category).as_json
+        Oak::Category::Decorator.new(expected_category).tap(&:validate).as_json
       end
 
       it 'does not create a new Oak::Category' do
