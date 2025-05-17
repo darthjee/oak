@@ -31,14 +31,6 @@
       });
       this.kindsRequester.bind(this);
     }
-  }
-
-  var options = {
-    callback: function(){
-      _.extend(this, Methods);
-      _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
-      this.requestKinds();
-    }
   };
 
   var CategoryMethods = {
