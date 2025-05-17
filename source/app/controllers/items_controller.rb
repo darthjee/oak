@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
   include OnePageApplication
   include LoggedUser
 
-  protect_from_forgery except: %i[index show]
+  protect_from_forgery except: %i[index show create]
 
   resource_for Oak::Item,
                only: %i[index show new create],
