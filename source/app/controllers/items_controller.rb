@@ -2,7 +2,7 @@
 
 class ItemsController < ApplicationController
   include OnePageApplication
-  include LoggedUser
+  include UserRequired
 
   protect_from_forgery except: %i[index show create]
 
