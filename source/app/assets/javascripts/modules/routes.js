@@ -16,7 +16,11 @@
         controllerAs: "hc"
       }
     }, {
-      routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"],
+      routes: [
+        "/categories/:category_slug/items",
+        "/categories/:category_slug/items/new",
+        "/categories/:category_slug/items/:id"
+      ],
       config: {
         controller: "Item.Controller",
         controllerAs: "gnc"
