@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ItemsController < ApplicationController
-  include OnePageApplication
   include UserRequired
 
   protect_from_forgery except: %i[index show create]

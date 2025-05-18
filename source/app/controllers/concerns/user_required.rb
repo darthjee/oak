@@ -5,7 +5,7 @@ module UserRequired
 
   included do
     include LoggedUser
-    include Tarquinn
+    include OnePageApplication
 
     redirection_rule :render_forbidden, :missing_user?
     skip_redirection_rule :render_root, :missing_user?
