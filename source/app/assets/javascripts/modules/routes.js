@@ -25,11 +25,18 @@
       }
     }, {
       routes: [
-        "/categories/:category_slug/items",
-        "/categories/:category_slug/items/:id"
+        "/categories/:category_slug/items"
       ],
       config: {
         controller: "Item.IndexController",
+        controllerAs: "gnc"
+      }
+    }, {
+      routes: [
+        "/categories/:category_slug/items/:id"
+      ],
+      config: {
+        controller: "Item.ShowController",
         controllerAs: "gnc"
       }
     }, {
