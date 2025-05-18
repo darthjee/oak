@@ -68,7 +68,7 @@ RSpec.describe KindsController, type: :controller do
     before do
       cookies.signed[:session] = session.id if session
     end
-    
+
     context 'when format is HTML and it is ajax' do
       before do
         get :new, params: { format: :html, ajax: true }, xhr: true
@@ -113,7 +113,7 @@ RSpec.describe KindsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("#/forbidden")
+        expect(response).to redirect_to('#/forbidden')
       end
     end
   end
@@ -207,7 +207,7 @@ RSpec.describe KindsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("#/forbidden")
+        expect(response).to redirect_to('#/forbidden')
       end
     end
   end
