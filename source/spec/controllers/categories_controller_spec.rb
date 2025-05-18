@@ -85,6 +85,13 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe 'GET #new' do
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
     context 'when format is HTML and it is ajax' do
       before do
         get :new, params: { format: :html, ajax: true }, xhr: true
@@ -123,6 +130,12 @@ RSpec.describe CategoriesController, type: :controller do
     let(:parameters) { { category: category_params, format: :json } }
     let(:created_category) { Oak::Category.last }
     let(:expected) { Oak::Category::Decorator.new(created_category).as_json }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
 
     context 'when the request is valid' do
       it 'creates a new Oak::Category' do
