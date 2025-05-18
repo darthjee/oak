@@ -2,7 +2,8 @@
   <%=
     angular_safe_link_to(
       :new_kind, {},
-      class: 'btn btn-primary'
+      class: 'btn btn-primary',
+      "ng-show" => "gnc.global_state.logged"
     ) do
       'New'
     end
