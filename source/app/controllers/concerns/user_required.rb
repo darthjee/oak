@@ -8,6 +8,7 @@ module UserRequired
     include Tarquinn
 
     redirection_rule :render_forbidden, :missing_user?
+    skip_redirection_rule :render_root, :missing_user?
   end
 
   class_methods do
