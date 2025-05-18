@@ -5,9 +5,10 @@
     'binded_http'
   ]);
 
-  function Controller(bindedHttp, notifier) {
+  function Controller(bindedHttp, notifier, global_state) {
     this.http     = bindedHttp.bind(this);
     this.notifier = notifier;
+    this.global_state = global_state;
 
     _.bindAll(this, "submit", "clear", "finishRequest", "_success", "_error");
   }
@@ -39,6 +40,7 @@
   fn._success = function(user) {
     this.notifier.notify("login-success", user);
     this.password = null;
+    this.global_state.logged = true;
 
     $("#login-modal").modal("hide");
   };
@@ -68,6 +70,7 @@
   app.controller('Login.Controller', [
     'binded_http',
     'cyberhawk_notifier',
+    'cyberhawk_global_state',
     Controller
   ]);
 }(window._, window.angular, window.$));
