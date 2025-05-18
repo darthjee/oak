@@ -3,42 +3,43 @@
     "cyberhawk/builder"
   ]);
 
-  var KindMethods = {
-    requestKinds: function() {
-      var promise = this._getKindsRequester().request();
-      promise.then(this._setKinds);
+  var PhotoMethods = {
+    requestPhotos: function() {
+      var promise = this._getPhotosRequester().request();
+      promise.then(this._setPhotos);
 
       this.constructor.trigger(this, this.route, "request");
     },
 
-    _setKinds: function(response) {
-      this.kinds = response.data;
+    _setPhotos: function(response) {
+      this.photos = response.data;
       this.loaded = true;
       this.constructor.trigger(this, this.route, "loaded");
     },
 
-    _getKindsRequester: function() {
-      if ( !this.kindsRequester ) {
-        this._buildKindsRequester();
+    _getPhotosRequester: function() {
+      if (!this.photosRequester) {
+        this._buildPhotosRequester();
       }
 
-      return this.kindsRequester;
+      return this.photosRequester;
     },
-    _buildKindsRequester: function() {
-      this.kindsRequester = this.requesterBuilder.build({
+
+    _buildPhotosRequester: function() {
+      this.photosRequester = this.requesterBuilder.build({
         search: this.location.$$search,
-        path: "/kinds"
+        path: "/photos"
       });
-      this.kindsRequester.bind(this);
+      this.photosRequester.bind(this);
     }
   };
 
   var options = {
-    callback: function(){
-      _.extend(this, KindMethods);
-      _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
+    callback: function() {
+      _.extend(this, PhotoMethods);
+      _.bindAll(this, "requestPhotos", "_setPhotos", "_getPhotosRequester", "_buildPhotosRequester");
 
-      this.requestKinds();
+      this.requestPhotos();
     }
   };
 
