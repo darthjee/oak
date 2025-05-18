@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  include OnePageApplication
+  include UserRequired
 
   protect_from_forgery except: %i[index create]
+  require_user_for :new, :create
 
   resource_for Oak::Category,
                only: :index,

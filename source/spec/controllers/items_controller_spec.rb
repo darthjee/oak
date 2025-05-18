@@ -141,6 +141,26 @@ RSpec.describe ItemsController, type: :controller do
 
   describe 'GET #new' do
     let(:category) { create(:oak_category) }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
+    context 'when format is HTML and it is not AJAX' do
+      before do
+        get :new, params: { category_slug: category.slug }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to("#/categories/#{category.slug}/items/new")
+      end
+    end
 
     context 'when format is HTML and it is AJAX' do
       before do
@@ -171,6 +191,22 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'renders the correct JSON using the decorator' do
         expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when user is not logged' do
+      let(:session) { nil }
+
+      before do
+        get :new, params: { category_slug: category.slug }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
       end
     end
   end
@@ -235,6 +271,22 @@ RSpec.describe ItemsController, type: :controller do
         post :create, params: parameters
 
         expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when user is not logged' do
+      let(:session) { nil }
+
+      before do
+        post :create, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
       end
     end
   end

@@ -1,13 +1,15 @@
 (function(_, angular, Global) {
   var app = angular.module('global/header_controller', [
     'cyberhawk/notifier',
-    'binded_http'
+    'binded_http',
+    'cyberhawk/global_state'
   ]);
 
-  function Controller(http, notifier, timeout) {
+  function Controller(http, notifier, timeout, global_state) {
     this.http = http.bind(this);
     this.notifier = notifier;
     this.timeout = timeout;
+    this.global_state = global_state;
 
     _.bindAll(this, 'finishRequest', '_login', '_completeLogoff');
     this._listen();
@@ -33,6 +35,7 @@
   fn._completeLogoff = function() {
     this.user = null;
     this.logged = false;
+    this.global_state.logged = false;
     this.notifier.notify("logoff-success", {});
   };
 
@@ -42,6 +45,7 @@
     this.timeout(function() {
       that.user = user;
       that.logged = true;
+      that.global_state.logged = true;
       that.notifier.notify("logged", {});
     }, 1);
   };
@@ -56,6 +60,7 @@
 
   app.controller('Global.HeaderController', [
     'binded_http', 'cyberhawk_notifier', '$timeout',
+    'cyberhawk_global_state',
     Controller
   ]);
 

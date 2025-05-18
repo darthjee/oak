@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class ItemsController < ApplicationController
-  include OnePageApplication
-  include LoggedUser
+  include UserRequired
 
   protect_from_forgery except: %i[index show create]
+  require_user_for :new, :create
 
   resource_for Oak::Item,
                only: %i[index show new create],

@@ -85,6 +85,13 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe 'GET #new' do
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
     context 'when format is HTML and it is ajax' do
       before do
         get :new, params: { format: :html, ajax: true }, xhr: true
@@ -116,6 +123,22 @@ RSpec.describe CategoriesController, type: :controller do
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
+
+    context 'when user is not logged' do
+      let(:session) { nil }
+
+      before do
+        get :new, params: { format: :json }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
+      end
+    end
   end
 
   describe 'POST #create' do
@@ -123,6 +146,12 @@ RSpec.describe CategoriesController, type: :controller do
     let(:parameters) { { category: category_params, format: :json } }
     let(:created_category) { Oak::Category.last }
     let(:expected) { Oak::Category::Decorator.new(created_category).as_json }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
 
     context 'when the request is valid' do
       it 'creates a new Oak::Category' do
@@ -186,6 +215,22 @@ RSpec.describe CategoriesController, type: :controller do
         post :create, params: parameters
 
         expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when user is not logged' do
+      let(:session) { nil }
+
+      before do
+        post :create, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
       end
     end
   end
