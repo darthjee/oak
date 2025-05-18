@@ -148,6 +148,20 @@ RSpec.describe ItemsController, type: :controller do
       cookies.signed[:session] = session.id if session
     end
 
+    context 'when format is HTML and it is not AJAX' do
+      before do
+        get :new, params: { category_slug: category.slug }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to("#/categories/#{category.slug}/items/new")
+      end
+    end
+
     context 'when format is HTML and it is AJAX' do
       before do
         get :new, params: { category_slug: category.slug, format: :html, ajax: true }, xhr: true
