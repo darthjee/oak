@@ -5,5 +5,19 @@ module UserRequired
 
   included do
     include LoggedUser
+    include Tarquinn
+
+    redirection_rule :render_forbidden, :missing_user?
+  end
+
+  class_methods do
+  end
+
+  def render_forbidden
+    '#/forbidden'
+  end
+
+  def missing_user?
+    true
   end
 end
