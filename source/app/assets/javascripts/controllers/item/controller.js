@@ -3,6 +3,15 @@
     "cyberhawk/builder"
   ]);
 
+  var LoginMethods = {
+    login: function() {
+      this.logged = true;
+    },
+    logoff: function() {
+      this.logged = false;
+    }
+  }
+
   var KindMethods = {
     requestKinds: function() {
       var promise = this._getKindsRequester().request();
@@ -69,8 +78,15 @@
     callback: function(){
       _.extend(this, KindMethods);
       _.extend(this, CategoryMethods);
+      _.extend(this, LoginMethods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
       _.bindAll(this, "requestCategory", "_setCategory", "_getCategoryRequester", "_buildCategoryRequester");
+      _.bindAll(this, "login", "logoff");
+
+      this.notifier.register("login-success", this.login);
+      this.notifier.register("logged", this.login);
+      this.notifier.register("logoff-success", this.logoff);
+
       this.requestKinds();
       this.requestCategory();
     }

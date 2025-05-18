@@ -21,7 +21,7 @@ class CategoriesController < ApplicationController
   private
 
   def categories
-    @categories ||= Oak::Category.eager_load(:main_photo)
+    @categories ||= Oak::Category.includes(:main_photo)
   end
 
   def category_params
