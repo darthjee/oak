@@ -19,6 +19,7 @@ module UserRequired
   end
 
   def missing_user?
+    return false if logged_user
     true
   end
 end
