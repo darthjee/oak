@@ -141,6 +141,12 @@ RSpec.describe ItemsController, type: :controller do
 
   describe 'GET #new' do
     let(:category) { create(:oak_category) }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
 
     context 'when format is HTML and it is AJAX' do
       before do
