@@ -10,7 +10,7 @@ module UserRequired
     redirection_rule :render_forbidden, :missing_user?
     skip_redirection_rule :render_root, :missing_user?
 
-    delegate :require_user_actions, to: :class
+    delegate :user_required?, to: :class
   end
 
   class_methods do
@@ -21,6 +21,10 @@ module UserRequired
     def require_user_actions
       @require_user_actions ||= Set.new
     end
+
+    def user_required?(action)
+      require_user_actions.include?(action.to_sym)
+    end
   end
 
   def render_forbidden
@@ -29,7 +33,7 @@ module UserRequired
 
   def missing_user?
     return false if logged_user
-    return false unless require_user_actions.include?(action_name.to_sym)
+    return false unless user_required?(action_name)
     true
   end
 end
