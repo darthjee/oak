@@ -17,8 +17,15 @@
       }
     }, {
       routes: [
+        "/categories/:category_slug/items/new"
+      ],
+      config: {
+        controller: "Item.FormController",
+        controllerAs: "gnc"
+      }
+    }, {
+      routes: [
         "/categories/:category_slug/items",
-        "/categories/:category_slug/items/new",
         "/categories/:category_slug/items/:id"
       ],
       config: {
