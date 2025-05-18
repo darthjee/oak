@@ -20,6 +20,7 @@ module UserRequired
 
   def missing_user?
     return false if logged_user
+    return false unless action_name.to_sym == :new
     true
   end
 end
