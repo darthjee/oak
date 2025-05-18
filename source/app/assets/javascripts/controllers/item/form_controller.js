@@ -1,5 +1,5 @@
 (function(_, angular) {
-  var app = angular.module("item/controller", [
+  var app = angular.module("item/form_controller", [
     "cyberhawk/builder"
   ]);
 
@@ -92,10 +92,9 @@
     }
   };
 
-  app.controller("Item.Controller", [
+  app.controller("Item.FormController", [
     "cyberhawk_builder", function(builder) {
       builder.buildAndRequest(this, options);
-
     }
   ]);
 }(window._, window.angular));

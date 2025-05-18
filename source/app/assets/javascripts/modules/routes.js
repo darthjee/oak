@@ -22,7 +22,7 @@
         "/categories/:category_slug/items/:id"
       ],
       config: {
-        controller: "Item.Controller",
+        controller: "Item.IndexController",
         controllerAs: "gnc"
       }
     }, {
