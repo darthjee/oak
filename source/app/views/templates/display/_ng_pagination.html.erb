@@ -12,7 +12,9 @@
       <span aria-hidden="true">&laquo;</span>
     <% end %>
     </li>
-    <li class="page-item" ng-repeat="page in <%= pages_list %> track by $index" class="{{ <%= current_page %> == page ? 'sr-only' : '' }}">
+    <li
+      ng-repeat="page in <%= pages_list %> track by $index"
+      class="page-item {{ <%= current_page %> == page ? 'active' : '' }}">
       <%= angular_safe_link_to(
         path_method, {
           page: '{{ page }}',
@@ -21,7 +23,7 @@
         'ng-show' => 'page',
         'class' => 'page-link'
       ) do %>
-      {{ page }} <span class="sr-only" ng-show="<%= current_page %> == page">(current)</span>
+      {{ page }}
     <% end %>
     <span ng-show="!page" class="page-link disabled">&#8230;</span>
     </li>
