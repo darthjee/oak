@@ -273,5 +273,21 @@ RSpec.describe ItemsController, type: :controller do
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
+
+    context 'when user is not logged' do
+      let(:session) { nil }
+
+      before do
+        post :create, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to("#/forbidden")
+      end
+    end
   end
 end

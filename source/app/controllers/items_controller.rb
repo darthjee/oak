@@ -5,7 +5,7 @@ class ItemsController < ApplicationController
   include UserRequired
 
   protect_from_forgery except: %i[index show create]
-  require_user_for :new
+  require_user_for :new, :create
 
   resource_for Oak::Item,
                only: %i[index show new create],
