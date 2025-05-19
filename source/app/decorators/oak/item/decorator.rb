@@ -5,6 +5,7 @@ module Oak
     class Decorator < ModelDecorator
       expose :id
       expose :name
+      expose :description
       expose :category_slug
       expose :kind_slug
       expose :snap_url
