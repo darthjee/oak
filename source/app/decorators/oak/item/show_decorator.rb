@@ -5,8 +5,8 @@ module Oak
     class ShowDecorator < ModelDecorator
       expose :id
       expose :name
-      expose :category_slug
-      expose :kind_slug
+      expose :category, decorator: Oak::Category::Decorator
+      expose :kind, decorator: Oak::Kind::Decorator
       expose :photos, decorator: Oak::Photo::Decorator
     end
   end
