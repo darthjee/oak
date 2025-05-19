@@ -5,47 +5,51 @@ require 'spec_helper'
 RSpec.describe Oak::Item::ShowDecorator do
   subject(:decorator) { described_class.new(item.tap(&:validate)) }
 
-  let(:item) { build(:oak_item, name:) }
+  let(:item) { build(:oak_item, name:, category:, kind:, photos:) }
   let(:name) { 'Sample Item' }
-  let(:category_slug) { item.category.slug }
-  let(:kind_slug) { item.kind.slug }
-  let(:user) { item.user }
-  let(:snap_url) do
-    [Settings.photos_server_url, 'category.png'].join('/')
-  end
+  let(:category) { build(:oak_category) }
+  let(:kind) { build(:oak_kind) }
+  let(:photos) { build_list(:oak_photo, 2) }
+
+  let(:decorated_category) { Oak::Category::Decorator.new(category) }
+  let(:decorated_kind) { Oak::Kind::Decorator.new(kind) }
+  let(:decorated_photos) { Oak::Photo::Decorator.new(photos) }
+
+  let(:category_json) { decorated_category.as_json }
+  let(:kind_json) { decorated_kind.as_json }
+  let(:photos_json) { decorated_photos.as_json }
 
   describe '#as_json' do
     let(:expected) do
       {
         id: item.id,
         name:,
-        category_slug:,
-        kind_slug:,
-        snap_url:
+        category: category_json,
+        kind: kind_json,
+        photos: photos_json
       }.stringify_keys
     end
 
-    context 'when the item has no photos' do
-      it 'includes the id and name' do
+    context 'when the item has all attributes' do
+      it 'includes the id, name, category, kind, and photos' do
         expect(decorator.as_json).to eq(expected)
       end
     end
 
-    context 'when the item has a main photo' do
-      let!(:photo) { create(:oak_photo, item:) }
-      let(:snap_url) do
-        [
-          Settings.photos_server_url,
-          :snaps,
-          :users,
-          user.id,
-          :items,
-          item.id,
-          photo.file_name
-        ].join('/')
+    context 'when the item has no photos' do
+      let(:photos) { [] }
+      let(:photos_json) { [] }
+      let(:expected) do
+        {
+          id: item.id,
+          name:,
+          category: category_json,
+          kind: kind_json,
+          photos: []
+        }.stringify_keys
       end
 
-      it 'includes the id and name' do
+      it 'includes the id, name, category, kind, and an empty photos array' do
         expect(decorator.as_json).to eq(expected)
       end
     end
@@ -57,14 +61,15 @@ RSpec.describe Oak::Item::ShowDecorator do
         {
           id: item.id,
           name:,
-          category_slug:,
-          kind_slug:,
-          snap_url:,
+          category: category_json,
+          kind: kind_json,
+          photos: photos_json,
           errors:
         }.deep_stringify_keys
       end
 
-      it 'includes the id and name' do
+      it 'includes the id, name, category, kind, photos, and errors' do
+        item.validate # Trigger validations
         expect(decorator.as_json).to eq(expected)
       end
     end
