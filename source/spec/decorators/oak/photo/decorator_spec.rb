@@ -22,15 +22,28 @@ RSpec.describe Oak::Photo::Decorator do
     ].join('/')
   end
 
+  let(:photo_url) do
+    [
+      Settings.photos_server_url,
+      :photos,
+      :users,
+      user.id,
+      :items,
+      item.id,
+      file_name
+    ].join('/')
+  end
+
   describe '#as_json' do
     let(:expected) do
       {
-        snap_url:
+        snap_url:,
+        photo_url:
       }.stringify_keys
     end
 
     context 'when the photo is valid' do
-      it 'includes the snap_url' do
+      it 'includes the snap_url and photo_url' do
         expect(decorator.as_json).to eq(expected)
       end
     end
@@ -41,6 +54,7 @@ RSpec.describe Oak::Photo::Decorator do
       let(:expected) do
         {
           snap_url:,
+          photo_url:,
           errors:
         }.deep_stringify_keys
       end
