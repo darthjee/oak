@@ -7,7 +7,7 @@ module Oak
       expose :name
       expose :category_slug
       expose :kind_slug
-      expose :photos
+      expose :photos, decorator: Oak::Photo::Decorator
     end
   end
 end
