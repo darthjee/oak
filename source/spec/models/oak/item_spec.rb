@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Oak::Item, type: :model do
-  subject(:item) { build(:oak_item, name:, user:, category:, kind:) }
+  subject(:item) { build(:oak_item, name:, description:, user:, category:, kind:) }
 
   let(:name) { SecureRandom.hex(10) }
+  let(:description) { 'Sample description' }
   let(:user) { build(:user) }
   let(:category) { build(:oak_category) }
   let(:kind) { build(:oak_kind) }
@@ -28,7 +29,7 @@ RSpec.describe Oak::Item, type: :model do
     end
 
     context 'when name exceeds the maximum length' do
-      let(:name) { 'a' * 101 } # 41 characters
+      let(:name) { 'a' * 101 }
 
       it 'is not valid' do
         expect(item).not_to be_valid
@@ -37,6 +38,18 @@ RSpec.describe Oak::Item, type: :model do
       it 'adds an error on name' do
         expect(item.tap(&:valid?).errors[:name])
           .to include('is too long (maximum is 100 characters)')
+      end
+    end
+
+    context 'when missing description' do
+      let(:description) { nil }
+
+      it 'is not valid without a description' do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds a proper error message' do
+        expect(item.tap(&:valid?).errors[:description]).to include("can't be blank")
       end
     end
 
