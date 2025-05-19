@@ -12,5 +12,6 @@ module Oak
     has_one :main_photo, class_name: 'Oak::Photo'
 
     validates :name, presence: true, length: { maximum: 100 }
+    validates :description, presence: true
   end
 end
