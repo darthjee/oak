@@ -2,7 +2,9 @@
   window.Home = {};
 
   angular.module("item", [
-    "item/controller"
+    "item/index_controller",
+    "item/form_controller",
+    "item/show_controller"
   ])
 }(window.angular));
 

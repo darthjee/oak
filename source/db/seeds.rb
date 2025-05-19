@@ -50,11 +50,13 @@ item = Zyra.find_or_create(
   kind_id: kind.id
 )
 
-Zyra.find_or_create(
-  :oak_photo,
-  file_name: 'arduino.png',
-  item_id: item.id
-)
+(1..3).each do |i|
+  Zyra.find_or_create(
+    :oak_photo,
+    file_name: "arduino#{i}.png",
+    item_id: item.id
+  )
+end
 
 Zyra.find_or_create(
   :oak_item,

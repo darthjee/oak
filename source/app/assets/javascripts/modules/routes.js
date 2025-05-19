@@ -16,9 +16,27 @@
         controllerAs: "hc"
       }
     }, {
-      routes: ["/categories/:category_slug/items", "/categories/:category_slug/items/new"],
+      routes: [
+        "/categories/:category_slug/items/new"
+      ],
       config: {
-        controller: "Item.Controller",
+        controller: "Item.FormController",
+        controllerAs: "gnc"
+      }
+    }, {
+      routes: [
+        "/categories/:category_slug/items"
+      ],
+      config: {
+        controller: "Item.IndexController",
+        controllerAs: "gnc"
+      }
+    }, {
+      routes: [
+        "/categories/:category_slug/items/:id"
+      ],
+      config: {
+        controller: "Item.ShowController",
         controllerAs: "gnc"
       }
     }, {
