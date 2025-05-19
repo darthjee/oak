@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PopulateItemsDescription < ActiveRecord::Migration[7.2]
   def up
     execute <<~SQL
