@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_19_230830) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_19_231846) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_19_230830) do
     t.bigint "kind_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "description"
+    t.text "description", null: false
     t.index ["category_id"], name: "fk_rails_89fb86dc8b"
     t.index ["kind_id"], name: "fk_rails_6d24077082"
     t.index ["user_id"], name: "fk_rails_d4b6334db2"
