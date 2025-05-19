@@ -87,7 +87,7 @@ RSpec.describe ItemsController, type: :controller do
     let(:item) { create(:oak_item, category:) }
 
     context 'when format is JSON' do
-      let(:expected) { Oak::Item::Decorator.new(item).as_json }
+      let(:expected) { Oak::Item::ShowDecorator.new(item).as_json }
       let(:params) { { category_slug: category.slug, id: item.id, format: :json } }
 
       before do

@@ -7,9 +7,13 @@ class ItemsController < ApplicationController
   require_user_for :new, :create
 
   resource_for Oak::Item,
-               only: %i[index show new create],
+               only: %i[index new create],
                decorator: Oak::Item::Decorator,
                paginated: true
+
+  resource_for Oak::Item,
+               only: %i[show],
+               decorator: Oak::Item::ShowDecorator
 
   model_for Oak::Category,
             id_key: :slug,
