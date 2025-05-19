@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_19_225104) do
     t.bigint "kind_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "description", null: false
+    t.text "description"
     t.index ["category_id"], name: "fk_rails_89fb86dc8b"
     t.index ["kind_id"], name: "fk_rails_6d24077082"
     t.index ["user_id"], name: "fk_rails_d4b6334db2"
