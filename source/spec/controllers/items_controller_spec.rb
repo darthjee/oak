@@ -214,7 +214,7 @@ RSpec.describe ItemsController, type: :controller do
   describe 'POST #create' do
     let!(:kind) { create(:oak_kind) }
     let(:category) { create(:oak_category) }
-    let(:item_params) { { name: 'New Item', kind_slug: kind.slug } }
+    let(:item_params) { { name: 'New Item', kind_slug: kind.slug, description: 'desc' } }
     let(:parameters) do
       { item: item_params, category_slug: category.slug, format: :json }
     end
