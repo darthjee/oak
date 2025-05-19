@@ -47,7 +47,8 @@ item = Zyra.find_or_create(
   name: 'Arduino',
   user_id: user.id,
   category_id: category.id,
-  kind_id: kind.id
+  kind_id: kind.id,
+  description: 'An arduino'
 )
 
 (1..3).each do |i|
@@ -63,7 +64,8 @@ Zyra.find_or_create(
   name: 'Wi-Fi',
   user_id: user.id,
   category_id: category.id,
-  kind_id: ohter_kind.id
+  kind_id: ohter_kind.id,
+  description: 'A Wi-Fi'
 )
 
 20.times do |i|
@@ -72,7 +74,8 @@ Zyra.find_or_create(
     name: "Component #{i}",
     user_id: user.id,
     category_id: category.id,
-    kind_id: ohter_kind.id
+    kind_id: ohter_kind.id,
+    description: 'A Componente'
   )
 end
 
@@ -82,6 +85,7 @@ end
     name: "Poke #{i}",
     user_id: user.id,
     category_id: other_category.id,
-    kind_id: pokemon_kind.id
+    kind_id: pokemon_kind.id,
+    description: 'A Pokemon'
   )
 end
