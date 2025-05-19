@@ -2,7 +2,9 @@
   <!-- Carrossel de Fotos -->
   <div id="itemPhotosCarousel" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item" ng-repeat="photo in gnc.data.photos">
+      <div
+        class="carousel-item {{ $index === 0 ? 'active' : '' }}"
+        ng-repeat="photo in gnc.data.photos track by $index">
         <img src="{{photo.snap_url}}" class="d-block w-100">
       </div>
     </div>
