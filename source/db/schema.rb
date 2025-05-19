@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_12_184628) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_19_223756) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -46,6 +46,16 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_12_184628) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_kinds_on_name", unique: true
     t.index ["slug"], name: "index_kinds_on_slug", unique: true
+  end
+
+  create_table "links", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.string "url", null: false
+    t.string "text", null: false
+    t.integer "order", limit: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "fk_rails_e1bb872bea"
   end
 
   create_table "photos", charset: "utf8mb3", force: :cascade do |t|
@@ -90,6 +100,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_12_184628) do
   add_foreign_key "items", "categories"
   add_foreign_key "items", "kinds"
   add_foreign_key "items", "users"
+  add_foreign_key "links", "items"
   add_foreign_key "photos", "items"
   add_foreign_key "sessions", "users"
   add_foreign_key "subscriptions", "categories"
