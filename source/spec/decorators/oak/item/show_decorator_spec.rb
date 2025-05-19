@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe Oak::Item::ShowDecorator do
   subject(:decorator) { described_class.new(item.tap(&:validate)) }
 
-  let(:item) { build(:oak_item, name:, category:, kind:, photos:) }
+  let(:item) { build(:oak_item, name:, category:, kind:, photos:, description:) }
   let(:name) { 'Sample Item' }
+  let(:description) { 'Sample Description' }
   let(:category) { build(:oak_category) }
   let(:kind) { build(:oak_kind) }
   let(:photos) { build_list(:oak_photo, 2) }
@@ -24,6 +25,7 @@ RSpec.describe Oak::Item::ShowDecorator do
       {
         id: item.id,
         name:,
+        description:,
         category: category_json,
         kind: kind_json,
         photos: photos_json
@@ -43,6 +45,7 @@ RSpec.describe Oak::Item::ShowDecorator do
         {
           id: item.id,
           name:,
+          description:,
           category: category_json,
           kind: kind_json,
           photos: []
@@ -61,6 +64,7 @@ RSpec.describe Oak::Item::ShowDecorator do
         {
           id: item.id,
           name:,
+          description:,
           category: category_json,
           kind: kind_json,
           photos: photos_json,

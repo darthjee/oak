@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe Oak::Item::Decorator do
   subject(:decorator) { described_class.new(item.tap(&:validate)) }
 
-  let(:item) { build(:oak_item, name:) }
+  let(:item) { build(:oak_item, name:, description:) }
   let(:name) { 'Sample Item' }
+  let(:description) { 'Sample Description' }
   let(:category_slug) { item.category.slug }
   let(:kind_slug) { item.kind.slug }
   let(:user) { item.user }
@@ -19,6 +20,7 @@ RSpec.describe Oak::Item::Decorator do
       {
         id: item.id,
         name:,
+        description:,
         category_slug:,
         kind_slug:,
         snap_url:
@@ -57,6 +59,7 @@ RSpec.describe Oak::Item::Decorator do
         {
           id: item.id,
           name:,
+          description:,
           category_slug:,
           kind_slug:,
           snap_url:,
