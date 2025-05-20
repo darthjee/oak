@@ -2,7 +2,7 @@
 
 module Oak
   class Item
-    class Builder
+    class CreateBuilder
       def self.build(**params)
         new(**params).build
       end
