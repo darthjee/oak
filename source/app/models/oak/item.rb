@@ -7,6 +7,7 @@ module Oak
     belongs_to :kind
 
     has_many :photos, class_name: 'Oak::Photo', dependent: :destroy
+    has_many :links,  class_name: 'Oak::Link',  dependent: :destroy
 
     # Defines a main photo as the first photo based on the default scope of photos
     has_one :main_photo, class_name: 'Oak::Photo'
