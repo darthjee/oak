@@ -17,10 +17,14 @@ module Oak
       end
 
       def build
-        Oak::Item.new(params)
+        scope.build(params)
       end
 
       private
+
+      def scope
+        @scope ||= Oak::Item.all
+      end
 
       def params
         @params ||= {

@@ -23,11 +23,7 @@ class ItemsController < ApplicationController
   private
 
   def items
-    @items ||= fetch_items
-  end
-
-  def fetch_items
-    category.items.includes(:main_photo)
+    @items ||= category.items.includes(:main_photo)
   end
 
   def kind
@@ -42,7 +38,11 @@ class ItemsController < ApplicationController
   end
 
   def build_item
-    Oak::Item.new(item_params)
+    Oak::Item::CreateBuilder.build(**create_params)
+  end
+
+  def create_params
+    item_params.to_h.symbolize_keys.merge(scope: items)
   end
 
   def category_slug
