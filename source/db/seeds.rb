@@ -58,9 +58,7 @@ item = Zyra.find_or_create(
     file_name: "arduino#{i}.png",
     item_id: item.id
   )
-end
 
-(1..3).each do |i|
   Zyra.find_or_create(
     :oak_link,
     text: "Link #{i}",
