@@ -2,13 +2,11 @@
 
 module Oak
   class Item
-    class CreateBuilder
+    class CreateBuilder < Sinclair::Model
+      initialize_with :name, :description, :category, :kind, :user
+
       def self.build(**params)
         new(**params).build
-      end
-
-      def initialize(**params)
-        @params = params.slice(:name, :description, :category, :kind, :user)
       end
 
       def build
@@ -17,7 +15,15 @@ module Oak
 
       private
 
-      attr_reader :params
+      def params
+        @params ||= {
+          name:,
+          description:,
+          category:,
+          kind:,
+          user:
+      }.compact
+      end
     end
   end
 end

@@ -12,8 +12,7 @@ RSpec.describe Oak::Item::CreateBuilder do
         description: 'Sample Description',
         category: category,
         kind: kind,
-        user: user,
-        extra_param: 'should be ignored'
+        user: user
       }
     end
 
