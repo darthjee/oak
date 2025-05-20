@@ -5,46 +5,8 @@
     </h4>
   </div>
   <div class="card-body">
-    <%= form.input(:name, placeholder: "Item name") %>
-    <%=
-      form.only(:form) do
-        form.ng_select(
-          :kind_slug,
-          options: "gnc.kinds",
-          reference_key: :slug,
-          text_field: :name,
-          ng_errors: "gnc.data.errors.kind",
-        )
-      end
-    %>
-    <%=
-      form.only(:display) do
-        form.input(
-          "category.name",
-          label: "Category"
-        )
-      end
-    %>
-    <%=
-      form.only(:display) do
-        form.input(
-          "kind.name",
-          label: "Kind"
-        )
-      end
-    %>
-    <%= form.textarea(:description, placeholder: "Description") %>
-
-    <% form.only(:display) do %>
-      <div class="links-section">
-        <h5>Links</h5>
-        <ul>
-          <li ng-repeat="link in gnc.data.links track by $index">
-            <a href="{{link.url}}" target="_blank">{{link.text}}</a>
-          </li>
-        </ul>
-      </div>
-    <% end %>
+    <%= render partial: 'form_data', locals: { form: form } %>
+    <%= render partial: 'form_links', locals: { form: form } %>
 
     <div class="form-group row">
       <div class="offset-2 col-10">
