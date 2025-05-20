@@ -12,6 +12,7 @@ Zyra.register(Oak::Category, find_by: :name)
 Zyra.register(Oak::Kind, find_by: :name)
 Zyra.register(Oak::Item, find_by: %i[user_id category_id kind_id name])
 Zyra.register(Oak::Photo, find_by: %i[item file_name])
+Zyra.register(Oak::Link, find_by: %i[item_id url])
 Zyra.register(Oak::Subscription, find_by: %i[user_id category_id])
 
 user = Zyra.find_or_create(
@@ -55,6 +56,15 @@ item = Zyra.find_or_create(
   Zyra.find_or_create(
     :oak_photo,
     file_name: "arduino#{i}.png",
+    item_id: item.id
+  )
+end
+
+(1..3).each do |i|
+  Zyra.find_or_create(
+    :oak_link,
+    text: "Link #{i}",
+    url: "https://example.com/#{i}",
     item_id: item.id
   )
 end
