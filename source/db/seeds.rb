@@ -2,29 +2,10 @@
 
 return if Rails.env.production? && ENV['FORCE_SEED'].nil?
 
-Zyra
-  .register(User, find_by: :email)
-  .on(:build) do |user|
-    user.password = SecureRandom.hex(10)
-  end
+require_relative 'seeds/registers'
+require_relative 'seeds/user'
+require_relative 'seeds/categories'
 
-Zyra.register(Oak::Category, find_by: :name)
-Zyra.register(Oak::Kind, find_by: :name)
-Zyra.register(Oak::Item, find_by: %i[user_id category_id kind_id name])
-Zyra.register(Oak::Photo, find_by: %i[item file_name])
-Zyra.register(Oak::Subscription, find_by: %i[user_id category_id])
-
-user = Zyra.find_or_create(
-  :user,
-  email: 'email@srv.com',
-  login: 'user',
-  name: 'user'
-)
-user.password = '123456'
-user.save
-
-category = Zyra.find_or_create(:oak_category, name: 'Arduino')
-other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
 pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
