@@ -3,7 +3,14 @@
 module Oak
   class Item
     class CreateBuilder < Sinclair::Model
-      initialize_with :name, :description, :category, :kind, :user
+      initialize_with({
+        scope: nil,
+        name: nil,
+        description: nil,
+        category: nil,
+        kind: nil,
+        user: nil,
+      }, **{})
 
       def self.build(**params)
         new(**params).build
@@ -22,7 +29,7 @@ module Oak
           category:,
           kind:,
           user:
-      }.compact
+        }.compact
       end
     end
   end
