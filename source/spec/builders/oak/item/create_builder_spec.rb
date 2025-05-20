@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Oak::Item::CreateBuilder do
   describe '.build' do
-    subject(:item) { described_class.build(params) }
+    subject(:item) { described_class.build(**params) }
 
     let(:params) do
       {

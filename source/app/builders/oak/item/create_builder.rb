@@ -3,11 +3,11 @@
 module Oak
   class Item
     class CreateBuilder
-      def self.build(params)
-        new(params).build
+      def self.build(**params)
+        new(**params).build
       end
 
-      def initialize(params)
+      def initialize(**params)
         @params = params.slice(:name, :description, :category, :kind, :user)
       end
 
