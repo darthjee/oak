@@ -9,7 +9,8 @@ class ItemsController < ApplicationController
   resource_for Oak::Item,
                only: %i[index new create],
                decorator: Oak::Item::Decorator,
-               paginated: true
+               paginated: true,
+               build_with: :build_item
 
   resource_for Oak::Item,
                only: %i[show],
@@ -38,6 +39,10 @@ class ItemsController < ApplicationController
       .require(:item)
       .permit(:name, :description)
       .merge(category:, kind:, user: logged_user)
+  end
+
+  def build_item
+    Oak::Item.new(item_params)
   end
 
   def category_slug
