@@ -35,7 +35,7 @@
     %>
     <%= form.textarea(:description, placeholder: "Description") %>
 
-    <%= form.only(:display) do %>
+    <% form.only(:display) do %>
       <div class="links-section">
         <h5>Links</h5>
         <ul>
