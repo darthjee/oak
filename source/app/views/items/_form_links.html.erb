@@ -1,0 +1,10 @@
+<% form.only(:display) do %>
+  <div class="links-section">
+    <h5>Links</h5>
+    <ul>
+      <li ng-repeat="link in gnc.data.links track by $index">
+        <a href="{{link.url}}" target="_blank">{{link.text}}</a>
+      </li>
+    </ul>
+  </div>
+<% end %>

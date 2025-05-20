@@ -9,6 +9,7 @@ module Oak
       expose :category, decorator: Oak::Category::Decorator
       expose :kind, decorator: Oak::Kind::Decorator
       expose :photos, decorator: Oak::Photo::Decorator
+      expose :links, decorator: Oak::Link::Decorator
     end
   end
 end
