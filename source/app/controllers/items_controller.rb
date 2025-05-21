@@ -33,7 +33,7 @@ class ItemsController < ApplicationController
   def item_params
     params
       .require(:item)
-      .permit(:name, :description, links: [:url, :text, :order])
+      .permit(:name, :description, links: %i[url text order])
       .merge(category:, kind:)
   end
 
