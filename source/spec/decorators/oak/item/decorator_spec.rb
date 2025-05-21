@@ -23,7 +23,8 @@ RSpec.describe Oak::Item::Decorator do
         description:,
         category_slug:,
         kind_slug:,
-        snap_url:
+        snap_url:,
+        links: []
       }.stringify_keys
     end
 
@@ -63,7 +64,8 @@ RSpec.describe Oak::Item::Decorator do
           category_slug:,
           kind_slug:,
           snap_url:,
-          errors:
+          errors:,
+          links: []
         }.deep_stringify_keys
       end
 
