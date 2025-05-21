@@ -18,12 +18,15 @@ module Oak
       end
 
       def build
-        @item = scope.build(item_params)
         build_links
-        @item
+        item
       end
 
       private
+
+      def item
+        @item ||= scope.build(item_params)
+      end
 
       def scope
         @scope ||= Oak::Item.all
@@ -41,7 +44,7 @@ module Oak
 
       def build_links
         links.each do |link_data|
-          @item.links.build(link_data)
+          item.links.build(link_data)
         end
       end
     end
