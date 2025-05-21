@@ -8,15 +8,20 @@ RSpec.describe Oak::Item::CreateBuilder do
 
     let(:params) do
       {
-        name: 'Sample Item',
-        description: 'Sample Description',
-        category: category,
-        kind: kind,
-        user: user,
+        scope:,
+        name:,
+        description:,
+        category:,
+        kind:,
+        user: user_param,
         links: links_data
-      }
+      }.compact
     end
 
+    let(:scope) { nil }
+    let(:user_param) { user }
+    let(:name) { 'Sample Item' }
+    let(:description) { 'Sample Description' }
     let(:category) { build(:oak_category) }
     let(:kind) { build(:oak_kind) }
     let(:user) { build(:user) }
@@ -37,15 +42,8 @@ RSpec.describe Oak::Item::CreateBuilder do
     end
 
     context 'when user is part of the scope' do
-      let(:params) do
-        {
-          scope: user.items,
-          name: 'Sample Item',
-          description: 'Sample Description',
-          category: category,
-          kind: kind
-        }
-      end
+      let(:scope) { user.items }
+      let(:user_param) { nil }
 
       it 'returns an instance of Oak::Item' do
         expect(item).to be_an_instance_of(Oak::Item)
@@ -60,7 +58,7 @@ RSpec.describe Oak::Item::CreateBuilder do
       end
     end
 
-    context 'where there are links data' do
+    context 'when there are links data' do
       let(:links_data) do
         [
           { url: 'https://example.com/1', text: 'Example Link 1', order: 1 },
