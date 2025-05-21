@@ -10,6 +10,7 @@ module Oak
         category: nil,
         kind: nil,
         user: nil,
+        links: []
       }, **{})
 
       def self.build(**params)
@@ -17,7 +18,9 @@ module Oak
       end
 
       def build
-        scope.build(params)
+        @item = scope.build(item_params)
+        build_links
+        @item
       end
 
       private
@@ -26,14 +29,20 @@ module Oak
         @scope ||= Oak::Item.all
       end
 
-      def params
-        @params ||= {
+      def item_params
+        {
           name:,
           description:,
           category:,
           kind:,
           user:
         }.compact
+      end
+
+      def build_links
+        links.each do |link_data|
+          @item.links.build(link_data)
+        end
       end
     end
   end
