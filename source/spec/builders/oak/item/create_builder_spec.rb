@@ -82,5 +82,25 @@ RSpec.describe Oak::Item::CreateBuilder do
         expect(item.links).to all(be_valid)
       end
     end
+
+    context 'when item is invalid' do
+      let(:name) { nil }
+
+      it 'returns an instance of Oak::Item' do
+        expect(item).to be_an_instance_of(Oak::Item)
+      end
+
+      it 'does not raise any errors' do
+        expect { item }.not_to raise_error
+      end
+
+      it do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds validation errors to the item' do
+        expect(item.errors[:name]).to include("can't be blank")
+      end
+    end
   end
 end
