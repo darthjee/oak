@@ -47,7 +47,7 @@ RSpec.describe Oak::Item::CreateBuilder do
           name: 'Sample Item',
           description: 'Sample Description',
           category: category,
-          kind: kind,
+          kind: kind
         }
       end
 
