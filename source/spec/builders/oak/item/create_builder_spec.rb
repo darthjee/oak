@@ -102,5 +102,40 @@ RSpec.describe Oak::Item::CreateBuilder do
         expect(item.errors[:name]).to include("can't be blank")
       end
     end
+
+    context 'when one of the links is invalid' do
+      let(:links_data) do
+        [
+          { url: 'https://example.com/1', text: 'Example Link 1', order: 1 },
+          { url: nil, text: 'Invalid Link', order: 2 }
+        ]
+      end
+
+      it 'returns an instance of Oak::Item' do
+        expect(item).to be_an_instance_of(Oak::Item)
+      end
+
+      it 'does not raise any errors' do
+        expect { item }.not_to raise_error
+      end
+
+      it 'marks the item as invalid' do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds validation errors to the item' do
+        expect(item.errors[:links]).to include('is invalid')
+      end
+
+      it 'marks the invalid link as invalid' do
+        invalid_link = item.links.find { |link| link.url.nil? }
+        expect(invalid_link).not_to be_valid
+      end
+
+      it 'adds validation errors to the invalid link' do
+        invalid_link = item.links.find { |link| link.url.nil? }
+        expect(invalid_link.errors[:url]).to include("can't be blank")
+      end
+    end
   end
 end
