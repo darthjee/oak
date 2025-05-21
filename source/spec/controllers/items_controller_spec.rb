@@ -214,7 +214,9 @@ RSpec.describe ItemsController, type: :controller do
   describe 'POST #create' do
     let!(:kind) { create(:oak_kind) }
     let(:category) { create(:oak_category) }
-    let(:item_params) { { name: 'New Item', kind_slug: kind.slug, description: 'desc' } }
+    let(:item_params) do
+      { name: 'New Item', kind_slug: kind.slug, description: 'desc', links: links_data }
+    end
     let(:parameters) do
       { item: item_params, category_slug: category.slug, format: :json }
     end
@@ -222,6 +224,7 @@ RSpec.describe ItemsController, type: :controller do
     let(:expected) { Oak::Item::Decorator.new(created_item).as_json }
     let(:session) { create(:session, user:) }
     let(:user) { create(:user) }
+    let(:links_data) { [] }
 
     before do
       cookies.signed[:session] = session.id if session
@@ -240,6 +243,39 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'returns the created item as JSON' do
+        post :create, params: parameters
+
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when payload contains links' do
+      let(:links_data) do
+        [
+          { url: 'https://example.com/1', text: 'Example Link 1', order: 1 },
+          { url: 'https://example.com/2', text: 'Example Link 2', order: 2 }
+        ]
+      end
+
+      it 'creates a new Oak::Item' do
+        expect { post :create, params: parameters }
+          .to change(Oak::Item, :count).by(1)
+      end
+
+      it 'creates the associated links' do
+        expect { post :create, params: parameters }
+          .to change(Oak::Link, :count).by(2)
+      end
+
+      it 'associates the links with the created item' do
+        post :create, params: parameters
+
+        expect(created_item.links.size).to eq(2)
+        expect(created_item.links.map(&:url)).to contain_exactly('https://example.com/1', 'https://example.com/2')
+        expect(created_item.links.map(&:text)).to contain_exactly('Example Link 1', 'Example Link 2')
+      end
+
+      it 'returns the created item with links as JSON' do
         post :create, params: parameters
 
         expect(response_json).to eq(expected.stringify_keys)
