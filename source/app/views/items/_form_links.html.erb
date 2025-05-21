@@ -13,7 +13,7 @@
   <div class="links-section">
     <h5>Links</h5>
     <ul class="list-unstyled">
-      <li ng-repeat="link in gnc.data.links track by $index">
+      <li class="border p-3 mb-3" ng-repeat="link in gnc.data.links track by $index">
         <% magicka_form('link') do |link_form| %>
           <%= link_form.input(
             "text",
