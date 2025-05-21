@@ -310,6 +310,37 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
 
+    context 'when links are invalid' do
+      let(:links_data) do
+        [
+          { url: nil, text: 'Invalid Link', order: 1 }, # Invalid link (missing URL)
+          { url: 'https://example.com/2', text: nil, order: 2 } # Invalid link (missing text)
+        ]
+      end
+
+      it 'does not create a new Oak::Item' do
+        expect { post :create, params: parameters }
+          .not_to change(Oak::Item, :count)
+      end
+
+      it 'does not create any links' do
+        expect { post :create, params: parameters }
+          .not_to change(Oak::Link, :count)
+      end
+
+      it 'returns unprocessable entity status' do
+        post :create, params: parameters
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns validation errors as JSON' do
+        post :create, params: parameters
+
+        expect(response_json['errors']).to include('links' => ['is invalid'])
+      end
+    end
+
     context 'when user is not logged' do
       let(:session) { nil }
 
