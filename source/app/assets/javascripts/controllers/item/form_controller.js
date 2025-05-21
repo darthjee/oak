@@ -47,6 +47,10 @@
           this.data.links = [{}];
         }
       };
+    },
+
+    addLink: function() {
+      this.data.links.push({});
     }
   };
 
