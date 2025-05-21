@@ -9,7 +9,8 @@ class ItemsController < ApplicationController
   resource_for Oak::Item,
                only: %i[index new create],
                decorator: Oak::Item::Decorator,
-               paginated: true
+               paginated: true,
+               build_with: :build_item
 
   resource_for Oak::Item,
                only: %i[show],
@@ -22,11 +23,7 @@ class ItemsController < ApplicationController
   private
 
   def items
-    @items ||= fetch_items
-  end
-
-  def fetch_items
-    category.items.includes(:main_photo)
+    @items ||= category.items.includes(:main_photo)
   end
 
   def kind
@@ -36,8 +33,16 @@ class ItemsController < ApplicationController
   def item_params
     params
       .require(:item)
-      .permit(:name, :description)
-      .merge(category:, kind:, user: logged_user)
+      .permit(:name, :description, links: %i[url text order])
+      .merge(category:, kind:)
+  end
+
+  def build_item
+    Oak::Item::CreateBuilder.build(**create_params)
+  end
+
+  def create_params
+    item_params.to_h.symbolize_keys.merge(scope: logged_user.items)
   end
 
   def category_slug

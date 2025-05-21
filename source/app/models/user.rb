@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :sessions
   has_many :subscriptions, class_name: 'Oak::Subscription', dependent: :destroy
   has_many :categories, through: :subscriptions, source: :category
+  has_many :items, class_name: 'Oak::Item', dependent: :destroy
 
   validates :login,
             presence: true,
