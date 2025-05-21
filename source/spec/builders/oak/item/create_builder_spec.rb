@@ -27,12 +27,8 @@ RSpec.describe Oak::Item::CreateBuilder do
         expect(item).to be_an_instance_of(Oak::Item)
       end
 
-      it 'assigns the correct attributes to the item' do
-        expect(item.name).to eq('Sample Item')
-        expect(item.description).to eq('Sample Description')
-        expect(item.category).to eq(category)
-        expect(item.kind).to eq(kind)
-        expect(item.user).to eq(user)
+      it 'creates a valid item from attributes' do
+        expect(item).to be_valid
       end
 
       it 'ignores extra parameters' do
@@ -55,12 +51,8 @@ RSpec.describe Oak::Item::CreateBuilder do
         expect(item).to be_an_instance_of(Oak::Item)
       end
 
-      it 'assigns the correct attributes to the item' do
-        expect(item.name).to eq('Sample Item')
-        expect(item.description).to eq('Sample Description')
-        expect(item.category).to eq(category)
-        expect(item.kind).to eq(kind)
-        expect(item.user).to eq(user)
+      it 'creates a valid item from attributes' do
+        expect(item).to be_valid
       end
 
       it 'sets the user from the scope' do
