@@ -33,12 +33,32 @@
     }
   };
 
+  var LinksMethods = {
+    bindLinksTriggers: function() {
+      this.constructor.on(this.route, "loaded", this.initLinks);
+    },
+
+    initLinks: function() {
+      if (this.data) {
+        if (!this.data.links) {
+          this.data.links = [{}];
+        }
+        if (!this.data.links[0]) {
+          this.data.links = [{}];
+        }
+      };
+    }
+  };
+
   var options = {
     callback: function(){
       _.extend(this, KindMethods);
+      _.extend(this, LinksMethods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
+      _.bindAll(this, "bindLinksTriggers", "initLinks");
 
       this.requestKinds();
+      this.bindLinksTriggers();
     }
   };
 
