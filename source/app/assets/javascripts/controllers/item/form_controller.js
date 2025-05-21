@@ -51,7 +51,11 @@
 
     addLink: function() {
       this.data.links.push({});
-    }
+    },
+
+    removeLink: function(index) {
+      console.info("remove link", index, this.data.links[index]);
+    },
   };
 
   var options = {
