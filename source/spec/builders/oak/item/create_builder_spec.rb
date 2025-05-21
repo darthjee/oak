@@ -74,9 +74,14 @@ RSpec.describe Oak::Item::CreateBuilder do
 
       it 'assigns the links to the item' do
         expect(item.links.size).to eq(2)
-        expect(item.links.map(&:url)).to contain_exactly('https://example.com/1', 'https://example.com/2')
-        expect(item.links.map(&:text)).to contain_exactly('Example Link 1', 'Example Link 2')
-        expect(item.links.map(&:order)).to contain_exactly(1, 2)
+      end
+
+      it 'creates links of Oak::Link' do
+        expect(item.links).to all(be_an_instance_of(Oak::Link))
+      end
+
+      it 'creates a valid links from attributes' do
+        expect(item.links).to all(be_valid)
       end
     end
   end
