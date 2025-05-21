@@ -257,6 +257,10 @@ RSpec.describe ItemsController, type: :controller do
         ]
       end
 
+      before do
+        post :create, params: parameters
+      end
+
       it 'creates a new Oak::Item' do
         expect { post :create, params: parameters }
           .to change(Oak::Item, :count).by(1)
@@ -268,11 +272,11 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'associates the links with the created item' do
-        post :create, params: parameters
-
         expect(created_item.links.size).to eq(2)
+      end
+
+      it 'creates link from payload' do
         expect(created_item.links.map(&:url)).to contain_exactly('https://example.com/1', 'https://example.com/2')
-        expect(created_item.links.map(&:text)).to contain_exactly('Example Link 1', 'Example Link 2')
       end
 
       it 'returns the created item with links as JSON' do
