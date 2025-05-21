@@ -99,7 +99,7 @@ RSpec.describe Oak::Item::CreateBuilder do
       end
 
       it 'adds validation errors to the item' do
-        expect(item.errors[:name]).to include("can't be blank")
+        expect(item.tap(&:valid?).errors[:name]).to include("can't be blank")
       end
     end
 
@@ -124,7 +124,7 @@ RSpec.describe Oak::Item::CreateBuilder do
       end
 
       it 'adds validation errors to the item' do
-        expect(item.errors[:links]).to include('is invalid')
+        expect(item.tap(&:valid?).errors[:links]).to include('is invalid')
       end
 
       it 'marks the invalid link as invalid' do
@@ -134,7 +134,7 @@ RSpec.describe Oak::Item::CreateBuilder do
 
       it 'adds validation errors to the invalid link' do
         invalid_link = item.links.find { |link| link.url.nil? }
-        expect(invalid_link.errors[:url]).to include("can't be blank")
+        expect(invalid_link.tap(&:valid?).errors[:url]).to include("can't be blank")
       end
     end
   end
