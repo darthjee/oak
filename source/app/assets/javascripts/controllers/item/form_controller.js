@@ -46,7 +46,7 @@
         if (!this.data.links[0]) {
           this.data.links = [{}];
         }
-      };
+      }
     },
 
     addLink: function() {
