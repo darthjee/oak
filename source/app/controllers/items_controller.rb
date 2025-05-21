@@ -33,8 +33,8 @@ class ItemsController < ApplicationController
   def item_params
     params
       .require(:item)
-      .permit(:name, :description)
-      .merge(category:, kind:, user: logged_user)
+      .permit(:name, :description, links: [:url, :text, :order])
+      .merge(category:, kind:)
   end
 
   def build_item
@@ -42,7 +42,7 @@ class ItemsController < ApplicationController
   end
 
   def create_params
-    item_params.to_h.symbolize_keys.merge(scope: items)
+    item_params.to_h.symbolize_keys.merge(scope: logged_user.items)
   end
 
   def category_slug
