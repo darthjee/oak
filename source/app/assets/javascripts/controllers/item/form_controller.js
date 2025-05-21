@@ -54,7 +54,7 @@
     },
 
     removeLink: function(index) {
-      console.info("remove link", index, this.data.links[index]);
+      this.data.links.splice(index, 1);
     },
   };
 
@@ -63,7 +63,7 @@
       _.extend(this, KindMethods);
       _.extend(this, LinksMethods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
-      _.bindAll(this, "bindLinksTriggers", "initLinks");
+      _.bindAll(this, "bindLinksTriggers", "initLinks", "addLink", "removeLink");
 
       this.requestKinds();
       this.bindLinksTriggers();
