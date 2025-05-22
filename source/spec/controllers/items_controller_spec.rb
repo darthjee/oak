@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe ItemsController, type: :controller do
   let(:response_json) { JSON.parse(response.body) }
-  let(:photos_data) { [] }
   let(:user) { create(:user) }
   let(:session) { create(:session, user:) }
 
@@ -144,8 +143,6 @@ RSpec.describe ItemsController, type: :controller do
 
   describe 'GET #new' do
     let(:category) { create(:oak_category) }
-    let(:session) { create(:session, user:) }
-    let(:user) { create(:user) }
 
     before do
       cookies.signed[:session] = session.id if session
@@ -225,8 +222,6 @@ RSpec.describe ItemsController, type: :controller do
     end
     let(:created_item) { Oak::Item.last }
     let(:expected) { Oak::Item::Decorator.new(created_item).as_json }
-    let(:session) { create(:session, user:) }
-    let(:user) { create(:user) }
     let(:links_data) { [] }
 
     before do
@@ -368,8 +363,6 @@ RSpec.describe ItemsController, type: :controller do
   describe 'GET #edit' do
     let(:category) { create(:oak_category) }
     let(:item) { create(:oak_item, category:) }
-    let(:session) { create(:session, user:) }
-    let(:user) { create(:user) }
 
     before do
       cookies.signed[:session] = session.id if session
@@ -439,6 +432,7 @@ RSpec.describe ItemsController, type: :controller do
   end
 
   describe 'PUT #update' do
+    let(:photos_data) { [] }
     let(:item_params) do
       {
         name: 'Updated Item',
