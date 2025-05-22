@@ -8,3 +8,47 @@
     </ul>
   </div>
 <% end %>
+
+<% form.only(:form) do %>
+  <div class="links-section">
+    <h5>Links</h5>
+    <ul class="list-unstyled">
+      <li class="border p-3 mb-3" ng-repeat="link in gnc.data.links track by $index">
+        <% magicka_form('link') do |link_form| %>
+          <%= link_form.input(
+            "text",
+            label: "Text"
+          ) %>
+          <%= link_form.input(
+            "url",
+            label: "URL"
+          ) %>
+        <% end %>
+
+        <div class="form-group row">
+          <div class="offset-1 col-10">
+            <%= form.only(:form) do
+              form.button(
+                ng_click: 'gnc.removeLink($index)',
+                classes: 'btn-primary',
+                text: 'Delete'
+              )
+            end %>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="form-group row">
+      <div class="offset-1 col-10">
+        <%= form.only(:form) do
+          form.button(
+            ng_click: 'gnc.addLink()',
+            classes: 'btn-primary',
+            text: 'Add Link'
+          )
+        end %>
+      </div>
+    </div>
+  </div>
+<% end %>
