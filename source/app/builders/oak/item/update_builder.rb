@@ -23,6 +23,8 @@ module Oak
           update_links
         end
         item
+      rescue ActiveRecord::RecordInvalid
+        item
       end
 
       private
@@ -41,7 +43,7 @@ module Oak
           category:,
           kind:,
           user:
-        }.compact
+        }
       end
 
       def update_links
