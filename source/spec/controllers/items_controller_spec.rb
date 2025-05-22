@@ -452,12 +452,20 @@ RSpec.describe ItemsController, type: :controller do
     end
 
     context 'when the request is valid' do
-      it 'updates the Oak::Item' do
+      it 'updates the Oak::Item name' do
         put :update, params: parameters
-        item.reload
 
-        expect(item.name).to eq('Updated Item')
-        expect(item.description).to eq('Updated description')
+        expect { put :update, params: parameters }
+          .to change { item.reload.name }
+          .from(item.name)
+          .to('Updated Item')
+      end
+
+      it 'updates the Oak::Item description' do
+        expect { put :update, params: parameters }
+          .to change { item.reload.description }
+          .from(item.description)
+          .to('Updated description')
       end
 
       it 'returns a successful response' do
