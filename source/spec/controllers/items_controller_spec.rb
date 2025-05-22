@@ -361,4 +361,77 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
   end
+
+  describe 'GET #edit' do
+    let(:category) { create(:oak_category) }
+    let(:item) { create(:oak_item, category:) }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
+    context 'when user is logged in' do
+      context 'when format is HTML and it is not AJAX' do
+        before do
+          get :edit, params: { category_slug: category.slug, id: item.id }
+        end
+
+        it 'returns a redirect response' do
+          expect(response).to have_http_status(:found) # HTTP status 302
+        end
+
+        it 'redirects to the correct path' do
+          expect(response).to redirect_to("#/categories/#{category.slug}/items/#{item.id}/edit")
+        end
+      end
+
+      context 'when format is HTML and it is AJAX' do
+        before do
+          get :edit, params: { category_slug: category.slug, id: item.id, format: :html, ajax: true }, xhr: true
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct template' do
+          expect(response).to render_template(:edit)
+        end
+      end
+
+      context 'when format is JSON' do
+        let(:expected) { Oak::Item::Decorator.new(item).as_json }
+
+        before do
+          get :edit, params: { category_slug: category.slug, id: item.id, format: :json }
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(response_json).to eq(expected.stringify_keys)
+        end
+      end
+    end
+
+    context 'when user is not logged in' do
+      let(:session) { nil }
+
+      before do
+        get :edit, params: { category_slug: category.slug, id: item.id }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
+      end
+    end
+  end
 end
