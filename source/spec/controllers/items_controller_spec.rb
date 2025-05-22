@@ -358,7 +358,7 @@ RSpec.describe ItemsController, type: :controller do
     end
   end
 
-  describe "PUT #update" do
+  describe 'PUT #update' do
     let(:item_params) do
       {
         name: 'Updated Item',
