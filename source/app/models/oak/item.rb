@@ -14,5 +14,9 @@ module Oak
 
     validates :name, presence: true, length: { maximum: 100 }
     validates :description, presence: true
+
+    scope :for_category, ->(category) { where(category:) }
+    scope :for_user, ->(user) { where(user:) }
+    scope :for_kind, ->(kind) { where(kind:) }
   end
 end

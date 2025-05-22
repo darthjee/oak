@@ -3,14 +3,15 @@
 class ItemsController < ApplicationController
   include UserRequired
 
-  protect_from_forgery except: %i[index show create]
-  require_user_for :new, :create
+  protect_from_forgery except: %i[index show create update]
+  require_user_for :new, :create, :edit, :update
 
   resource_for Oak::Item,
-               only: %i[index new create],
+               only: %i[index new create edit update],
                decorator: Oak::Item::Decorator,
                paginated: true,
-               build_with: :build_item
+               build_with: :build_item,
+               update_with: :update_item
 
   resource_for Oak::Item,
                only: %i[show],
@@ -33,7 +34,7 @@ class ItemsController < ApplicationController
   def item_params
     params
       .require(:item)
-      .permit(:name, :description, links: %i[url text order])
+      .permit(:name, :description, links: %i[id url text order])
       .merge(category:, kind:)
   end
 
@@ -41,8 +42,16 @@ class ItemsController < ApplicationController
     Oak::Item::CreateBuilder.build(**create_params)
   end
 
+  def update_item
+    Oak::Item::UpdateBuilder.build(**update_params)
+  end
+
   def create_params
     item_params.to_h.symbolize_keys.merge(scope: logged_user.items)
+  end
+
+  def update_params
+    item_params.to_h.symbolize_keys.merge(item:, user: item.user)
   end
 
   def category_slug
