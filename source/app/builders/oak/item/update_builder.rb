@@ -23,6 +23,7 @@ module Oak
           delete_removed_links
           update_links
           item.save!
+          item.links.each(&:save!)
         end
         item
       rescue ActiveRecord::RecordInvalid
