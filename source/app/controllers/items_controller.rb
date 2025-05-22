@@ -50,6 +50,10 @@ class ItemsController < ApplicationController
     item_params.to_h.symbolize_keys.merge(scope: logged_user.items)
   end
 
+  def update_params
+    item_params.to_h.symbolize_keys.merge(item:)
+  end
+
   def category_slug
     params.require(:category_slug)
   end
