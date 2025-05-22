@@ -5,206 +5,6 @@ require 'spec_helper'
 RSpec.describe ItemsController, type: :controller do
   let(:response_json) { JSON.parse(response.body) }
 
-  let(:item_params) do
-    {
-      name: 'Updated Item',
-      kind_slug: kind.slug,
-      description: 'Updated description',
-      photos: photos_data
-    }
-
-    let(:parameters) do
-      {
-        id: item.id,
-        item: item_params,
-        category_slug: category.slug,
-        format: :json
-      }
-    end
-
-    before do
-      cookies.signed[:session] = session.id if session
-    end
-
-    context 'when the request is valid' do
-      it 'updates the Oak::Item name' do
-        expect { put :update, params: parameters }
-          .to change { item.reload.name }
-          .from(item.name)
-          .to('Updated Item')
-      end
-
-      it 'updates the Oak::Item description' do
-        expect { put :update, params: parameters }
-          .to change { item.reload.description }
-          .from(item.description)
-          .to('Updated description')
-      end
-
-      it 'returns a successful response' do
-        put :update, params: parameters
-
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'returns the updated item as JSON' do
-        put :update, params: parameters
-
-        expected = Oak::Item::Decorator.new(item.reload).as_json
-        expect(response_json).to eq(expected.stringify_keys)
-      end
-    end
-
-    context 'when the request is invalid' do
-      let(:item_params) { { name: '', description: '' } }
-
-      it 'does not update the Oak::Item' do
-        expect { put :update, params: parameters }
-          .not_to(change { item.reload.attributes })
-      end
-
-      it 'returns unprocessable entity status' do
-        put :update, params: parameters
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns validation errors as JSON' do
-        put :update, params: parameters
-
-        expected = Oak::Item::Decorator.new(item.tap(&:validate)).as_json
-        expect(response_json).to eq(expected.stringify_keys)
-      end
-    end
-
-    context 'when photos are updated' do
-      let!(:existing_photo) { create(:oak_photo, item:) }
-      let(:photos_data) do
-        [
-          { id: existing_photo.id, file_name: 'updated_photo.png' },
-          { file_name: 'new_photo.png' }
-        ]
-      end
-
-      it 'updates existing photos and adds new ones' do
-        expect { put :update, params: parameters }
-          .to change { item.photos.count }.by(1)
-
-        existing_photo.reload
-        expect(existing_photo.file_name).to eq('updated_photo.png')
-        expect(item.photos.map(&:file_name)).to include('new_photo.png')
-      end
-    end
-
-    context 'when photos are deleted' do
-      let!(:photo_to_delete) { create(:oak_photo, item:) }
-      let(:photos_data) { [] }
-
-      it 'removes all photos from the item' do
-        expect { put :update, params: parameters }
-          .to change { item.photos.count }.by(-1)
-
-        expect(item.photos).to be_empty
-      end
-    end
-
-    context 'when user is not logged' do
-      let(:session) { nil }
-
-      before do
-        put :update, params: parameters
-      end
-
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
-      end
-
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
-      end
-    end
-  end
-  let(:photos_data) { [] }
-  let(:user) { create(:user) }
-  let(:session) { create(:session, user:) }
-
-  describe 'GET #index' do
-    let(:category) { create(:oak_category) }
-    let!(:items) { create_list(:oak_item, 3, category:) }
-
-    context 'when format is JSON' do
-      let(:expected) do
-        Oak::Item::Decorator.new(items).as_json
-      end
-
-      context 'when requesting for the correct category' do
-        let(:parameters) { { category_slug: category.slug, format: :json } }
-
-        before do
-          get :index, params: parameters
-        end
-
-        it 'returns a successful response' do
-          expect(response).to have_http_status(:ok)
-        end
-
-        it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
-        end
-      end
-
-      context 'when requesting for the another category' do
-        let(:other_category) { create(:oak_category) }
-        let(:parameters) { { category_slug: other_category.slug, format: :json } }
-        let(:expected) { [] }
-
-        before do
-          get :index, params: parameters
-        end
-
-        it 'returns a successful response' do
-          expect(response).to have_http_status(:ok)
-        end
-
-        it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
-        end
-      end
-    end
-
-    context 'when format is HTML and request is AJAX' do
-      let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
-
-      before do
-        get :index, params: parameters, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:parameters) { { category_slug: category.slug } }
-
-      before do
-        get :index, params: parameters
-      end
-
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
-      end
-
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to("#/categories/#{category.slug}/items")
-      end
-    end
-  end
-
   describe 'GET #show' do
     let(:category) { create(:oak_category) }
     let(:item) { create(:oak_item, category:) }
@@ -554,6 +354,208 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'redirects to the correct path' do
         expect(response).to redirect_to('#/forbidden')
+      end
+    end
+  end
+
+  describe "PUT #update" do
+    let(:item_params) do
+      {
+        name: 'Updated Item',
+        kind_slug: kind.slug,
+        description: 'Updated description',
+        photos: photos_data
+      }
+
+      let(:parameters) do
+        {
+          id: item.id,
+          item: item_params,
+          category_slug: category.slug,
+          format: :json
+        }
+      end
+
+      before do
+        cookies.signed[:session] = session.id if session
+      end
+
+      context 'when the request is valid' do
+        it 'updates the Oak::Item name' do
+          expect { put :update, params: parameters }
+            .to change { item.reload.name }
+            .from(item.name)
+            .to('Updated Item')
+        end
+
+        it 'updates the Oak::Item description' do
+          expect { put :update, params: parameters }
+            .to change { item.reload.description }
+            .from(item.description)
+            .to('Updated description')
+        end
+
+        it 'returns a successful response' do
+          put :update, params: parameters
+
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'returns the updated item as JSON' do
+          put :update, params: parameters
+
+          expected = Oak::Item::Decorator.new(item.reload).as_json
+          expect(response_json).to eq(expected.stringify_keys)
+        end
+      end
+
+      context 'when the request is invalid' do
+        let(:item_params) { { name: '', description: '' } }
+
+        it 'does not update the Oak::Item' do
+          expect { put :update, params: parameters }
+            .not_to(change { item.reload.attributes })
+        end
+
+        it 'returns unprocessable entity status' do
+          put :update, params: parameters
+
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'returns validation errors as JSON' do
+          put :update, params: parameters
+
+          expected = Oak::Item::Decorator.new(item.tap(&:validate)).as_json
+          expect(response_json).to eq(expected.stringify_keys)
+        end
+      end
+
+      context 'when photos are updated' do
+        let!(:existing_photo) { create(:oak_photo, item:) }
+        let(:photos_data) do
+          [
+            { id: existing_photo.id, file_name: 'updated_photo.png' },
+            { file_name: 'new_photo.png' }
+          ]
+        end
+
+        it 'updates existing photos and adds new ones' do
+          expect { put :update, params: parameters }
+            .to change { item.photos.count }.by(1)
+
+          existing_photo.reload
+          expect(existing_photo.file_name).to eq('updated_photo.png')
+          expect(item.photos.map(&:file_name)).to include('new_photo.png')
+        end
+      end
+
+      context 'when photos are deleted' do
+        let!(:photo_to_delete) { create(:oak_photo, item:) }
+        let(:photos_data) { [] }
+
+        it 'removes all photos from the item' do
+          expect { put :update, params: parameters }
+            .to change { item.photos.count }.by(-1)
+
+          expect(item.photos).to be_empty
+        end
+      end
+
+      context 'when user is not logged' do
+        let(:session) { nil }
+
+        before do
+          put :update, params: parameters
+        end
+
+        it 'returns a redirect response' do
+          expect(response).to have_http_status(:found) # HTTP status 302
+        end
+
+        it 'redirects to the correct path' do
+          expect(response).to redirect_to('#/forbidden')
+        end
+      end
+    end
+    let(:photos_data) { [] }
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user:) }
+
+    describe 'GET #index' do
+      let(:category) { create(:oak_category) }
+      let!(:items) { create_list(:oak_item, 3, category:) }
+
+      context 'when format is JSON' do
+        let(:expected) do
+          Oak::Item::Decorator.new(items).as_json
+        end
+
+        context 'when requesting for the correct category' do
+          let(:parameters) { { category_slug: category.slug, format: :json } }
+
+          before do
+            get :index, params: parameters
+          end
+
+          it 'returns a successful response' do
+            expect(response).to have_http_status(:ok)
+          end
+
+          it 'renders the correct JSON using the decorator' do
+            expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          end
+        end
+
+        context 'when requesting for the another category' do
+          let(:other_category) { create(:oak_category) }
+          let(:parameters) { { category_slug: other_category.slug, format: :json } }
+          let(:expected) { [] }
+
+          before do
+            get :index, params: parameters
+          end
+
+          it 'returns a successful response' do
+            expect(response).to have_http_status(:ok)
+          end
+
+          it 'renders the correct JSON using the decorator' do
+            expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          end
+        end
+      end
+
+      context 'when format is HTML and request is AJAX' do
+        let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
+
+        before do
+          get :index, params: parameters, xhr: true
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct template' do
+          expect(response).to render_template(:index)
+        end
+      end
+
+      context 'when format is HTML and request is not AJAX' do
+        let(:parameters) { { category_slug: category.slug } }
+
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a redirect response' do
+          expect(response).to have_http_status(:found) # HTTP status 302
+        end
+
+        it 'redirects to the correct path' do
+          expect(response).to redirect_to("#/categories/#{category.slug}/items")
+        end
       end
     end
   end
