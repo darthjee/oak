@@ -24,7 +24,7 @@ RSpec.describe Oak::Item::UpdateBuilder do
     let(:category) { create(:oak_category) }
     let(:kind) { create(:oak_kind) }
     let(:user) { create(:user) }
-    let(:links_data) { [] }
+    let(:links_data) { [] } 
 
     context 'when the update is valid' do
       it 'updates the item attributes' do
@@ -118,11 +118,13 @@ RSpec.describe Oak::Item::UpdateBuilder do
       end
 
       it 'marks the invalid link as invalid' do
+        updated_item
         invalid_link = item.links.find { |link| link.url.nil? }
         expect(invalid_link).not_to be_valid
       end
 
       it 'adds validation errors to the invalid link' do
+        updated_item
         invalid_link = item.links.find { |link| link.url.nil? }
         expect(invalid_link.errors[:url]).to include("can't be blank")
       end
