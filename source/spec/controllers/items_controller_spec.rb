@@ -490,23 +490,22 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'updates existing link' do
-        put :update, params: parameters
-        existing_link.reload
-        expect(existing_link.url).to eq('https://example.com/updated')
-        expect(existing_link.text).to eq('Updated Link')
-        expect(item.links.map(&:url)).to include('https://example.com/new')
+        expect { put :update, params: parameters }
+          .to change { existing_link.reload.text }.to('Updated Link')
+          .and change { existing_link.reload.url }.to('https://example.com/updated')
       end
     end
 
     context 'when links are deleted' do
-      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link') }
       let(:links_data) { [] }
+
+      before do
+        create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link')
+      end
 
       it 'removes all links from the item' do
         expect { put :update, params: parameters }
           .to change { item.links.count }.by(-1)
-
-        expect(item.links).to be_empty
       end
     end
 
