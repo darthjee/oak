@@ -2,58 +2,39 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Item::CreateBuilder do
+RSpec.describe Oak::Item::UpdateBuilder do
   describe '.build' do
-    subject(:item) { described_class.build(**params) }
+    subject(:updated_item) { described_class.build(**params) }
 
     let(:params) do
       {
-        scope:,
-        name:,
-        description:,
-        category:,
-        kind:,
-        user: user_param,
+        item: item,
+        name: name,
+        description: description,
+        category: category,
+        kind: kind,
+        user: user,
         links: links_data
       }.compact
     end
 
-    let(:scope) { nil }
-    let(:user_param) { user }
-    let(:name) { 'Sample Item' }
-    let(:description) { 'Sample Description' }
-    let(:category) { build(:oak_category) }
-    let(:kind) { build(:oak_kind) }
-    let(:user) { build(:user) }
+    let(:item) { create(:oak_item, name: 'Old Name', description: 'Old Description', category:, kind:, user:) }
+    let(:name) { 'Updated Name' }
+    let(:description) { 'Updated Description' }
+    let(:category) { create(:oak_category) }
+    let(:kind) { create(:oak_kind) }
+    let(:user) { create(:user) }
     let(:links_data) { [] }
 
-    context 'when no scope is provided' do
-      it 'returns an instance of Oak::Item' do
-        expect(item).to be_an_instance_of(Oak::Item)
-      end
+    context 'when the update is valid' do
+      it 'updates the item attributes' do
+        updated_item
+        item.reload
 
-      it 'creates a valid item from attributes' do
-        expect(item).to be_valid
-      end
-
-      it 'ignores extra parameters' do
-        expect { item.extra_param }.to raise_error(NoMethodError)
-      end
-    end
-
-    context 'when user is part of the scope' do
-      let(:scope) { user.items }
-      let(:user_param) { nil }
-
-      it 'returns an instance of Oak::Item' do
-        expect(item).to be_an_instance_of(Oak::Item)
-      end
-
-      it 'creates a valid item from attributes' do
-        expect(item).to be_valid
-      end
-
-      it 'sets the user from the scope' do
+        expect(item.name).to eq('Updated Name')
+        expect(item.description).to eq('Updated Description')
+        expect(item.category).to eq(category)
+        expect(item.kind).to eq(kind)
         expect(item.user).to eq(user)
       end
     end
@@ -66,40 +47,55 @@ RSpec.describe Oak::Item::CreateBuilder do
         ]
       end
 
-      it 'returns an instance of Oak::Item' do
-        expect(item).to be_an_instance_of(Oak::Item)
-      end
+      it 'creates new links for the item' do
+        expect { updated_item }
+          .to change { item.links.count }.by(2)
 
-      it 'assigns the links to the item' do
-        expect(item.links.size).to eq(2)
-      end
-
-      it 'creates links of Oak::Link' do
-        expect(item.links).to all(be_an_instance_of(Oak::Link))
-      end
-
-      it 'creates a valid links from attributes' do
-        expect(item.links).to all(be_valid)
+        expect(item.links.map(&:url)).to contain_exactly('https://example.com/1', 'https://example.com/2')
+        expect(item.links.map(&:text)).to contain_exactly('Example Link 1', 'Example Link 2')
       end
     end
 
-    context 'when item is invalid' do
+    context 'when links are updated' do
+      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link', order: 1) }
+      let(:links_data) do
+        [
+          { id: existing_link.id, url: 'https://example.com/updated', text: 'Updated Link', order: 1 }
+        ]
+      end
+
+      it 'updates the existing links' do
+        updated_item
+        existing_link.reload
+
+        expect(existing_link.url).to eq('https://example.com/updated')
+        expect(existing_link.text).to eq('Updated Link')
+      end
+    end
+
+    context 'when links are deleted' do
+      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link', order: 1) }
+      let(:links_data) { [] }
+
+      it 'removes the existing links' do
+        expect { updated_item }
+          .to change { item.links.count }.by(-1)
+
+        expect(item.links).to be_empty
+      end
+    end
+
+    context 'when the update is invalid' do
       let(:name) { nil }
 
-      it 'returns an instance of Oak::Item' do
-        expect(item).to be_an_instance_of(Oak::Item)
-      end
-
-      it 'does not raise any errors' do
-        expect { item }.not_to raise_error
-      end
-
-      it do
-        expect(item).not_to be_valid
+      it 'does not update the item' do
+        expect { updated_item }
+          .not_to change { item.reload.attributes }
       end
 
       it 'adds validation errors to the item' do
-        expect(item.tap(&:valid?).errors[:name]).to include("can't be blank")
+        updated_item
+        expect(item.errors[:name]).to include("can't be blank")
       end
     end
 
@@ -111,20 +107,14 @@ RSpec.describe Oak::Item::CreateBuilder do
         ]
       end
 
-      it 'returns an instance of Oak::Item' do
-        expect(item).to be_an_instance_of(Oak::Item)
-      end
-
-      it 'does not raise any errors' do
-        expect { item }.not_to raise_error
-      end
-
-      it 'marks the item as invalid' do
-        expect(item).not_to be_valid
+      it 'does not update the item' do
+        expect { updated_item }
+          .not_to change { item.reload.attributes }
       end
 
       it 'adds validation errors to the item' do
-        expect(item.tap(&:valid?).errors[:links]).to include('is invalid')
+        updated_item
+        expect(item.errors[:links]).to include('is invalid')
       end
 
       it 'marks the invalid link as invalid' do
@@ -134,7 +124,7 @@ RSpec.describe Oak::Item::CreateBuilder do
 
       it 'adds validation errors to the invalid link' do
         invalid_link = item.links.find { |link| link.url.nil? }
-        expect(invalid_link.tap(&:valid?).errors[:url]).to include("can't be blank")
+        expect(invalid_link.errors[:url]).to include("can't be blank")
       end
     end
   end
