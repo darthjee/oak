@@ -439,10 +439,17 @@ RSpec.describe ItemsController, type: :controller do
     let(:parameters) do
       { item: item_params, category_slug: category.slug, id: item.id, format: :json }
     end
-    let(:item_params) { { name: 'Updated Item', description: 'Updated description', links: links_data } }
     let(:session) { create(:session, user:) }
     let(:user) { create(:user) }
     let(:links_data) { [] }
+    let(:item_params) do
+      {
+        name: 'Updated Item',
+        description: 'Updated description',
+        kind_slug: kind.slug,
+        links: links_data
+      }
+    end
 
     before do
       cookies.signed[:session] = session.id if session
