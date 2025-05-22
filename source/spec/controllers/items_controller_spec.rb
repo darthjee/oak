@@ -487,7 +487,7 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'does not update the Oak::Item' do
         expect { put :update, params: parameters }
-          .not_to change { item.reload.attributes }
+          .not_to(change { item.reload.attributes })
       end
 
       it 'returns unprocessable entity status' do

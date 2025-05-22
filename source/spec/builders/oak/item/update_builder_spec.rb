@@ -24,7 +24,7 @@ RSpec.describe Oak::Item::UpdateBuilder do
     let(:category) { create(:oak_category) }
     let(:kind) { create(:oak_kind) }
     let(:user) { create(:user) }
-    let(:links_data) { [] } 
+    let(:links_data) { [] }
 
     context 'when the update is valid' do
       it 'updates the item attributes' do
@@ -90,7 +90,7 @@ RSpec.describe Oak::Item::UpdateBuilder do
 
       it 'does not update the item' do
         expect { updated_item }
-          .not_to change { item.reload.attributes }
+          .not_to(change { item.reload.attributes })
       end
 
       it 'adds validation errors to the item' do
@@ -109,7 +109,7 @@ RSpec.describe Oak::Item::UpdateBuilder do
 
       it 'does not update the item' do
         expect { updated_item }
-          .not_to change { item.reload.attributes }
+          .not_to(change { item.reload.attributes })
       end
 
       it 'adds validation errors to the item' do

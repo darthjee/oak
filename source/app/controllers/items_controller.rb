@@ -43,7 +43,7 @@ class ItemsController < ApplicationController
   end
 
   def update_item
-    #Oak::Item::UpdateBuilder.build(**update_params)
+    # Oak::Item::UpdateBuilder.build(**update_params)
   end
 
   def create_params
