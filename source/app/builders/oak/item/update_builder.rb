@@ -47,6 +47,7 @@ module Oak
       def update_links
         update_existing_links
         create_new_links
+        delete_removed_links
       end
 
       def existing_links
@@ -71,6 +72,11 @@ module Oak
         new_links.each do |link_data|
           item.links.create!(link_data)
         end
+      end
+
+      def delete_removed_links
+        payload_ids = links.map { |link| link[:id] }.compact
+        item.links.where.not(id: payload_ids).destroy_all
       end
     end
   end
