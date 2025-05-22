@@ -13,7 +13,7 @@ class ItemsController < ApplicationController
                build_with: :build_item
 
   resource_for Oak::Item,
-               only: %i[show],
+               only: %i[show edit],
                decorator: Oak::Item::ShowDecorator
 
   model_for Oak::Category,
