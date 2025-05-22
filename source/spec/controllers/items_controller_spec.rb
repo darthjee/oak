@@ -432,13 +432,13 @@ RSpec.describe ItemsController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let(:photos_data) { [] }
+    let(:links_data) { [] }
     let(:item_params) do
       {
         name: 'Updated Item',
         kind_slug: kind.slug,
         description: 'Updated description',
-        photos: photos_data
+        links: links_data
       }
     end
 
@@ -506,34 +506,61 @@ RSpec.describe ItemsController, type: :controller do
       end
     end
 
-    context 'when photos are updated' do
-      let!(:existing_photo) { create(:oak_photo, item:) }
-      let(:photos_data) do
+    context 'when links are updated' do
+      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link') }
+      let(:links_data) do
         [
-          { id: existing_photo.id, file_name: 'updated_photo.png' },
-          { file_name: 'new_photo.png' }
+          { id: existing_link.id, url: 'https://example.com/updated', text: 'Updated Link' },
+          { url: 'https://example.com/new', text: 'New Link' }
         ]
       end
 
-      it 'updates existing photos and adds new ones' do
+      it 'updates existing links and adds new ones' do
         expect { put :update, params: parameters }
-          .to change { item.photos.count }.by(1)
+          .to change { item.links.count }.by(1)
 
-        existing_photo.reload
-        expect(existing_photo.file_name).to eq('updated_photo.png')
-        expect(item.photos.map(&:file_name)).to include('new_photo.png')
+        existing_link.reload
+        expect(existing_link.url).to eq('https://example.com/updated')
+        expect(existing_link.text).to eq('Updated Link')
+        expect(item.links.map(&:url)).to include('https://example.com/new')
       end
     end
 
-    context 'when photos are deleted' do
-      let!(:photo_to_delete) { create(:oak_photo, item:) }
-      let(:photos_data) { [] }
+    context 'when links are deleted' do
+      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link') }
+      let(:links_data) { [] }
 
-      it 'removes all photos from the item' do
+      it 'removes all links from the item' do
         expect { put :update, params: parameters }
-          .to change { item.photos.count }.by(-1)
+          .to change { item.links.count }.by(-1)
 
-        expect(item.photos).to be_empty
+        expect(item.links).to be_empty
+      end
+    end
+
+    context 'when links are invalid' do
+      let(:links_data) do
+        [
+          { url: nil, text: 'Invalid Link' }, # Invalid link (missing URL)
+          { url: 'https://example.com/2', text: nil } # Invalid link (missing text)
+        ]
+      end
+
+      it 'does not update the Oak::Item' do
+        expect { put :update, params: parameters }
+          .not_to change { item.reload.attributes }
+      end
+
+      it 'returns unprocessable entity status' do
+        put :update, params: parameters
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns validation errors as JSON' do
+        put :update, params: parameters
+
+        expect(response_json['errors']).to include('links' => ['is invalid'])
       end
     end
 
