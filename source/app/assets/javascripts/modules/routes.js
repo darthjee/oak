@@ -17,7 +17,8 @@
       }
     }, {
       routes: [
-        "/categories/:category_slug/items/new"
+        "/categories/:category_slug/items/new",
+        "/categories/:category_slug/items/edit/:id",
       ],
       config: {
         controller: "Item.FormController",
