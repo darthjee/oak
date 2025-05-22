@@ -20,7 +20,9 @@ module Oak
       def build
         ActiveRecord::Base.transaction do
           update_item
+          delete_removed_links
           update_links
+          item.save!
         end
         item
       rescue ActiveRecord::RecordInvalid
@@ -33,7 +35,6 @@ module Oak
 
       def update_item
         item.assign_attributes(item_params)
-        item.save!
       end
 
       def item_params
@@ -47,32 +48,14 @@ module Oak
       end
 
       def update_links
-        update_existing_links
-        delete_removed_links
-        create_new_links
-      end
-
-      def existing_links
-        links.select { |link| link[:id].present? }
-      end
-
-      def new_links
-        links.reject { |link| link[:id].present? }
-      end
-
-      def update_existing_links
-        existing_links.each do |link_data|
-          link = item.links.find_by(id: link_data[:id])
-          next unless link
-
-          link.assign_attributes(link_data.except(:id))
-          link.save!
-        end
-      end
-
-      def create_new_links
-        new_links.each do |link_data|
-          item.links.create!(link_data)
+        item.links = links.map do |link_data|
+          if link_data[:id].present?
+            link = item.links.find(link_data[:id])
+            link.assign_attributes(link_data)
+            link
+          else
+            item.links.build(link_data)
+          end
         end
       end
 
