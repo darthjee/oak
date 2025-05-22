@@ -18,8 +18,10 @@ module Oak
       end
 
       def build
-        update_item
-        update_links
+        ActiveRecord::Base.transaction do
+          update_item
+          update_links
+        end
         item
       end
 
@@ -29,7 +31,7 @@ module Oak
 
       def update_item
         item.assign_attributes(item_params)
-        item.save
+        item.save!
       end
 
       def item_params
@@ -61,13 +63,13 @@ module Oak
           next unless link
 
           link.assign_attributes(link_data.except(:id))
-          link.save
+          link.save!
         end
       end
 
       def create_new_links
         new_links.each do |link_data|
-          item.links.build(link_data)
+          item.links.create!(link_data)
         end
       end
     end
