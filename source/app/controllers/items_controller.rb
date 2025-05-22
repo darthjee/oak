@@ -10,7 +10,8 @@ class ItemsController < ApplicationController
                only: %i[index new create edit update],
                decorator: Oak::Item::Decorator,
                paginated: true,
-               build_with: :build_item
+               build_with: :build_item,
+               update_with: :update_item
 
   resource_for Oak::Item,
                only: %i[show],
@@ -39,6 +40,10 @@ class ItemsController < ApplicationController
 
   def build_item
     Oak::Item::CreateBuilder.build(**create_params)
+  end
+
+  def update_item
+    #Oak::Item::UpdateBuilder.build(**update_params)
   end
 
   def create_params
