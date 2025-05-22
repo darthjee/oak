@@ -431,43 +431,28 @@ RSpec.describe ItemsController, type: :controller do
     end
   end
 
-  describe 'PUT #update' do
-    let(:links_data) { [] }
-    let(:item_params) do
-      {
-        name: 'Updated Item',
-        kind_slug: kind.slug,
-        description: 'Updated description',
-        links: links_data
-      }
-    end
 
+  describe 'PUT #update' do
+    let!(:kind) { create(:oak_kind) }
+    let(:category) { create(:oak_category) }
+    let(:item) { create(:oak_item, category:, kind:, user:) }
     let(:parameters) do
-      {
-        id: item.id,
-        item: item_params,
-        category_slug: category.slug,
-        format: :json
-      }
+      { item: item_params, category_slug: category.slug, id: item.id, format: :json }
     end
+    let(:item_params) { { name: 'Updated Item', description: 'Updated description', links: links_data } }
+    let(:session) { create(:session, user:) }
+    let(:user) { create(:user) }
+    let(:links_data) { [] }
 
     before do
       cookies.signed[:session] = session.id if session
     end
 
     context 'when the request is valid' do
-      it 'updates the Oak::Item name' do
+      it 'updates the Oak::Item attributes' do
         expect { put :update, params: parameters }
-          .to change { item.reload.name }
-          .from(item.name)
-          .to('Updated Item')
-      end
-
-      it 'updates the Oak::Item description' do
-        expect { put :update, params: parameters }
-          .to change { item.reload.description }
-          .from(item.description)
-          .to('Updated description')
+          .to change { item.reload.name }.to('Updated Item')
+          .and change { item.reload.description }.to('Updated description')
       end
 
       it 'returns a successful response' do
@@ -480,28 +465,6 @@ RSpec.describe ItemsController, type: :controller do
         put :update, params: parameters
 
         expected = Oak::Item::Decorator.new(item.reload).as_json
-        expect(response_json).to eq(expected.stringify_keys)
-      end
-    end
-
-    context 'when the request is invalid' do
-      let(:item_params) { { name: '', description: '' } }
-
-      it 'does not update the Oak::Item' do
-        expect { put :update, params: parameters }
-          .not_to(change { item.reload.attributes })
-      end
-
-      it 'returns unprocessable entity status' do
-        put :update, params: parameters
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'returns validation errors as JSON' do
-        put :update, params: parameters
-
-        expected = Oak::Item::Decorator.new(item.tap(&:validate)).as_json
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
@@ -561,6 +524,28 @@ RSpec.describe ItemsController, type: :controller do
         put :update, params: parameters
 
         expect(response_json['errors']).to include('links' => ['is invalid'])
+      end
+    end
+
+    context 'when the request is invalid' do
+      let(:item_params) { { name: '', description: '' } }
+
+      it 'does not update the Oak::Item' do
+        expect { put :update, params: parameters }
+          .not_to change { item.reload.attributes }
+      end
+
+      it 'returns unprocessable entity status' do
+        put :update, params: parameters
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'returns validation errors as JSON' do
+        put :update, params: parameters
+
+        expected = Oak::Item::Decorator.new(item.tap(&:validate)).as_json
+        expect(response_json).to eq(expected.stringify_keys)
       end
     end
 
