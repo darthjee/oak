@@ -4,6 +4,86 @@ require 'spec_helper'
 
 RSpec.describe ItemsController, type: :controller do
   let(:response_json) { JSON.parse(response.body) }
+  let(:photos_data) { [] }
+  let(:user) { create(:user) }
+  let(:session) { create(:session, user:) }
+
+  describe 'GET #index' do
+    let(:category) { create(:oak_category) }
+    let!(:items) { create_list(:oak_item, 3, category:) }
+
+    context 'when format is JSON' do
+      let(:expected) do
+        Oak::Item::Decorator.new(items).as_json
+      end
+
+      context 'when requesting for the correct category' do
+        let(:parameters) { { category_slug: category.slug, format: :json } }
+
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        end
+      end
+
+      context 'when requesting for the another category' do
+        let(:other_category) { create(:oak_category) }
+        let(:parameters) { { category_slug: other_category.slug, format: :json } }
+        let(:expected) { [] }
+
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        end
+      end
+    end
+
+    context 'when format is HTML and request is AJAX' do
+      let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
+
+      before do
+        get :index, params: parameters, xhr: true
+      end
+
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'renders the correct template' do
+        expect(response).to render_template(:index)
+      end
+    end
+
+    context 'when format is HTML and request is not AJAX' do
+      let(:parameters) { { category_slug: category.slug } }
+
+      before do
+        get :index, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to("#/categories/#{category.slug}/items")
+      end
+    end
+  end
 
   describe 'GET #show' do
     let(:category) { create(:oak_category) }
@@ -475,86 +555,6 @@ RSpec.describe ItemsController, type: :controller do
 
         it 'redirects to the correct path' do
           expect(response).to redirect_to('#/forbidden')
-        end
-      end
-    end
-    let(:photos_data) { [] }
-    let(:user) { create(:user) }
-    let(:session) { create(:session, user:) }
-
-    describe 'GET #index' do
-      let(:category) { create(:oak_category) }
-      let!(:items) { create_list(:oak_item, 3, category:) }
-
-      context 'when format is JSON' do
-        let(:expected) do
-          Oak::Item::Decorator.new(items).as_json
-        end
-
-        context 'when requesting for the correct category' do
-          let(:parameters) { { category_slug: category.slug, format: :json } }
-
-          before do
-            get :index, params: parameters
-          end
-
-          it 'returns a successful response' do
-            expect(response).to have_http_status(:ok)
-          end
-
-          it 'renders the correct JSON using the decorator' do
-            expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
-          end
-        end
-
-        context 'when requesting for the another category' do
-          let(:other_category) { create(:oak_category) }
-          let(:parameters) { { category_slug: other_category.slug, format: :json } }
-          let(:expected) { [] }
-
-          before do
-            get :index, params: parameters
-          end
-
-          it 'returns a successful response' do
-            expect(response).to have_http_status(:ok)
-          end
-
-          it 'renders the correct JSON using the decorator' do
-            expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
-          end
-        end
-      end
-
-      context 'when format is HTML and request is AJAX' do
-        let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
-
-        before do
-          get :index, params: parameters, xhr: true
-        end
-
-        it 'returns a successful response' do
-          expect(response).to have_http_status(:ok)
-        end
-
-        it 'renders the correct template' do
-          expect(response).to render_template(:index)
-        end
-      end
-
-      context 'when format is HTML and request is not AJAX' do
-        let(:parameters) { { category_slug: category.slug } }
-
-        before do
-          get :index, params: parameters
-        end
-
-        it 'returns a redirect response' do
-          expect(response).to have_http_status(:found) # HTTP status 302
-        end
-
-        it 'redirects to the correct path' do
-          expect(response).to redirect_to("#/categories/#{category.slug}/items")
         end
       end
     end
