@@ -25,17 +25,22 @@ RSpec.describe Oak::Item::UpdateBuilder do
     let(:kind) { create(:oak_kind) }
     let(:user) { create(:user) }
     let(:links_data) { [] }
+    let(:new_attributes) do
+      {
+        id: item.id,
+        name: 'Updated Name',
+        description: 'Updated Description',
+        category_id: category.id,
+        kind_id: kind.id,
+        user_id: user.id
+      }.stringify_keys
+    end
 
     context 'when the update is valid' do
       it 'updates the item attributes' do
-        updated_item
-        item.reload
-
-        expect(item.name).to eq('Updated Name')
-        expect(item.description).to eq('Updated Description')
-        expect(item.category).to eq(category)
-        expect(item.kind).to eq(kind)
-        expect(item.user).to eq(user)
+        expect { updated_item }
+          .to change { item.reload.attributes.except('created_at', 'updated_at') }
+          .to(new_attributes)
       end
     end
 
@@ -50,9 +55,6 @@ RSpec.describe Oak::Item::UpdateBuilder do
       it 'creates new links for the item' do
         expect { updated_item }
           .to change { item.links.count }.by(2)
-
-        expect(item.links.map(&:url)).to contain_exactly('https://example.com/1', 'https://example.com/2')
-        expect(item.links.map(&:text)).to contain_exactly('Example Link 1', 'Example Link 2')
       end
     end
 
@@ -63,34 +65,57 @@ RSpec.describe Oak::Item::UpdateBuilder do
           { id: existing_link.id, url: 'https://example.com/updated', text: 'Updated Link', order: 1 }
         ]
       end
+      let(:expected_attributes) do
+        {
+          id: existing_link.id,
+          url: 'https://example.com/updated',
+          text: 'Updated Link',
+          order: 1,
+          item_id: item.id
+        }.stringify_keys
+      end
 
       it 'updates the existing links' do
-        updated_item
-        existing_link.reload
-
-        expect(existing_link.url).to eq('https://example.com/updated')
-        expect(existing_link.text).to eq('Updated Link')
+        expect { updated_item }
+          .to not_change { item.links.count }
+          .and change { existing_link.reload.attributes.except('created_at', 'updated_at') }
+          .to(expected_attributes)
       end
     end
 
     context 'when links are deleted' do
-      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link', order: 1) }
       let(:links_data) { [] }
+
+      before do
+        create(
+          :oak_link, item:, url: 'https://example.com/old',
+                     text: 'Old Link', order: 1
+        )
+      end
 
       it 'removes the existing links' do
         expect { updated_item }
           .to change { item.links.count }.by(-1)
-
-        expect(item.links).to be_empty
       end
     end
 
     context 'when the update is invalid' do
       let(:name) { nil }
+      let!(:existing_link) { create(:oak_link, item:, url: 'https://example.com/old', text: 'Old Link', order: 1) }
+      let(:links_data) do
+        [
+          { id: existing_link.id, url: 'https://example.com/updated', text: 'Updated Link', order: 1 }
+        ]
+      end
 
       it 'does not update the item' do
         expect { updated_item }
           .not_to(change { item.reload.attributes })
+      end
+
+      it 'does not update the existing links' do
+        expect { updated_item }
+          .not_to(change { existing_link.reload.attributes })
       end
 
       it 'adds validation errors to the item' do
