@@ -485,10 +485,13 @@ RSpec.describe ItemsController, type: :controller do
         ]
       end
 
-      it 'updates existing links and adds new ones' do
+      it 'adds new link' do
         expect { put :update, params: parameters }
           .to change { item.links.count }.by(1)
+      end
 
+      it 'updates existing link' do
+        put :update, params: parameters
         existing_link.reload
         expect(existing_link.url).to eq('https://example.com/updated')
         expect(existing_link.text).to eq('Updated Link')
