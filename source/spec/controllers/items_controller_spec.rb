@@ -431,7 +431,6 @@ RSpec.describe ItemsController, type: :controller do
     end
   end
 
-
   describe 'PUT #update' do
     let!(:kind) { create(:oak_kind) }
     let(:category) { create(:oak_category) }
@@ -521,7 +520,7 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'does not update the Oak::Item' do
         expect { put :update, params: parameters }
-          .not_to change { item.reload.attributes }
+          .not_to(change { item.reload.attributes })
       end
 
       it 'returns unprocessable entity status' do
@@ -538,11 +537,22 @@ RSpec.describe ItemsController, type: :controller do
     end
 
     context 'when the request is invalid' do
-      let(:item_params) { { name: '', description: '' } }
+      let(:item_params) do
+        {
+          name: '',
+          description: '',
+          kind_slug: kind.slug,
+          links: links_data
+        }
+      end
+      let(:expected_item_params) do
+        { id: item.id, name: '', description: '', kind:, category:, user: }
+      end
+      let(:expected_item) { Oak::Item.new(expected_item_params) }
 
       it 'does not update the Oak::Item' do
         expect { put :update, params: parameters }
-          .not_to change { item.reload.attributes }
+          .not_to(change { item.reload.attributes })
       end
 
       it 'returns unprocessable entity status' do
@@ -554,8 +564,8 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns validation errors as JSON' do
         put :update, params: parameters
 
-        expected = Oak::Item::Decorator.new(item.tap(&:validate)).as_json
-        expect(response_json).to eq(expected.stringify_keys)
+        expected = Oak::Item::Decorator.new(expected_item.tap(&:validate)).as_json
+        expect(response_json).to eq(expected)
       end
     end
 
