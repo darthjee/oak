@@ -51,7 +51,7 @@ class ItemsController < ApplicationController
   end
 
   def update_params
-    item_params.to_h.symbolize_keys.merge(item:)
+    item_params.to_h.symbolize_keys.merge(item:, user: item.user)
   end
 
   def category_slug
