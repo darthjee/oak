@@ -46,8 +46,8 @@ module Oak
 
       def update_links
         update_existing_links
-        create_new_links
         delete_removed_links
+        create_new_links
       end
 
       def existing_links
