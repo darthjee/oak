@@ -55,7 +55,7 @@ module Oak
         links.reject { |link| link[:id].present? }
       end
 
-      def update_existing_links(
+      def update_existing_links
         existing_links.each do |link_data|
           link = item.links.find_by(id: link_data[:id])
           next unless link
