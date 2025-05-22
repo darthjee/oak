@@ -19,6 +19,18 @@
             text: 'Save'
           )
         end %>
+        <%= form.only(:display) do
+          angular_safe_link_to(
+            :edit_category_item, {
+              category_slug: "{{gnc.data.category.slug}}",
+              id: '{{gnc.data.id}}'
+            },
+            class: 'btn btn-primary',
+            "ng-show" => "gnc.global_state.logged"
+          ) do
+            'edit'
+          end
+        end %>
       </div>
     </div>
   </div>
