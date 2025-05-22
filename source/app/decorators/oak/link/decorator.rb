@@ -3,6 +3,7 @@
 module Oak
   class Link
     class Decorator < ModelDecorator
+      expose :id
       expose :text
       expose :url
     end

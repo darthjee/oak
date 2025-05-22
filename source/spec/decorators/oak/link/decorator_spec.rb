@@ -5,13 +5,15 @@ require 'spec_helper'
 RSpec.describe Oak::Link::Decorator do
   subject(:decorator) { described_class.new(link) }
 
-  let(:link) { build(:oak_link, text:, url:) }
+  let(:link) { build(:oak_link, id:, text:, url:) }
+  let(:id) { Random.rand(1..1000) }
   let(:text) { 'Example Link' }
   let(:url) { 'https://example.com' }
 
   describe '#as_json' do
     let(:expected) do
       {
+        id:,
         text:,
         url:
       }.stringify_keys
@@ -28,6 +30,7 @@ RSpec.describe Oak::Link::Decorator do
       let(:errors) { { text: ["can't be blank"] } }
       let(:expected) do
         {
+          id:,
           text:,
           url:,
           errors:
