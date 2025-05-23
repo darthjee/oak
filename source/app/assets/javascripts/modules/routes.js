@@ -13,7 +13,8 @@
     provider.configs = [{
       routes: ["/"],
       config: {
-        controllerAs: "hc"
+        controller: "Home.Controller",
+        controllerAs: "gnc"
       }
     }, {
       routes: [
