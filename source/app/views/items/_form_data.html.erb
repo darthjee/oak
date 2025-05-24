@@ -1,4 +1,7 @@
-<%= form.input(:name, placeholder: "Item name") %>
+<div class="form-group">
+  <%= form.input(:name, placeholder: "Item name", class: "form-control form-control-lg") %>
+</div>
+
 <%=
   form.only(:form) do
     form.ng_select(
@@ -7,23 +10,31 @@
       reference_key: :slug,
       text_field: :name,
       ng_errors: "gnc.data.errors.kind",
+      class: "form-control"
     )
   end
 %>
+
 <%=
   form.only(:display) do
     form.input(
       "category.name",
-      label: "Category"
+      label: "Category",
+      class: "form-control-plaintext"
     )
   end
 %>
+
 <%=
   form.only(:display) do
     form.input(
       "kind.name",
-      label: "Kind"
+      label: "Kind",
+      class: "form-control-plaintext"
     )
   end
 %>
-<%= form.textarea(:description, placeholder: "Description") %>
+
+<div class="form-group">
+  <%= form.textarea(:description, placeholder: "Description", class: "form-control") %>
+</div>
