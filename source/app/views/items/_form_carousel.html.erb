@@ -22,31 +22,3 @@
     </div>
   </div>
 <% end %>
-
-<% form.only(:form) do %>
-  <div class="photos-section mt-4">
-    <h5 class="text-primary">Manage Photos</h5>
-    <div class="form-group">
-      <label for="photoUpload" class="btn btn-secondary btn-sm">
-        Upload Photo
-        <input
-          type="file"
-          id="photoUpload"
-          class="d-none"
-          ng-change="gnc.uploadPhoto()"
-          ng-model="gnc.newPhoto">
-      </label>
-    </div>
-    <ul class="list-group">
-      <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="photo in gnc.data.photos track by $index">
-        <span>{{photo.file_name}}</span>
-        <button
-          type="button"
-          class="btn btn-danger btn-sm"
-          ng-click="gnc.removePhoto($index)">
-          Delete
-        </button>
-      </li>
-    </ul>
-  </div>
-<% end %>
