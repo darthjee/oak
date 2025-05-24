@@ -1,3 +1,26 @@
+
+  <%=
+    angular_safe_link_to(
+      :category_items, { category_slug: "{{gnc.data.category_slug}}" },
+      class: 'btn btn-primary'
+    ) do
+      'Back'
+    end
+  %>
+
+<%= form.only(:display) do
+  angular_safe_link_to(
+    :edit_category_item, {
+      category_slug: "{{gnc.data.category.slug}}",
+      id: '{{gnc.data.id}}'
+    },
+    class: 'btn btn-primary',
+    "ng-show" => "gnc.global_state.logged"
+  ) do
+    'Edit'
+  end
+end %>
+
 <div class="card shadow-sm">
   <div class="card-header bg-primary text-white">
     <h4 class="my-0 font-weight-normal">
@@ -20,18 +43,6 @@
             classes: 'btn btn-success btn-lg',
             text: 'Save'
           )
-        end %>
-        <%= form.only(:display) do
-          angular_safe_link_to(
-            :edit_category_item, {
-              category_slug: "{{gnc.data.category.slug}}",
-              id: '{{gnc.data.id}}'
-            },
-            class: 'btn btn-primary btn-lg',
-            "ng-show" => "gnc.global_state.logged"
-          ) do
-            'Edit'
-          end
         end %>
       </div>
     </div>
