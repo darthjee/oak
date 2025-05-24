@@ -1,21 +1,23 @@
 <div class="card shadow-sm">
-  <div class="card-header">
+  <div class="card-header bg-primary text-white">
     <h4 class="my-0 font-weight-normal">
-      Item
+      <%= form.only(:form) { "Edit Item" } || "Item Details" %>
     </h4>
   </div>
   <div class="card-body">
     <%= render partial: 'form_data', locals: { form: form } %>
+    <hr class="my-4">
     <%= render partial: 'form_links', locals: { form: form } %>
+    <hr class="my-4">
     <%= render partial: 'form_carousel', locals: { form: form } %>
 
-    <div class="form-group row">
-      <div class="offset-1 col-10">
+    <div class="form-group row mt-4">
+      <div class="col-12 text-center">
         <%= form.only(:form) do
           form.button(
             ng_click: 'gnc.save()',
             ng_disabled: 'gnc.ongoing',
-            classes: 'btn-primary',
+            classes: 'btn btn-success btn-lg',
             text: 'Save'
           )
         end %>
@@ -25,10 +27,10 @@
               category_slug: "{{gnc.data.category.slug}}",
               id: '{{gnc.data.id}}'
             },
-            class: 'btn btn-primary',
+            class: 'btn btn-primary btn-lg',
             "ng-show" => "gnc.global_state.logged"
           ) do
-            'edit'
+            'Edit'
           end
         end %>
       </div>
