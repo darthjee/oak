@@ -1,12 +1,12 @@
 
-  <%=
-    angular_safe_link_to(
-      :category_items, { category_slug: "{{gnc.data.category_slug}}" },
-      class: 'btn btn-secondary'
-    ) do
-      'Back'
-    end
-  %>
+<%=
+  angular_safe_link_to(
+    :category_items, { category_slug: "{{gnc.data.category_slug}}" },
+    class: 'btn btn-secondary'
+  ) do
+    'Back'
+  end
+%>
 
 <%= form.only(:display) do
   angular_safe_link_to(
@@ -24,7 +24,7 @@ end %>
 <div class="card shadow-sm">
   <div class="card-header bg-primary text-white">
     <h4 class="my-0 font-weight-normal">
-      <%= form.only(:form) { "Edit Item" } || "Item Details" %>
+      <%= title %>
     </h4>
   </div>
   <div class="card-body">
