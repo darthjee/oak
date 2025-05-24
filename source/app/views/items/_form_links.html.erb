@@ -4,7 +4,6 @@
     <ul class="list-group">
       <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="link in gnc.data.links track by $index">
         <a href="{{link.url}}" target="_blank" class="text-decoration-none">{{link.text}}</a>
-        <span class="badge badge-primary badge-pill">{{link.order}}</span>
       </li>
     </ul>
   </div>
@@ -28,15 +27,6 @@
               <%= link_form.input(
                 "url",
                 label: "URL",
-                class: "form-control"
-              ) %>
-            </div>
-          </div>
-          <div class="form-row mt-2">
-            <div class="col-md-4">
-              <%= link_form.input(
-                "order",
-                label: "Order",
                 class: "form-control"
               ) %>
             </div>
