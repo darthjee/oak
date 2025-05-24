@@ -1,16 +1,7 @@
 <div class="container mt-4">
-  <%=
-    angular_safe_link_to(
-      :category_items, { category_slug: "{{gnc.data.category_slug}}" },
-      class: 'btn btn-primary'
-    ) do
-      'Back'
-    end
-  %>
-
   <div class="mt-4">
     <% magicka_display('gnc.data') do |form| %>
-      <%= render partial: 'form', locals: { form: form } %>
+      <%= render partial: 'form', locals: { form: form, title: "Item Details" } %>
     <% end %>
   </div>
 </div>

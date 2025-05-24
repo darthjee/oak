@@ -1,9 +1,9 @@
 <% form.only(:display) do %>
   <div class="links-section">
-    <h5>Links</h5>
-    <ul>
-      <li ng-repeat="link in gnc.data.links track by $index">
-        <a href="{{link.url}}" target="_blank">{{link.text}}</a>
+    <h5 class="text-primary">Links</h5>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="link in gnc.data.links track by $index">
+        <a href="{{link.url}}" target="_blank" class="text-decoration-none">{{link.text}}</a>
       </li>
     </ul>
   </div>
@@ -11,26 +11,34 @@
 
 <% form.only(:form) do %>
   <div class="links-section">
-    <h5>Links</h5>
+    <h5 class="text-primary">Links</h5>
     <ul class="list-unstyled">
-      <li class="border p-3 mb-3" ng-repeat="link in gnc.data.links track by $index">
+      <li class="border p-3 mb-3 bg-light rounded" ng-repeat="link in gnc.data.links track by $index">
         <% magicka_form('link') do |link_form| %>
-          <%= link_form.input(
-            "text",
-            label: "Text"
-          ) %>
-          <%= link_form.input(
-            "url",
-            label: "URL"
-          ) %>
+          <div class="form-row">
+            <div class="col-md-6">
+              <%= link_form.input(
+                "text",
+                label: "Text",
+                class: "form-control"
+              ) %>
+            </div>
+            <div class="col-md-6">
+              <%= link_form.input(
+                "url",
+                label: "URL",
+                class: "form-control"
+              ) %>
+            </div>
+          </div>
         <% end %>
 
-        <div class="form-group row">
-          <div class="offset-1 col-10">
+        <div class="form-group row mt-3">
+          <div class="col-12 text-right">
             <%= form.only(:form) do
               form.button(
                 ng_click: 'gnc.removeLink($index)',
-                classes: 'btn-primary',
+                classes: 'btn btn-danger btn-sm',
                 text: 'Delete'
               )
             end %>
@@ -39,12 +47,12 @@
       </li>
     </ul>
 
-    <div class="form-group row">
-      <div class="offset-1 col-10">
+    <div class="form-group row mt-3">
+      <div class="col-12 text-center">
         <%= form.only(:form) do
           form.button(
             ng_click: 'gnc.addLink()',
-            classes: 'btn-primary',
+            classes: 'btn btn-primary btn-sm',
             text: 'Add Link'
           )
         end %>

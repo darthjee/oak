@@ -1,11 +1,14 @@
 <% form.only(:display) do %>
-  <div class="card shadow-sm" ng-show="gnc.data.photos.length > 0">
+  <div class="card shadow-sm mt-4" ng-show="gnc.data.photos.length > 0">
+    <div class="card-header bg-primary text-white">
+      <h5 class="my-0 font-weight-normal">Photos</h5>
+    </div>
     <div id="itemPhotosCarousel" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner">
         <div
           class="carousel-item {{ $index === 0 ? 'active' : '' }}"
           ng-repeat="photo in gnc.data.photos track by $index">
-          <img src="{{photo.photo_url}}" class="d-block mx-auto w-50">
+          <img src="{{photo.photo_url}}" class="d-block mx-auto w-75 rounded">
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-target="#itemPhotosCarousel" data-slide="prev">
