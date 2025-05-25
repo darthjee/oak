@@ -14,11 +14,11 @@ class ItemsController < ApplicationController
                update_with: :update_item
 
   resource_for Oak::Item,
-              only: %i[new create edit update],
-              decorator: Oak::Item::FormDecorator,
-              paginated: true,
-              build_with: :build_item,
-              update_with: :update_item
+               only: %i[new create edit update],
+               decorator: Oak::Item::FormDecorator,
+               paginated: true,
+               build_with: :build_item,
+               update_with: :update_item
 
   resource_for Oak::Item,
                only: %i[show],
