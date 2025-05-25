@@ -178,7 +178,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Item::Decorator.new(Oak::Item.new(category:)).as_json
+        Oak::Item::NewDecorator.new(Oak::Item.new(category:)).as_json
       end
 
       before do
@@ -221,7 +221,7 @@ RSpec.describe ItemsController, type: :controller do
       { item: item_params, category_slug: category.slug, format: :json }
     end
     let(:created_item) { Oak::Item.last }
-    let(:expected) { Oak::Item::Decorator.new(created_item).as_json }
+    let(:expected) { Oak::Item::NewDecorator.new(created_item).as_json }
     let(:links_data) { [] }
 
     before do
@@ -291,7 +291,7 @@ RSpec.describe ItemsController, type: :controller do
       end
       let(:expected_item) { Oak::Item.new(expected_item_params) }
       let(:expected) do
-        Oak::Item::Decorator.new(expected_item.tap(&:validate)).as_json
+        Oak::Item::NewDecorator.new(expected_item.tap(&:validate)).as_json
       end
 
       it 'does not create a new Oak::Item' do
@@ -398,7 +398,7 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       context 'when format is JSON' do
-        let(:expected) { Oak::Item::Decorator.new(item).as_json }
+        let(:expected) { Oak::Item::NewDecorator.new(item).as_json }
 
         before do
           get :edit, params: { category_slug: category.slug, id: item.id, format: :json }
@@ -470,7 +470,7 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns the updated item as JSON' do
         put :update, params: parameters
 
-        expected = Oak::Item::Decorator.new(item.reload).as_json
+        expected = Oak::Item::NewDecorator.new(item.reload).as_json
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
@@ -563,7 +563,7 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns validation errors as JSON' do
         put :update, params: parameters
 
-        expected = Oak::Item::Decorator.new(expected_item.tap(&:validate)).as_json
+        expected = Oak::Item::NewDecorator.new(expected_item.tap(&:validate)).as_json
         expect(response_json).to eq(expected)
       end
     end
