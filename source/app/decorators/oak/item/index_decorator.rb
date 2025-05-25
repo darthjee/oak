@@ -2,7 +2,7 @@
 
 module Oak
   class Item
-    class Decorator < ModelDecorator
+    class IndexDecorator < ModelDecorator
       expose :id
       expose :name
       expose :description

@@ -13,7 +13,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Item::Decorator.new(items).as_json
+        Oak::Item::IndexDecorator.new(items).as_json
       end
 
       context 'when requesting for the correct category' do
