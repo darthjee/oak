@@ -7,11 +7,18 @@ class ItemsController < ApplicationController
   require_user_for :new, :create, :edit, :update
 
   resource_for Oak::Item,
-               only: %i[index new create edit update],
+               only: %i[index],
                decorator: Oak::Item::Decorator,
                paginated: true,
                build_with: :build_item,
                update_with: :update_item
+
+  resource_for Oak::Item,
+              only: %i[new create edit update],
+              decorator: Oak::Item::NewDecorator,
+              paginated: true,
+              build_with: :build_item,
+              update_with: :update_item
 
   resource_for Oak::Item,
                only: %i[show],
