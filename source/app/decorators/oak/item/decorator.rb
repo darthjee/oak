@@ -9,6 +9,7 @@ module Oak
       expose :category_slug
       expose :kind_slug
       expose :snap_url
+      expose :main_link, as: :link, decorator: Oak::Link::Decorator
       expose :links, decorator: Oak::Link::Decorator
 
       def snap_url
