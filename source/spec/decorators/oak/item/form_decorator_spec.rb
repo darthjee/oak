@@ -11,9 +11,6 @@ RSpec.describe Oak::Item::FormDecorator do
   let(:category_slug) { item.category.slug }
   let(:kind_slug) { item.kind.slug }
   let(:user) { item.user }
-  let(:snap_url) do
-    [Settings.photos_server_url, 'category.png'].join('/')
-  end
 
   describe '#as_json' do
     let(:expected) do
@@ -23,7 +20,6 @@ RSpec.describe Oak::Item::FormDecorator do
         description:,
         category_slug:,
         kind_slug:,
-        snap_url:,
         links: []
       }.stringify_keys
     end
@@ -34,21 +30,24 @@ RSpec.describe Oak::Item::FormDecorator do
       end
     end
 
-    context 'when the item has a main photo' do
-      let!(:photo) { create(:oak_photo, item:) }
-      let(:snap_url) do
-        [
-          Settings.photos_server_url,
-          :snaps,
-          :users,
-          user.id,
-          :items,
-          item.id,
-          photo.file_name
-        ].join('/')
+    context 'when the item has links' do
+      let!(:link1) { create(:oak_link, item:, order: 2, url: 'https://example.com/2') }
+      let!(:link2) { create(:oak_link, item:, order: 1, url: 'https://example.com/1') }
+      let(:expected) do
+        {
+          id: item.id,
+          name:,
+          description:,
+          category_slug:,
+          kind_slug:,
+          links: [
+            Oak::Link::Decorator.new(link2).as_json,
+            Oak::Link::Decorator.new(link1).as_json
+          ]
+        }.deep_stringify_keys
       end
 
-      it 'includes the id and name' do
+      it 'includes the links' do
         expect(decorator.as_json).to eq(expected)
       end
     end
@@ -63,7 +62,6 @@ RSpec.describe Oak::Item::FormDecorator do
           description:,
           category_slug:,
           kind_slug:,
-          snap_url:,
           errors:,
           links: []
         }.deep_stringify_keys
