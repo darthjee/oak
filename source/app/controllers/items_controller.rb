@@ -15,7 +15,7 @@ class ItemsController < ApplicationController
 
   resource_for Oak::Item,
               only: %i[new create edit update],
-              decorator: Oak::Item::NewDecorator,
+              decorator: Oak::Item::FormDecorator,
               paginated: true,
               build_with: :build_item,
               update_with: :update_item
