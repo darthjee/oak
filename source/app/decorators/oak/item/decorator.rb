@@ -10,7 +10,6 @@ module Oak
       expose :kind_slug
       expose :snap_url
       expose :main_link, as: :link, decorator: Oak::Link::Decorator
-      expose :links, decorator: Oak::Link::Decorator
 
       def snap_url
         return [base_url, 'category.png'].join('/') if main_photo.nil?
