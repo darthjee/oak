@@ -18,6 +18,11 @@
           <h5 class="card-title">{{item.name}}</h5>
           <img src="{{item.snap_url}}" class="img-fluid" alt="Snapshot">
         <% end %>
+        <div class="mt-2" ng-show="item.link">
+          <a href="{{item.link.url}}" target="_blank" class="text-primary">
+            {{item.link.text}}
+          </a>
+        </div>
       </div>
     </div>
   </div>
