@@ -26,7 +26,9 @@
     },
 
     _buildCategoryRequester: function() {
-      var path = this.location.$$url.replace(/\/items$/, "");
+      var path = this.location.$$url.replace(
+        /\/categories\/([^/]*)\/items.*$/, "/categories/$1"
+      );
       this.categoryRequester = this.requesterBuilder.build({
         search: this.location.$$search,
         path: path
