@@ -11,6 +11,7 @@ module Oak
 
     # Defines a main photo as the first photo based on the default scope of photos
     has_one :main_photo, class_name: 'Oak::Photo'
+    has_one :main_link, class_name: 'Oak::Link'
 
     validates :name, presence: true, length: { maximum: 100 }
     validates :description, presence: true
