@@ -30,16 +30,18 @@ RSpec.describe Oak::Category::FormDecorator do
     end
 
     context 'when there are kinds associated' do
-      let!(:kinds_objects) { create_list(:oak_kind, 2) }
-      let(:kinds) { kinds_objects.map(&:slug) }
-
-      before do
-        kinds_objects.each do |kind|
-          create(:oak_category_kind, category:, kind:)
-        end
+      let!(:first_kind) { create(:oak_kind, name: 'kind-1') }
+      let!(:second_kind) { create(:oak_kind, name: 'kind-2') }
+      let!(:first_category_kind) { create(:oak_category_kind, category:, kind: first_kind) }
+      let!(:second_category_kind) { create(:oak_category_kind, category:, kind: second_kind) }
+      let(:kinds) do
+        [
+          Oak::Kind::Decorator.new(first_kind).as_json,
+          Oak::Kind::Decorator.new(second_kind).as_json
+        ]
       end
 
-      it 'includes the kinds slugs' do
+      it 'includes the decorated kinds' do
         expect(decorator.as_json).to eq(expected)
       end
     end
