@@ -6,17 +6,18 @@ class SubscriptionsController < ApplicationController
   protect_from_forgery except: :create
   require_user_for :create
 
-  resource_for Oak::Subscription,
-               only: :create,
-               decorator: Oak::Subscription::Decorator
+  def create
+    render json: subscription_json, status: status
+  end
 
   private
 
-  def subscription_params
-    {
-      user: logged_user,
-      category: category
-    }
+  def subscription_json
+    Oak::Subscription::Decorator.new(subscription).as_json
+  end
+
+  def subscription
+    logged_user.subscriptions.find_or_create_by(category:)
   end
 
   def category
