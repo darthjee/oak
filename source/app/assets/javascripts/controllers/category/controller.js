@@ -33,6 +33,7 @@
 
   app.controller("Category.Controller", [
     "cyberhawk_builder", function(builder) {
+      console.info("Category.Controller initialized");
       builder.buildAndRequest(this, options);
     }
   ]);
