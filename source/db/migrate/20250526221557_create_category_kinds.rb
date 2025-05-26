@@ -9,6 +9,6 @@ class CreateCategoryKinds < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :category_kinds, [:category_id, :kind_id], unique: true
+    add_index :category_kinds, %i[category_id kind_id], unique: true
   end
 end
