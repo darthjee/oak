@@ -32,13 +32,16 @@ RSpec.describe Oak::Category::FormDecorator do
     context 'when there are kinds associated' do
       let!(:first_kind) { create(:oak_kind, name: 'kind-1') }
       let!(:second_kind) { create(:oak_kind, name: 'kind-2') }
-      let!(:first_category_kind) { create(:oak_category_kind, category:, kind: first_kind) }
-      let!(:second_category_kind) { create(:oak_category_kind, category:, kind: second_kind) }
       let(:kinds) do
         [
           Oak::Kind::Decorator.new(first_kind).as_json,
           Oak::Kind::Decorator.new(second_kind).as_json
         ]
+      end
+
+      before do
+        create(:oak_category_kind, category:, kind: first_kind)
+        create(:oak_category_kind, category:, kind: second_kind)
       end
 
       it 'includes the decorated kinds' do
