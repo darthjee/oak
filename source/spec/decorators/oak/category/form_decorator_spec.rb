@@ -30,10 +30,10 @@ RSpec.describe Oak::Category::FormDecorator do
     end
 
     context 'when there are kinds associated' do
-      let!(:kind1) { create(:oak_kind, name: 'kind-1') }
-      let!(:kind2) { create(:oak_kind, name: 'kind-2') }
-      let!(:category_kind1) { create(:oak_category_kind, category:, kind: kind1) }
-      let!(:category_kind2) { create(:oak_category_kind, category:, kind: kind2) }
+      let!(:first_kind) { create(:oak_kind, name: 'kind-1') }
+      let!(:second_kind) { create(:oak_kind, name: 'kind-2') }
+      let!(:first_category_kind) { create(:oak_category_kind, category:, kind: first_kind) }
+      let!(:second_category_kind) { create(:oak_category_kind, category:, kind: second_kind) }
       let(:kinds) { %w[kind-1 kind-2] }
 
       it 'includes the kinds slugs' do
