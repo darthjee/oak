@@ -46,6 +46,10 @@
     }, {
       routes: ["/forbidden"]
     }, {
+      config: {
+        controller: "Category.Controller",
+        controllerAs: "gnc"
+      },
       routes: ["/categories", "/categories/new", "/categories/:category_slug"]
     }, {
       routes: ["/kinds", "/kinds/new", "/kinds/:kind_slug"]
