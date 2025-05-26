@@ -1,33 +1,36 @@
-<!-- Add Kind Section -->
-<div class="form-group mt-4">
-  <label for="add-kind">Add Kind</label>
-  <div class="d-flex align-items-center">
-    <%=
-      form.ng_select(
-        :kind_slug,
-        options: "gnc.allKinds",
-        reference_key: :slug,
-        text_field: :name,
-        ng_model: "gnc.selectedKind",
-        class: "form-control mr-2"
-      )
-    %>
-    <button
-      class="btn btn-success"
-      ng-click="gnc.addKind(gnc.selectedKind)">
-      Add
-    </button>
+<div class="border p-3 mb-3 bg-light rounded">
+  <!-- Add Kind Section -->
+  <div class="form-group mt-4">
+    <label for="add-kind">Add Kind</label>
+    <div class="d-flex align-items-center">
+      <%=
+        form.ng_select(
+          :kind_slug,
+          options: "gnc.allKinds",
+          reference_key: :slug,
+          text_field: :name,
+          ng_model: "gnc.selectedKind",
+          class: "form-control mr-2"
+        )
+      %>
+      
+      <button
+        class="btn btn-success"
+        ng-click="gnc.addKind(gnc.selectedKind)">
+        Add
+      </button>
+    </div>
   </div>
-</div>
 
-<!-- Kinds Section -->
-<div class="form-group mt-4">
-  <label for="category-kinds">Kinds</label>
-  <div id="category-kinds" class="d-flex flex-wrap">
-    <span
-      class="badge badge-primary mr-2 mb-2"
-      ng-repeat="kind in gnc.data.kinds track by kind.slug">
-      {{kind.name}}
-    </span>
+  <!-- Kinds Section -->
+  <div class="form-group mt-4">
+    <label for="category-kinds">Kinds</label>
+    <div id="category-kinds" class="d-flex flex-wrap">
+      <span
+        class="badge badge-primary mr-2 mb-2"
+        ng-repeat="kind in gnc.data.kinds track by kind.slug">
+        {{kind.name}}
+      </span>
+    </div>
   </div>
 </div>
