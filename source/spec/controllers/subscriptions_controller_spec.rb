@@ -15,6 +15,10 @@ RSpec.describe SubscriptionsController, type: :controller do
 
   describe 'POST #create' do
     context 'when the user is logged in' do
+      let(:created_subscription) { Oak::Subscription.last }
+      let(:decorator) { Oak::Subscription::Decorator.new(created_subscription) }
+      let(:expected) { decorator.as_json }
+
       it 'creates a new Oak::Subscription' do
         expect { post :create, params: parameters }
           .to change(Oak::Subscription, :count).by(1)
@@ -29,15 +33,14 @@ RSpec.describe SubscriptionsController, type: :controller do
       it 'returns the created subscription as JSON' do
         post :create, params: parameters
 
-        created_subscription = Oak::Subscription.last
-        expected = Oak::Subscription::Decorator.new(created_subscription).as_json
-
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
 
     context 'when the subscription already exists' do
       let!(:existing_subscription) { create(:oak_subscription, user:, category:) }
+      let(:decorator) { Oak::Subscription::Decorator.new(existing_subscription) }
+      let(:expected) { decorator.as_json }
 
       it 'does not create a new subscription' do
         expect { post :create, params: parameters }
@@ -47,9 +50,12 @@ RSpec.describe SubscriptionsController, type: :controller do
       it 'returns the existing subscription as JSON' do
         post :create, params: parameters
 
-        expected = Oak::Subscription::Decorator.new(existing_subscription).as_json
-
         expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the existing subscription data' do
+        post :create, params: parameters
+
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
