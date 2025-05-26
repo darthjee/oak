@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-class CreateCategoriesKinds < ActiveRecord::Migration[7.2]
+class CreateCategoryKinds < ActiveRecord::Migration[7.2]
   def change
-    create_table :categories_kinds do |t|
+    create_table :category_kinds do |t|
       t.references :category, null: false, foreign_key: true, index: true
       t.references :kind, null: false, foreign_key: true, index: true
 
       t.timestamps
     end
 
-    add_index :categories_kinds, [:category_id, :kind_id], unique: true
+    add_index :category_kinds, [:category_id, :kind_id], unique: true
   end
 end
