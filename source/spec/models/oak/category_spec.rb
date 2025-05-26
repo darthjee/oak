@@ -66,6 +66,15 @@ RSpec.describe Oak::Category, type: :model do
       end
     end
 
+    context 'when name has spaces' do
+      let(:new_name) { 'New  Name' }
+
+      it 'updates the slug to match the new name' do
+        expect { category.name = new_name }
+          .to change(category, :slug).to('new_name')
+      end
+    end
+
     context 'when name is updated to nil' do
       let(:new_name) { nil }
 
