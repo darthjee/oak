@@ -3,8 +3,31 @@
     "cyberhawk/builder"
   ]);
 
+  var SubscriptionsMethods = {
+    subscribe: function(categorySlug) {
+      console.info("Subscribing to category: " + categorySlug);
+      var path = "/categories/" + categorySlug + "/subscriptions";
+      var promise = this.requesterBuilder.build({
+        method: "POST",
+        path: path
+      }).request();
+
+      promise.then(
+        function(response) {
+          this.constructor.trigger(this, "subscribe", "success", response.data);
+        }.bind(this),
+        function(response) {
+          this.constructor.trigger(this, "subscribe", "error", response.data);
+        }.bind(this)
+      );
+    }
+  };
+
   var options = {
-    callback: function(){
+    callback: function() {
+      _.extend(this, SubscriptionsMethods);
+
+      _.bindAll(this, "subscribe");
     }
   };
 
