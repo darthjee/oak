@@ -18,6 +18,18 @@
       <%= form.input(:name, placeholder: "Category name", class: "form-control form-control-lg") %>
     </div>
 
+    <!-- Kinds Section -->
+    <div class="form-group mt-4">
+      <label for="category-kinds">Tags</label>
+      <div id="category-kinds" class="d-flex flex-wrap">
+        <span
+          class="badge badge-primary mr-2 mb-2"
+          ng-repeat="kind in gnc.data.kinds track by kind.slug">
+          {{kind.name}}
+        </span>
+      </div>
+    </div>
+
     <div class="form-group row mt-4">
       <div class="col-12 text-center">
         <%= form.only(:form) do
