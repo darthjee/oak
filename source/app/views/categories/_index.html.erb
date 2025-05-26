@@ -20,7 +20,8 @@
         <% end %>
         <button
           class="btn btn-sm btn-secondary mt-2"
-          ng-click="gnc.subscribe(category.slug)">
+          ng-click="gnc.subscribe(category.slug)"
+          ng-show="gnc.global_state.logged">
           Subscribe
         </button>
       </div>
