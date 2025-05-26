@@ -11,32 +11,27 @@ RSpec.describe Oak::Category::Decorator do
   let(:snap_url) do
     [Settings.photos_server_url, 'category.png'].join('/')
   end
-  let(:kinds) { [] }
 
   describe '#as_json' do
     let(:expected) do
       {
         name:,
         slug:,
-        snap_url:,
-        kinds:
+        snap_url:
       }.stringify_keys
     end
 
     context 'when there is no item' do
-      it 'includes the name and kinds' do
+      it 'includes the name' do
         expect(decorator.as_json).to eq(expected)
       end
     end
 
-    context 'when there are kinds associated' do
-      let!(:kind1) { create(:oak_kind, name: 'kind-1') }
-      let!(:kind2) { create(:oak_kind, name: 'kind-2') }
-      let!(:category_kind1) { create(:oak_category_kind, category:, kind: kind1) }
-      let!(:category_kind2) { create(:oak_category_kind, category:, kind: kind2) }
-      let(:kinds) { %w[kind-1 kind-2] }
+    context 'when there are items without photos' do
+      let!(:item) { create(:oak_item, category:) }
+      let(:user) { item.user }
 
-      it 'includes the kinds slugs' do
+      it 'includes the name' do
         expect(decorator.as_json).to eq(expected)
       end
     end
@@ -58,7 +53,7 @@ RSpec.describe Oak::Category::Decorator do
         ].join('/')
       end
 
-      it 'includes the name and kinds' do
+      it 'includes the name' do
         expect(decorator.as_json).to eq(expected)
       end
     end
@@ -71,12 +66,11 @@ RSpec.describe Oak::Category::Decorator do
           name:,
           slug:,
           snap_url:,
-          kinds:,
           errors:
         }.deep_stringify_keys
       end
 
-      it 'includes the name and kinds' do
+      it 'includes the name' do
         expect(decorator.as_json).to eq(expected)
       end
     end
