@@ -1,9 +1,22 @@
-<%=
-  angular_safe_link_to(
-    :category_items, { category_slug: "{{gnc.data.category_slug || gnc.data.category.slug}}" },
-    class: 'btn btn-secondary'
-  ) do
-    'Back'
+<%= form.only(:display) do
+    angular_safe_link_to(
+      :category_items, { category_slug: "{{gnc.data.category.slug}}" },
+      class: 'btn btn-secondary'
+    ) do
+      'Back'
+    end
+  end
+%>
+<%= form.only(:form) do
+    angular_safe_link_to(
+      :category_item, {
+        category_slug: "{{gnc.data.category_slug}}",
+        id: '{{gnc.data.id}}'
+      },
+      class: 'btn btn-secondary'
+    ) do
+      'Back'
+    end
   end
 %>
 
