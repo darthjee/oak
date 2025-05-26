@@ -36,6 +36,24 @@ RSpec.describe SubscriptionsController, type: :controller do
       end
     end
 
+    context 'when the subscription already exists' do
+      let!(:existing_subscription) { create(:oak_subscription, user:, category:) }
+
+      it 'does not create a new subscription' do
+        expect { post :create, params: parameters }
+          .not_to change(Oak::Subscription, :count)
+      end
+
+      it 'returns the existing subscription as JSON' do
+        post :create, params: parameters
+
+        expected = Oak::Subscription::Decorator.new(existing_subscription).as_json
+
+        expect(response).to have_http_status(:ok)
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
     context 'when the user is not logged in' do
       let(:session) { nil }
 
