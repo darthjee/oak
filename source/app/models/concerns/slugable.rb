@@ -17,7 +17,8 @@ module Slugable
 
     # Private setter for slug
     def slug=(value)
-      super(value&.to_s&.gsub(/ +/, '_')&.underscore)
+      value = value&.to_s&.gsub(/ +/, '_')
+      super(value&.underscore)
     end
   end
 end
