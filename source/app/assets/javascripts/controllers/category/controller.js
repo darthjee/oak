@@ -35,19 +35,14 @@
 
   var SubscriptionsMethods = {
     subscribe: function(categorySlug) {
-      var path = "/categories/" + categorySlug + "/subscriptions";
-      var promise = this.requesterBuilder.build({
-        path: path
-      }).createRequest({});
+      var requester = this._getSubscriptionRequester(categorySlug);
+      requester.createRequest({});
+    },
 
-      promise.then(
-        function(response) {
-          this.constructor.trigger(this, "subscribe", "success", response.data);
-        }.bind(this),
-        function(response) {
-          this.constructor.trigger(this, "subscribe", "error", response.data);
-        }.bind(this)
-      );
+    _getSubscriptionRequester: function(categorySlug) {
+      return this.requesterBuilder.build({
+        path: "/categories/" + categorySlug + "/subscriptions"
+      })
     }
   };
 
@@ -57,9 +52,9 @@
       _.extend(this, KindMethods);
       _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
 
-      this.requestKinds();
+      _.bindAll(this, "subscribe", "_getSubscriptionRequester");
 
-      _.bindAll(this, "subscribe");
+      this.requestKinds();
     }
   };
 
