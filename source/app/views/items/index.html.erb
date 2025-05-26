@@ -9,7 +9,7 @@
         'New'
       end
     %>
-    
+
     <%=
       angular_safe_link_to(
         :edit_category, { slug: "{{gnc.category.slug}}" },
@@ -20,7 +20,7 @@
       end
     %>
   </div>
-  
+
   <div class="row">
     <div class="col-md-3 mb-4" ng-repeat="item in gnc.data">
       <div class="card-body">
