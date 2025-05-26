@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
   include UserRequired
 
   protect_from_forgery except: %i[index create]
-  require_user_for :new, :create
+  require_user_for :new, :create, :edit
 
   resource_for Oak::Category,
                only: :index,
