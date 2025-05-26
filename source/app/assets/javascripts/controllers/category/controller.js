@@ -1,5 +1,5 @@
 (function(_, angular) {
-  var app = angular.module("item/index_controller", [
+  var app = angular.module("category/controller", [
     "cyberhawk/builder"
   ]);
 
@@ -31,7 +31,7 @@
     }
   };
 
-  app.controller("Item.IndexController", [
+  app.controller("Category.Controller", [
     "cyberhawk_builder", function(builder) {
       builder.buildAndRequest(this, options);
     }
