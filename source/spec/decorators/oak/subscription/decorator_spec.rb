@@ -29,7 +29,7 @@ RSpec.describe Oak::Subscription::Decorator do
           id: subscription.id,
           user_id: user.id,
           category_slug: nil,
-          errors: { category: ["must exist", "can't be blank"] }
+          errors: { category: ['must exist', "can't be blank"] }
         }.deep_stringify_keys
       end
 
