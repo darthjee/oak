@@ -30,7 +30,7 @@ other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
 pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
-Zyra.find_or_create(:oak_category_kind, category_id: category.id, kind_id: kind.id)
+Zyra.find_or_create(:oak_categorykind, category_id: category.id, kind_id: kind.id)
 
 Zyra.find_or_create(
   :oak_subscription,
