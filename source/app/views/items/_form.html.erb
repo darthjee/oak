@@ -1,6 +1,6 @@
 <%=
   angular_safe_link_to(
-    :category_items, { category_slug: "{{gnc.data.category_slug}}" },
+    :category_items, { category_slug: "{{gnc.data.category_slug || gnc.data.category.slug}}" },
     class: 'btn btn-secondary'
   ) do
     'Back'
