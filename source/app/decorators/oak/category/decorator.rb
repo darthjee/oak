@@ -6,11 +6,16 @@ module Oak
       expose :name
       expose :slug
       expose :snap_url
+      expose :kinds
 
       def snap_url
         return [base_url, 'category.png'].join('/') if main_photo.nil?
 
         Photo::FileUrl.call(main_photo, :snap)
+      end
+
+      def kinds
+        super.map(&:slug)
       end
 
       private
