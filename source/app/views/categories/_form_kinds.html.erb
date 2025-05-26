@@ -6,10 +6,10 @@
       <%=
         form.ng_select(
           :kind_slug,
-          options: "gnc.allKinds",
+          options: "gnc.kinds",
           reference_key: :slug,
           text_field: :name,
-          ng_model: "gnc.selectedKind",
+          ng_model: "gnc.addKind()",
           class: "form-control mr-2"
         )
       %>
