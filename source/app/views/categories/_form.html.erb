@@ -7,6 +7,18 @@
   end
 %>
 
+<%= form.only(:display) do
+  angular_safe_link_to(
+    :edit_category, {
+      category_slug: "{{gnc.data.slug}}"
+    },
+    class: 'btn btn-primary',
+    "ng-show" => "gnc.global_state.logged"
+  ) do
+    'Edit'
+  end
+end %>
+
 <div class="card shadow-sm">
   <div class="card-header bg-primary text-white">
     <h4 class="my-0 font-weight-normal">
