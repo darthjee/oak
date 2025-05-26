@@ -13,7 +13,7 @@ class CategoriesController < ApplicationController
                per_page: 20
 
   resource_for Oak::Category,
-               only: %i[new create show],
+               only: %i[new create show edit],
                decorator: Oak::Category::FormDecorator,
                id_key: :slug,
                param_key: :slug,
