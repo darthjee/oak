@@ -8,9 +8,8 @@
       console.info("Subscribing to category: " + categorySlug);
       var path = "/categories/" + categorySlug + "/subscriptions";
       var promise = this.requesterBuilder.build({
-        method: "POST",
         path: path
-      }).request();
+      }).saveRequest({});
 
       promise.then(
         function(response) {
