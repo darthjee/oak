@@ -10,7 +10,7 @@
 <%= form.only(:display) do
   angular_safe_link_to(
     :edit_category, {
-      category_slug: "{{gnc.data.slug}}"
+      slug: "{{gnc.data.slug}}"
     },
     class: 'btn btn-primary',
     "ng-show" => "gnc.global_state.logged"
