@@ -14,7 +14,7 @@ class CategoriesController < ApplicationController
 
   resource_for Oak::Category,
                only: %i[new create show],
-               decorator: Oak::Category::Decorator,
+               decorator: Oak::Category::FormDecorator,
                id_key: :slug,
                param_key: :slug,
                paginated: false
