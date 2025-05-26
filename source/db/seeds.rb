@@ -14,6 +14,7 @@ Zyra.register(Oak::Item, find_by: %i[user_id category_id kind_id name])
 Zyra.register(Oak::Photo, find_by: %i[item file_name])
 Zyra.register(Oak::Link, find_by: %i[item_id url])
 Zyra.register(Oak::Subscription, find_by: %i[user_id category_id])
+Zyra.register(Oak::CategoryKind, find_by: %i[category_id kind_id])
 
 user = Zyra.find_or_create(
   :user,
@@ -29,6 +30,7 @@ other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
 pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
+Zyra.find_or_create(:oak_category_kind, category_id: category.id, kind_id: kind.id)
 
 Zyra.find_or_create(
   :oak_subscription,
