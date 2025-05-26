@@ -5,11 +5,10 @@
 
   var SubscriptionsMethods = {
     subscribe: function(categorySlug) {
-      console.info("Subscribing to category: " + categorySlug);
       var path = "/categories/" + categorySlug + "/subscriptions";
       var promise = this.requesterBuilder.build({
         path: path
-      }).saveRequest({});
+      }).createRequest({});
 
       promise.then(
         function(response) {
