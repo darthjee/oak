@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_19_231846) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_26_221557) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -25,6 +25,16 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_19_231846) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "categories_kinds", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "kind_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id", "kind_id"], name: "index_categories_kinds_on_category_id_and_kind_id", unique: true
+    t.index ["category_id"], name: "index_categories_kinds_on_category_id"
+    t.index ["kind_id"], name: "index_categories_kinds_on_kind_id"
   end
 
   create_table "items", charset: "utf8mb3", force: :cascade do |t|
@@ -98,6 +108,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_19_231846) do
     t.index ["login"], name: "index_users_on_login", unique: true
   end
 
+  add_foreign_key "categories_kinds", "categories"
+  add_foreign_key "categories_kinds", "kinds"
   add_foreign_key "items", "categories"
   add_foreign_key "items", "kinds"
   add_foreign_key "items", "users"
