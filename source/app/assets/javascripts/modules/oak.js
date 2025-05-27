@@ -7,6 +7,7 @@
     'login',
     'menu',
     'category',
+    'kind',
     'item'
   ]);
 
