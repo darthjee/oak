@@ -146,7 +146,7 @@ RSpec.describe CategoriesController, type: :controller do
     before do
       cookies.signed[:session] = session.id if session
     end
-    
+
     context 'when user is logged in' do
       context 'when format is HTML and it is not AJAX' do
         before do
