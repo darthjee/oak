@@ -31,6 +31,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
           .to change { category.reload.attributes.except('created_at', 'updated_at') }
           .to(new_attributes)
       end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { updated_category }
+          .not_to change(Oak::Kind, :count)
+      end
     end
 
     context 'when there are kinds data' do
@@ -41,6 +46,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
       it 'creates new associations for the category' do
         expect { updated_category }
           .to change { category.kinds.count }.by(2)
+      end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { updated_category }
+          .not_to change(Oak::Kind, :count)
       end
     end
 
@@ -58,6 +68,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
       it 'keeps the existing kinds' do
         updated_category
         expect(category.kinds).to include(existing_kind)
+      end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { updated_category }
+          .not_to change(Oak::Kind, :count)
       end
     end
 
@@ -78,6 +93,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
         expect(category.kinds).to include(existing_kind)
         expect(category.kinds).not_to include(removed_kind)
       end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { updated_category }
+          .not_to change(Oak::Kind, :count)
+      end
     end
 
     context 'when the update is invalid' do
@@ -94,6 +114,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
       it 'does not update the kinds' do
         expect { updated_category }
           .not_to(change { category.kinds.count })
+      end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { updated_category }
+          .not_to change(Oak::Kind, :count)
       end
 
       it 'adds validation errors to the category' do
