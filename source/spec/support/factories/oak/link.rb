@@ -6,6 +6,6 @@ FactoryBot.define do
 
     url { "https://example#{SecureRandom.hex(4)}.com" }
     text { "Link #{SecureRandom.hex(2)}" }
-    order { rand(-127..128) }
+    order { rand(-128..127) }
   end
 end
