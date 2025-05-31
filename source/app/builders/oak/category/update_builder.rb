@@ -40,19 +40,24 @@ module Oak
       end
 
       def update_kinds
-        kinds.each do |kind_slug|
-          kind = Oak::Kind.find_by(slug: kind_slug)
-          next unless kind
-
-          category.category_kinds.build(kind:) unless category.kinds.include?(kind)
+        new_kinds_ids.each do |kind_id|
+          category.category_kinds.build(kind_id:)
         end
       end
 
       def delete_removed_kinds
-        payload_slugs = kinds
-        category.kinds.where.not(slug: payload_slugs).each do |kind|
-          category.category_kinds.find_by(kind: kind)&.destroy
-        end
+        category.category_kinds.where.not(kind_id: kept_kinds_ids).destroy_all
+      end
+
+      def kept_kinds_ids
+        @kept_kinds_ids ||= category.kinds.where(slug: kinds).pluck(:id)
+      end
+
+      def new_kinds_ids
+        @new_kinds_ids ||= Oak::Kind
+          .where(slug: kinds)
+          .where.not(id: kept_kinds_ids)
+          .pluck(:id)
       end
     end
   end
