@@ -6,7 +6,11 @@ module Oak
       expose :name
       expose :slug
       expose :snap_url
-      expose :kinds, decorator: Oak::Kind::Decorator
+      expose :kinds
+
+      def kinds
+        object.kinds.map(&:slug)
+      end
 
       def snap_url
         return [base_url, 'category.png'].join('/') if main_photo.nil?
