@@ -315,7 +315,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:slug) { category.slug }
 
       let(:expected) do
-        Oak::Category::Decorator.new(category).as_json
+        Oak::Category::FormDecorator.new(category).as_json
       end
 
       let(:parameters) { { ajax: true, format: :json, slug: slug } }
