@@ -1,4 +1,4 @@
-(function(_, angular, Cyberhawk, querystring) {
+(function(_, angular, querystring) {
   var module = angular.module("kind/methods", []);
 
   var KindMethods = {
@@ -47,5 +47,5 @@
   module.service("kinds_methods", [
     MethodsFactory
   ]);
-}(window._, window.angular, window.Cyberhawk, window.querystring));
+}(window._, window.angular, window.querystring));
 
