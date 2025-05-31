@@ -174,6 +174,27 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
 
+    context 'when passing slug' do
+      let(:category_params) { { name: 'New Category', slug: nil } }
+
+      it 'creates a new Oak::Category' do
+        expect { post :create, params: parameters }
+          .to change(Oak::Category, :count).by(1)
+      end
+
+      it do
+        post :create, params: parameters
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'returns the created category as JSON' do
+        post :create, params: parameters
+
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
     context 'when the request is invalid' do
       let(:category_params) { { name: '' } }
       let(:expected_category) { Oak::Category.new(category_params) }
