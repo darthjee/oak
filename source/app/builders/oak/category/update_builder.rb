@@ -35,7 +35,7 @@ module Oak
 
       def category_params
         {
-          name:,
+          name:
         }
       end
 
@@ -44,9 +44,7 @@ module Oak
           kind = Oak::Kind.find_by(slug: kind_slug)
           next unless kind
 
-          unless category.kinds.include?(kind)
-            category.category_kinds.build(kind:)
-          end
+          category.category_kinds.build(kind:) unless category.kinds.include?(kind)
         end
       end
 
