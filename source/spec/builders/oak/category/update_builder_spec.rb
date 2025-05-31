@@ -34,9 +34,9 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when there are kinds data' do
-      let!(:kind1) { create(:oak_kind, slug: 'kind-1') }
-      let!(:kind2) { create(:oak_kind, slug: 'kind-2') }
-      let(:kinds_data) { %w[kind-1 kind-2] }
+      let!(:kind1) { create(:oak_kind, name: 'kind 1') }
+      let!(:kind2) { create(:oak_kind, name: 'kind 2') }
+      let(:kinds_data) { %w[kind_1 kind_2] }
 
       it 'creates new associations for the category' do
         expect { updated_category }
@@ -45,10 +45,10 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when kinds are updated' do
-      let!(:existing_kind) { create(:oak_kind, slug: 'kind-1') }
-      let!(:new_kind) { create(:oak_kind, slug: 'kind-2') }
+      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
+      let!(:new_kind) { create(:oak_kind, name: 'kind 2') }
       let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
-      let(:kinds_data) { %w[kind-1 kind-2] }
+      let(:kinds_data) { %w[kind_1 kind_2] }
 
       it 'adds new kinds to the category' do
         expect { updated_category }
@@ -62,11 +62,11 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when kinds are deleted' do
-      let!(:existing_kind) { create(:oak_kind, slug: 'kind-1') }
-      let!(:removed_kind) { create(:oak_kind, slug: 'kind-2') }
+      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
+      let!(:removed_kind) { create(:oak_kind, name: 'kind 2') }
       let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
       let!(:removed_category_kind) { create(:oak_category_kind, category:, kind: removed_kind) }
-      let(:kinds_data) { %w[kind-1] }
+      let(:kinds_data) { %w[kind_1] }
 
       it 'removes the kinds not in the payload' do
         expect { updated_category }
@@ -82,9 +82,9 @@ RSpec.describe Oak::Category::UpdateBuilder do
 
     context 'when the update is invalid' do
       let(:name) { nil }
-      let!(:existing_kind) { create(:oak_kind, slug: 'kind-1') }
+      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
       let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
-      let(:kinds_data) { %w[kind-1] }
+      let(:kinds_data) { %w[kind_1] }
 
       it 'does not update the category' do
         expect { updated_category }
