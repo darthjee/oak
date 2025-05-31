@@ -1,14 +1,26 @@
 <div class="container">
-  <%=
-    angular_safe_link_to(
-      :new_category_item, { category_slug: "{{gnc.category.slug}}" },
-      class: 'btn btn-primary',
-      "ng-show" => "gnc.global_state.logged"
-    ) do
-      'New'
-    end
-  %>
-  
+  <div class="mt-4">
+    <%=
+      angular_safe_link_to(
+        :new_category_item, { category_slug: "{{gnc.category.slug}}" },
+        class: 'btn btn-primary',
+        "ng-show" => "gnc.global_state.logged"
+      ) do
+        'New'
+      end
+    %>
+
+    <%=
+      angular_safe_link_to(
+        :edit_category, { slug: "{{gnc.category.slug}}" },
+        class: 'btn btn-primary',
+        "ng-show" => "gnc.global_state.logged"
+      ) do
+        'Edit'
+      end
+    %>
+  </div>
+
   <div class="row">
     <div class="col-md-3 mb-4" ng-repeat="item in gnc.data">
       <div class="card-body">

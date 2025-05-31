@@ -50,7 +50,7 @@
         controller: "Category.Controller",
         controllerAs: "gnc"
       },
-      routes: ["/categories", "/categories/new", "/categories/:category_slug"]
+      routes: ["/categories", "/categories/new", "/categories/:category_slug", "/categories/:category_slug/edit"]
     }, {
       routes: ["/kinds", "/kinds/new", "/kinds/:kind_slug"]
     }];

@@ -24,3 +24,5 @@ find "$SOURCE_DIR" -type f | while read -r file; do
     echo "Skipped (already exists): $dest_file"
   fi
 done
+
+rsync -aP ./ dreamhost:photos.oak.ffavs.net/

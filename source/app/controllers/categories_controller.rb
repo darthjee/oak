@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
   include UserRequired
 
   protect_from_forgery except: %i[index create]
-  require_user_for :new, :create
+  require_user_for :new, :create, :edit
 
   resource_for Oak::Category,
                only: :index,
@@ -13,8 +13,8 @@ class CategoriesController < ApplicationController
                per_page: 20
 
   resource_for Oak::Category,
-               only: %i[new create show],
-               decorator: Oak::Category::Decorator,
+               only: %i[new create show edit],
+               decorator: Oak::Category::FormDecorator,
                id_key: :slug,
                param_key: :slug,
                paginated: false

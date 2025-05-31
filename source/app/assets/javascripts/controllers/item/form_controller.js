@@ -3,36 +3,6 @@
     "cyberhawk/builder"
   ]);
 
-  var KindMethods = {
-    requestKinds: function() {
-      var promise = this._getKindsRequester().request();
-      promise.then(this._setKinds);
-
-      this.constructor.trigger(this, this.route, "request");
-    },
-
-    _setKinds: function(response) {
-      this.kinds = response.data;
-      this.loaded = true;
-      this.constructor.trigger(this, this.route, "loaded");
-    },
-
-    _getKindsRequester: function() {
-      if ( !this.kindsRequester ) {
-        this._buildKindsRequester();
-      }
-
-      return this.kindsRequester;
-    },
-    _buildKindsRequester: function() {
-      this.kindsRequester = this.requesterBuilder.build({
-        search: this.location.$$search,
-        path: "/kinds"
-      });
-      this.kindsRequester.bind(this);
-    }
-  };
-
   var LinksMethods = {
     bindLinksTriggers: function() {
       this.constructor.on(this.route, "loaded", this.initLinks);
@@ -60,19 +30,19 @@
 
   var options = {
     callback: function(){
-      _.extend(this, KindMethods);
       _.extend(this, LinksMethods);
-      _.bindAll(this, "requestKinds", "_setKinds", "_getKindsRequester", "_buildKindsRequester");
       _.bindAll(this, "bindLinksTriggers", "initLinks", "addLink", "removeLink");
 
-      this.requestKinds();
       this.bindLinksTriggers();
     }
   };
 
   app.controller("Item.FormController", [
-    "cyberhawk_builder", function(builder) {
+    "cyberhawk_builder",
+    "kinds_methods",
+    function(builder, kindsMethods) {
       builder.buildAndRequest(this, options);
+      kindsMethods.build(this);
     }
   ]);
 }(window._, window.angular));

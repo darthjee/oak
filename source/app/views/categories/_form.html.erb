@@ -7,6 +7,18 @@
   end
 %>
 
+<%= form.only(:display) do
+  angular_safe_link_to(
+    :edit_category, {
+      slug: "{{gnc.data.slug}}"
+    },
+    class: 'btn btn-primary',
+    "ng-show" => "gnc.global_state.logged"
+  ) do
+    'Edit'
+  end
+end %>
+
 <div class="card shadow-sm">
   <div class="card-header bg-primary text-white">
     <h4 class="my-0 font-weight-normal">
@@ -17,6 +29,8 @@
     <div class="form-group">
       <%= form.input(:name, placeholder: "Category name", class: "form-control form-control-lg") %>
     </div>
+
+    <%= render partial: 'form_kinds', locals: { form: form } %>
 
     <div class="form-group row mt-4">
       <div class="col-12 text-center">

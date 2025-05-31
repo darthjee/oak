@@ -10,7 +10,9 @@ RSpec.describe CategoriesController, type: :controller do
       let!(:categories) { create_list(:oak_category, 3) }
 
       let(:expected) do
-        Oak::Category::Decorator.new(categories).as_json
+        categories.map do |category|
+          Oak::Category::Decorator.new(category).as_json
+        end
       end
 
       let(:parameters) { { ajax: true, format: :json } }
@@ -49,37 +51,37 @@ RSpec.describe CategoriesController, type: :controller do
           expect(response_json).to eq(expected.map(&:stringify_keys))
         end
       end
-    end
 
-    context 'when format is HTML and request is AJAX' do
-      let(:parameters) { { format: :html, ajax: true } }
+      context 'when format is HTML and request is AJAX' do
+        let(:parameters) { { format: :html, ajax: true } }
 
-      before do
-        get :index, params: parameters, xhr: true
+        before do
+          get :index, params: parameters, xhr: true
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct template' do
+          expect(response).to render_template(:index)
+        end
       end
 
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
+      context 'when format is HTML and request is not AJAX' do
+        let(:parameters) { {} }
 
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
+        before do
+          get :index, params: parameters
+        end
 
-    context 'when format is HTML and request is not AJAX' do
-      let(:parameters) { {} }
+        it 'returns a redirect response' do
+          expect(response).to have_http_status(:found) # HTTP status 302
+        end
 
-      before do
-        get :index, params: parameters
-      end
-
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
-      end
-
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/categories')
+        it 'redirects to the correct path' do
+          expect(response).to redirect_to('#/categories')
+        end
       end
     end
   end
@@ -108,18 +110,18 @@ RSpec.describe CategoriesController, type: :controller do
 
     context 'when format is JSON' do
       let(:expected) do
-        Oak::Category::Decorator.new(Oak::Category.new).as_json
+        Oak::Category::FormDecorator.new(Oak::Category.new).as_json
       end
 
       before do
         get :new, params: { format: :json }
       end
 
-      it 'returns an emppty json' do
+      it 'returns an empty JSON' do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'renders the correct JSON using the decorator' do
+      it 'renders the correct JSON using the form decorator' do
         expect(response_json).to eq(expected.stringify_keys)
       end
     end
@@ -145,7 +147,7 @@ RSpec.describe CategoriesController, type: :controller do
     let(:category_params) { { name: 'New Category' } }
     let(:parameters) { { category: category_params, format: :json } }
     let(:created_category) { Oak::Category.last }
-    let(:expected) { Oak::Category::Decorator.new(created_category).as_json }
+    let(:expected) { Oak::Category::FormDecorator.new(created_category).as_json }
     let(:session) { create(:session, user:) }
     let(:user) { create(:user) }
 
@@ -159,7 +161,7 @@ RSpec.describe CategoriesController, type: :controller do
           .to change(Oak::Category, :count).by(1)
       end
 
-      it do
+      it 'returns a successful response' do
         post :create, params: parameters
 
         expect(response).to have_http_status(:created)
@@ -197,7 +199,7 @@ RSpec.describe CategoriesController, type: :controller do
       let(:category_params) { { name: '' } }
       let(:expected_category) { Oak::Category.new(category_params) }
       let(:expected) do
-        Oak::Category::Decorator.new(expected_category).tap(&:validate).as_json
+        Oak::Category::FormDecorator.new(expected_category).tap(&:validate).as_json
       end
 
       it 'does not create a new Oak::Category' do
@@ -205,7 +207,7 @@ RSpec.describe CategoriesController, type: :controller do
           .not_to change(Oak::Category, :count)
       end
 
-      it do
+      it 'returns an unprocessable entity response' do
         post :create, params: parameters
 
         expect(response).to have_http_status(:unprocessable_entity)
@@ -235,13 +237,85 @@ RSpec.describe CategoriesController, type: :controller do
     end
   end
 
+  describe 'GET #edit' do
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user:) }
+    let(:category) { create(:oak_category) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
+    context 'when user is logged in' do
+      context 'when format is HTML and it is not AJAX' do
+        before do
+          get :edit, params: { slug: category.slug }
+        end
+
+        it 'returns a redirect response' do
+          expect(response).to have_http_status(:found) # HTTP status 302
+        end
+
+        it 'redirects to the correct path' do
+          expect(response).to redirect_to("#/categories/#{category.slug}/edit")
+        end
+      end
+
+      context 'when format is HTML and it is AJAX' do
+        before do
+          get :edit, params: { slug: category.slug, format: :html, ajax: true }, xhr: true
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct template' do
+          expect(response).to render_template(:edit)
+        end
+      end
+
+      context 'when format is JSON' do
+        let(:expected) { Oak::Category::FormDecorator.new(category).as_json }
+
+        before do
+          get :edit, params: { slug: category.slug, format: :json }
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(response_json).to eq(expected.stringify_keys)
+        end
+      end
+    end
+
+    context 'when user is not logged in' do
+      let(:session) { nil }
+
+      before do
+        get :edit, params: { slug: category.slug }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('#/forbidden')
+      end
+    end
+  end
+
   describe 'GET #show' do
     context 'when format is JSON' do
       let!(:category) { create(:oak_category) }
       let(:slug) { category.slug }
 
       let(:expected) do
-        Oak::Category::Decorator.new(category).as_json
+        Oak::Category::FormDecorator.new(category).as_json
       end
 
       let(:parameters) { { ajax: true, format: :json, slug: slug } }
