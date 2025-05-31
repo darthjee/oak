@@ -39,9 +39,12 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when there are kinds data' do
-      let!(:kind1) { create(:oak_kind, name: 'kind 1') }
-      let!(:kind2) { create(:oak_kind, name: 'kind 2') }
       let(:kinds_data) { %w[kind_1 kind_2] }
+
+      before do
+        create(:oak_kind, name: 'kind 1')
+        create(:oak_kind, name: 'kind 2')
+      end
 
       it 'creates new associations for the category' do
         expect { updated_category }
@@ -56,9 +59,12 @@ RSpec.describe Oak::Category::UpdateBuilder do
 
     context 'when kinds are updated' do
       let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
-      let!(:new_kind) { create(:oak_kind, name: 'kind 2') }
-      let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
       let(:kinds_data) { %w[kind_1 kind_2] }
+
+      before do
+        create(:oak_category_kind, category:, kind: existing_kind)
+        create(:oak_kind, name: 'kind 2')
+      end
 
       it 'adds new kinds to the category' do
         expect { updated_category }
@@ -79,18 +85,25 @@ RSpec.describe Oak::Category::UpdateBuilder do
     context 'when kinds are deleted' do
       let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
       let!(:removed_kind) { create(:oak_kind, name: 'kind 2') }
-      let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
-      let!(:removed_category_kind) { create(:oak_category_kind, category:, kind: removed_kind) }
       let(:kinds_data) { %w[kind_1] }
+
+      before do
+        create(:oak_category_kind, category:, kind: removed_kind)
+        create(:oak_category_kind, category:, kind: existing_kind)
+      end
 
       it 'removes the kinds not in the payload' do
         expect { updated_category }
           .to change { category.kinds.count }.by(-1)
       end
 
-      it 'keeps the kinds in the payload' do
+      it 'keeps the kind in the payload' do
         updated_category
         expect(category.kinds).to include(existing_kind)
+      end
+
+      it 'removes the kind not in the payload' do
+        updated_category
         expect(category.kinds).not_to include(removed_kind)
       end
 
@@ -103,8 +116,9 @@ RSpec.describe Oak::Category::UpdateBuilder do
     context 'when the update is invalid' do
       let(:name) { nil }
       let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
-      let!(:existing_category_kind) { create(:oak_category_kind, category:, kind: existing_kind) }
       let(:kinds_data) { %w[kind_1] }
+
+      before { create(:oak_category_kind, category:, kind: existing_kind) }
 
       it 'does not update the category' do
         expect { updated_category }
