@@ -10,25 +10,23 @@ RSpec.describe Oak::Category::UpdateBuilder do
       {
         category: category,
         name: name,
-        description: description,
         kinds: kinds_data
       }.compact
     end
 
-    let(:category) { create(:oak_category, name: 'Old Name', description: 'Old Description') }
+    let(:category) { create(:oak_category, name: 'Old Name') }
     let(:name) { 'Updated Name' }
-    let(:description) { 'Updated Description' }
     let(:kinds_data) { [] }
     let(:new_attributes) do
       {
         id: category.id,
         name: 'Updated Name',
-        description: 'Updated Description'
+        slug: 'updated_name'
       }.stringify_keys
     end
 
     context 'when the update is valid' do
-      it 'updates the category attributes' do
+      it 'updates the category attributes, including the slug' do
         expect { updated_category }
           .to change { category.reload.attributes.except('created_at', 'updated_at') }
           .to(new_attributes)

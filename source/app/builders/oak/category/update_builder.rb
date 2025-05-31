@@ -6,7 +6,6 @@ module Oak
       initialize_with({
                         category: nil,
                         name: nil,
-                        description: nil,
                         kinds: []
                       }, **{})
 
@@ -37,7 +36,6 @@ module Oak
       def category_params
         {
           name:,
-          description:
         }
       end
 
