@@ -46,7 +46,10 @@ module Oak
       end
 
       def delete_removed_kinds
-        category.category_kinds.where.not(kind_id: kept_kinds_ids).destroy_all
+        category
+          .category_kinds
+          .where.not(kind_id: kept_kinds_ids)
+          .destroy_all
       end
 
       def kept_kinds_ids
@@ -55,9 +58,9 @@ module Oak
 
       def new_kinds_ids
         @new_kinds_ids ||= Oak::Kind
-          .where(slug: kinds)
-          .where.not(id: kept_kinds_ids)
-          .pluck(:id)
+                           .where(slug: kinds)
+                           .where.not(id: kept_kinds_ids)
+                           .pluck(:id)
       end
     end
   end
