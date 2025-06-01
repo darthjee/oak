@@ -54,14 +54,18 @@ module Oak
       end
 
       def kept_kinds_ids
-        @kept_kinds_ids ||= category.kinds.where(slug: kinds).pluck(:id)
+        @kept_kinds_ids ||= category.kinds.where(slug: kinds_slugs).pluck(:id)
       end
 
       def new_kinds_ids
         @new_kinds_ids ||= Oak::Kind
-                           .where(slug: kinds)
+                           .where(slug: kinds_slugs)
                            .where.not(id: kept_kinds_ids)
                            .pluck(:id)
+      end
+
+      def kinds_slugs
+        @kinds_slugs ||= kinds.map { |kind_data| kind_data[:slug] }
       end
     end
   end

@@ -38,12 +38,17 @@ RSpec.describe Oak::Category::UpdateBuilder do
       end
     end
 
-    context 'when there are kinds data' do
-      let(:kinds_data) { %w[kind_1 kind_2] }
+    context 'when kinds are provided' do
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' },
+          { name: 'Kind 2', slug: 'kind_2' }
+        ]
+      end
 
       before do
-        create(:oak_kind, name: 'kind 1')
-        create(:oak_kind, name: 'kind 2')
+        create(:oak_kind, name: 'Kind 1')
+        create(:oak_kind, name: 'Kind 2')
       end
 
       it 'creates new associations for the category' do
@@ -58,12 +63,17 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when kinds are updated' do
-      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
-      let(:kinds_data) { %w[kind_1 kind_2] }
+      let!(:existing_kind) { create(:oak_kind, name: 'Kind 1') }
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' },
+          { name: 'Kind 2', slug: 'kind_2' }
+        ]
+      end
 
       before do
         create(:oak_category_kind, category:, kind: existing_kind)
-        create(:oak_kind, name: 'kind 2')
+        create(:oak_kind, name: 'Kind 2')
       end
 
       it 'adds new kinds to the category' do
@@ -83,9 +93,13 @@ RSpec.describe Oak::Category::UpdateBuilder do
     end
 
     context 'when kinds are deleted' do
-      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
-      let!(:removed_kind) { create(:oak_kind, name: 'kind 2') }
-      let(:kinds_data) { %w[kind_1] }
+      let!(:existing_kind) { create(:oak_kind, name: 'Kind 1') }
+      let!(:removed_kind) { create(:oak_kind, name: 'Kind 2') }
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' }
+        ]
+      end
 
       before do
         create(:oak_category_kind, category:, kind: removed_kind)
@@ -115,8 +129,12 @@ RSpec.describe Oak::Category::UpdateBuilder do
 
     context 'when the update is invalid' do
       let(:name) { nil }
-      let!(:existing_kind) { create(:oak_kind, name: 'kind 1') }
-      let(:kinds_data) { %w[kind_1] }
+      let!(:existing_kind) { create(:oak_kind, name: 'Kind 1') }
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' }
+        ]
+      end
 
       before { create(:oak_category_kind, category:, kind: existing_kind) }
 
