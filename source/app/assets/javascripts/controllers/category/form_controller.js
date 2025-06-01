@@ -34,6 +34,14 @@
         return kind.slug === that.data.kind_slug;
       });
     },
+
+    removeKind: function(kind) {
+      var that = this;
+
+      this.data.kinds = _.filter(this.data.kinds, function(k) {
+        return k.slug != kind.slug;
+      });
+    }
   };
 
   var options = {
