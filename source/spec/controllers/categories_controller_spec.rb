@@ -408,7 +408,7 @@ RSpec.describe CategoriesController, type: :controller do
 
       it 'updates the category kinds' do
         expect { patch :update, params: parameters }
-          .to change { category.kinds.count }.by(2)
+          .to change { category.reload.kinds.count }.by(2)
       end
 
       it 'returns the updated category as JSON' do
