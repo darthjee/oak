@@ -15,7 +15,7 @@ RSpec.describe Category::KindsController, type: :controller do
     context 'when format is JSON' do
       let(:parameters) { { category_slug: category.slug, format: :json } }
       let(:expected) do
-        category.kinds.map { |kind| Oak::Kind::Decorator.new(kind).as_json }
+        category.kinds.map { |kind| Oak::Kind::SelectDecorator.new(kind).as_json }
       end
 
       before do

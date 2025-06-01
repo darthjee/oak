@@ -8,7 +8,7 @@ module Category
 
     resource_for Oak::Kind,
                  only: :index,
-                 decorator: Oak::Kind::Decorator,
+                 decorator: Oak::Kind::SelectDecorator,
                  paginated: true
 
     model_for Oak::Category,
