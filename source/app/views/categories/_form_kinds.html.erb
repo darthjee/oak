@@ -30,11 +30,14 @@
         class="badge badge-primary mr-2 mb-2 d-flex align-items-center"
         ng-repeat="kind in gnc.data.kinds track by kind.slug">
         {{kind.name}}
-        <button
-          class="btn btn-sm btn-danger ml-2"
-          ng-click="gnc.removeKind(kind)">
-          x
-        </button>
+
+        <% form.only(:form) do %>
+          <button
+            class="btn btn-sm btn-danger ml-2"
+            ng-click="gnc.removeKind(kind)">
+            x
+          </button>
+        <% end %>
       </span>
     </div>
   </div>
