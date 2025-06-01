@@ -4,8 +4,27 @@
     "kind/methods"
   ]);
 
+  var KindsMethods = {
+    addKind: function() {
+      var kind = this.selectedKind();
+
+      if (kind) {
+        this.data.kinds.push(kind);
+      }
+    },
+
+    selectedKind: function(kind) {
+      var that = this;
+
+      return _.find(this.kinds, function(kind) {
+        return kind.slug === that.data.kind_slug;
+      });
+    },
+  };
+
   var options = {
     callback: function() {
+      _.extend(this, KindsMethods);
     }
   };
 
