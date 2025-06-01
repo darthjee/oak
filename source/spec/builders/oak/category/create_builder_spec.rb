@@ -33,8 +33,11 @@ RSpec.describe Oak::Category::CreateBuilder do
     end
 
     context 'when kinds are provided' do
-      let!(:first_kind) { create(:oak_kind, name: 'Kind 1') }
-      let!(:second_kind) { create(:oak_kind, name: 'Kind 2') }
+      before do
+        create(:oak_kind, name: 'Kind 1')
+        create(:oak_kind, name: 'Kind 2')
+      end
+
       let(:kinds_data) do
         [
           { name: 'Kind 1', slug: 'kind_1' },
