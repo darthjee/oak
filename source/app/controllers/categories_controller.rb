@@ -30,7 +30,11 @@ class CategoriesController < ApplicationController
     params.require(:category).permit(:name)
   end
 
+  def update_params
+    category_params.to_h.symbolize_keys
+  end
+
   def update_category
-    Oak::Category::UpdateBuilder.build(**category_params)
+    Oak::Category::UpdateBuilder.build(**update_params)
   end
 end
