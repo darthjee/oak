@@ -16,9 +16,15 @@
     selectedKind: function(kind) {
       var that = this;
 
-      return _.find(this.kinds, function(kind) {
+      var kind = _.find(this.kinds, function(kind) {
         return kind.slug === that.data.kind_slug;
       });
+
+      var found = _.any(this.data.kinds, function(kind) {
+        return kind.slug === that.data.kind_slug;
+      });
+
+      return (!found) && kind;
     },
   };
 
