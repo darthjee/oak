@@ -369,7 +369,9 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    let(:parameters) { { category: category_params, slug: category.slug, format: :json } }
+    let(:parameters) do
+      { category: category_params, slug: category.slug, format: :json }
+    end
     let(:category_params) { { name: 'Updated Name', kinds: kinds_data } }
     let(:kinds_data) { [] }
     let(:expected) { Oak::Category::FormDecorator.new(category.reload).as_json }
