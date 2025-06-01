@@ -404,9 +404,12 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context 'when kinds are provided' do
-      let!(:kind1) { create(:oak_kind, name: 'kind 1') }
-      let!(:kind2) { create(:oak_kind, name: 'kind 2') }
       let(:kinds_data) { %w[kind_1 kind_2] }
+
+      before do
+        create(:oak_kind, name: 'kind 1')
+        create(:oak_kind, name: 'kind 2')
+      end
 
       it 'updates the category kinds' do
         expect { patch :update, params: parameters }
