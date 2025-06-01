@@ -404,11 +404,16 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context 'when kinds are provided' do
-      let(:kinds_data) { %w[kind_1 kind_2] }
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' },
+          { name: 'Kind 2', slug: 'kind_2' }
+        ]
+      end
 
       before do
-        create(:oak_kind, name: 'kind 1')
-        create(:oak_kind, name: 'kind 2')
+        create(:oak_kind, name: 'Kind 1')
+        create(:oak_kind, name: 'Kind 2')
       end
 
       it 'updates the category kinds' do
