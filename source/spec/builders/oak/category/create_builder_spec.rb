@@ -33,8 +33,8 @@ RSpec.describe Oak::Category::CreateBuilder do
     end
 
     context 'when kinds are provided' do
-      let!(:kind1) { create(:oak_kind, name: 'Kind 1') }
-      let!(:kind2) { create(:oak_kind, name: 'Kind 2') }
+      let!(:first_kind) { create(:oak_kind, name: 'Kind 1') }
+      let!(:second_kind) { create(:oak_kind, name: 'Kind 2') }
       let(:kinds_data) { %w[kind_1 kind_2] }
 
       it 'creates a valid category' do
@@ -42,7 +42,7 @@ RSpec.describe Oak::Category::CreateBuilder do
       end
 
       it 'associates the kinds with the category' do
-        expect(created_category.kinds).to contain_exactly(kind1, kind2)
+        expect(created_category.kinds).to contain_exactly(first_kind, second_kind)
       end
 
       it 'does not change the count of Oak::Kind' do
