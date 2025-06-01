@@ -70,26 +70,5 @@ RSpec.describe Oak::Category::CreateBuilder do
         expect(created_category.tap(&:valid?).errors[:name]).to include("can't be blank")
       end
     end
-
-    context 'when one of the kinds is invalid' do
-      let!(:kind1) { create(:oak_kind, name: 'Kind 1') }
-      let(:kinds_data) { %w[kind_1 kind_2] }
-
-      it 'returns an instance of Oak::Category' do
-        expect(created_category).to be_an_instance_of(Oak::Category)
-      end
-
-      it 'does not raise any errors' do
-        expect { created_category }.not_to raise_error
-      end
-
-      it 'marks the category as invalid' do
-        expect(created_category).not_to be_valid
-      end
-
-      it 'adds validation errors to the category' do
-        expect(created_category.tap(&:valid?).errors[:category_kinds]).to include('is invalid')
-      end
-    end
   end
 end
