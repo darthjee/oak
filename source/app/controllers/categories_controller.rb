@@ -31,7 +31,7 @@ class CategoriesController < ApplicationController
   end
 
   def update_params
-    category_params.to_h.symbolize_keys
+    category_params.to_h.symbolize_keys.merge(category:)
   end
 
   def update_category
