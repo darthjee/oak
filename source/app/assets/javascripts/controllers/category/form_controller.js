@@ -19,7 +19,7 @@
       }
     },
 
-    selectedKind: function(kind) {
+    selectedKind: function() {
       var kind = _.find(this.kinds, this.matchSlug(this.data.kind_slug));
 
       return (!this.hasKind(kind)) && kind;
