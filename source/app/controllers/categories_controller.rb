@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
   include UserRequired
 
   protect_from_forgery except: %i[index create]
-  require_user_for :new, :create, :edit
+  require_user_for :new, :create, :edit, :update
 
   resource_for Oak::Category,
                only: :index,
@@ -17,6 +17,7 @@ class CategoriesController < ApplicationController
                decorator: Oak::Category::FormDecorator,
                id_key: :slug,
                param_key: :slug,
+               update_with: :update_category,
                paginated: false
 
   private
@@ -27,5 +28,9 @@ class CategoriesController < ApplicationController
 
   def category_params
     params.require(:category).permit(:name)
+  end
+
+  def update_category
+    Oak::Category::UpdateBuilder.build(**category_params)
   end
 end
