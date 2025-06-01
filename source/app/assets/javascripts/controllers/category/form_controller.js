@@ -20,11 +20,19 @@
         return kind.slug === that.data.kind_slug;
       });
 
-      var found = _.any(this.data.kinds, function(kind) {
+      return (!this.hasKind(kind)) && kind;
+    },
+
+    hasKind: function(kind) {
+      var that = this;
+
+      if (!kind) {
+        return true;
+      }
+
+      return _.any(this.data.kinds, function(kind) {
         return kind.slug === that.data.kind_slug;
       });
-
-      return (!found) && kind;
     },
   };
 
