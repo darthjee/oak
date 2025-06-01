@@ -2,7 +2,8 @@
   window.Home = {};
 
   angular.module("category", [
-    "category/controller",
+    "category/index_controller",
+    "category/controller"
   ])
 }(window.angular));
 
