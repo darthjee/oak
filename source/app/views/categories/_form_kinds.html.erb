@@ -27,9 +27,14 @@
     <label for="category-kinds">Kinds</label>
     <div id="category-kinds" class="d-flex flex-wrap">
       <span
-        class="badge badge-primary mr-2 mb-2"
+        class="badge badge-primary mr-2 mb-2 d-flex align-items-center"
         ng-repeat="kind in gnc.data.kinds track by kind.slug">
         {{kind.name}}
+        <button
+          class="btn btn-sm btn-danger ml-2"
+          ng-click="gnc.removeKind(kind)">
+          x
+        </button>
       </span>
     </div>
   </div>
