@@ -1,7 +1,11 @@
 <div class="border p-3 mb-3 bg-light rounded">
   <!-- Add Kind Section -->
   <div class="form-group mt-4">
-    <label for="add-kind">Add Kind</label>
+    <div class="row">
+      <div class="col-12">
+        <h5>Add a Kind</h5>
+      </div>
+    </div>
     <div class="d-flex align-items-center">
       <%=
         form.ng_select(
@@ -13,7 +17,6 @@
           class: "form-control mr-2"
         )
       %>
-      
       <button
         class="btn btn-success"
         ng-click="gnc.addKind()">
