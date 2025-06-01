@@ -26,12 +26,16 @@ RSpec.describe Oak::Category::CreateBuilder do
       it 'creates a valid category from attributes' do
         expect(created_category).to be_valid
       end
+
+      it 'generates the slug based on the name' do
+        expect(created_category.slug).to eq('sample_category')
+      end
     end
 
     context 'when kinds are provided' do
-      let!(:kind1) { create(:oak_kind, slug: 'kind-1') }
-      let!(:kind2) { create(:oak_kind, slug: 'kind-2') }
-      let(:kinds_data) { %w[kind-1 kind-2] }
+      let!(:kind1) { create(:oak_kind, name: 'Kind 1') }
+      let!(:kind2) { create(:oak_kind, name: 'Kind 2') }
+      let(:kinds_data) { %w[kind_1 kind_2] }
 
       it 'creates a valid category' do
         expect(created_category).to be_valid
@@ -68,8 +72,8 @@ RSpec.describe Oak::Category::CreateBuilder do
     end
 
     context 'when one of the kinds is invalid' do
-      let!(:kind1) { create(:oak_kind, slug: 'kind-1') }
-      let(:kinds_data) { %w[kind-1 kind-2] }
+      let!(:kind1) { create(:oak_kind, name: 'Kind 1') }
+      let(:kinds_data) { %w[kind_1 kind_2] }
 
       it 'returns an instance of Oak::Category' do
         expect(created_category).to be_an_instance_of(Oak::Category)
