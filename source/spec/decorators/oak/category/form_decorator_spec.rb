@@ -33,7 +33,10 @@ RSpec.describe Oak::Category::FormDecorator do
       let!(:first_kind) { create(:oak_kind, name: 'kind-1') }
       let!(:second_kind) { create(:oak_kind, name: 'kind-2') }
       let(:kinds) do
-        [first_kind, second_kind].map(&:slug)
+        [
+          Oak::Kind::Decorator.new(first_kind).as_json,
+          Oak::Kind::Decorator.new(second_kind).as_json
+        ]
       end
 
       before do
