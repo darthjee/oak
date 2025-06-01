@@ -17,6 +17,7 @@ class CategoriesController < ApplicationController
                decorator: Oak::Category::FormDecorator,
                id_key: :slug,
                param_key: :slug,
+               build_with: :create_category,
                update_with: :update_category,
                paginated: false
 
@@ -34,7 +35,15 @@ class CategoriesController < ApplicationController
     category_params.to_h.deep_symbolize_keys.merge(category:)
   end
 
+  def create_params
+    category_params.to_h.deep_symbolize_keys.merge(scope: Oak::Category.all)
+  end
+
   def update_category
     Oak::Category::UpdateBuilder.build(**update_params)
+  end
+
+  def create_category
+    Oak::Category::CreateBuilder.build(**create_params)
   end
 end
