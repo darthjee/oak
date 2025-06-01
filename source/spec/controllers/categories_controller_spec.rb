@@ -144,12 +144,13 @@ RSpec.describe CategoriesController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:category_params) { { name: 'New Category' } }
+    let(:category_params) { { name: 'New Category', kinds: kinds_data } }
     let(:parameters) { { category: category_params, format: :json } }
     let(:created_category) { Oak::Category.last }
     let(:expected) { Oak::Category::FormDecorator.new(created_category).as_json }
     let(:session) { create(:session, user:) }
     let(:user) { create(:user) }
+    let(:kinds_data) { [] }
 
     before do
       cookies.signed[:session] = session.id if session
@@ -174,18 +175,33 @@ RSpec.describe CategoriesController, type: :controller do
       end
     end
 
-    context 'when passing slug' do
-      let(:category_params) { { name: 'New Category', slug: nil } }
+    context 'when kinds are provided' do
+      let(:kinds_data) do
+        [
+          { name: 'Kind 1', slug: 'kind_1' },
+          { name: 'Kind 2', slug: 'kind_2' }
+        ]
+      end
+
+      before do
+        create(:oak_kind, name: 'Kind 1')
+        create(:oak_kind, name: 'Kind 2')
+      end
 
       it 'creates a new Oak::Category' do
         expect { post :create, params: parameters }
           .to change(Oak::Category, :count).by(1)
       end
 
-      it do
+      it 'associates the kinds with the category' do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:created)
+        expect(created_category.kinds.map(&:slug)).to contain_exactly('kind_1', 'kind_2')
+      end
+
+      it 'does not change the count of Oak::Kind' do
+        expect { post :create, params: parameters }
+          .not_to change(Oak::Kind, :count)
       end
 
       it 'returns the created category as JSON' do
@@ -196,7 +212,8 @@ RSpec.describe CategoriesController, type: :controller do
     end
 
     context 'when the request is invalid' do
-      let(:category_params) { { name: '' } }
+      let(:category_params) { { name: '', kinds: kinds_data } }
+      let(:kinds_data) { [] }
       let(:expected_category) { Oak::Category.new(category_params) }
       let(:expected) do
         Oak::Category::FormDecorator.new(expected_category).tap(&:validate).as_json
