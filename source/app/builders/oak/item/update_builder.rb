@@ -3,15 +3,16 @@
 module Oak
   class Item
     class UpdateBuilder < Sinclair::Model
-      initialize_with({
-                        item: nil,
-                        name: nil,
-                        description: nil,
-                        category: nil,
-                        kind: nil,
-                        user: nil,
-                        links: []
-                      }, **{})
+      initialize_with(
+        :item, {
+          name: nil,
+          description: nil,
+          category: nil,
+          kind: nil,
+          user: nil,
+          links: []
+        }, **{}
+      )
 
       def self.build(**params)
         new(**params).build

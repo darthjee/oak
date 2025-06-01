@@ -3,11 +3,12 @@
 module Oak
   class Category
     class UpdateBuilder < Sinclair::Model
-      initialize_with({
-                        category: nil,
-                        name: nil,
-                        kinds: []
-                      }, **{})
+      initialize_with(
+        :category, {
+          name: nil,
+          kinds: []
+        }, **{}
+      )
 
       def self.build(**params)
         new(**params).build
