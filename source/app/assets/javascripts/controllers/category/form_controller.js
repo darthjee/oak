@@ -1,5 +1,5 @@
 (function(_, angular) {
-  var app = angular.module("category/controller", [
+  var app = angular.module("category/form_controller", [
     "cyberhawk/builder",
     "kind/methods"
   ]);
@@ -25,7 +25,7 @@
     }
   };
 
-  app.controller("Category.Controller", [
+  app.controller("Category.FormController", [
     "cyberhawk_builder",
     "kinds_methods",
     function(builder, kindsMethods) {

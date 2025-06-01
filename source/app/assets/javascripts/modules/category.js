@@ -3,7 +3,7 @@
 
   angular.module("category", [
     "category/index_controller",
-    "category/controller"
+    "category/form_controller"
   ])
 }(window.angular));
 
