@@ -13,34 +13,28 @@
       }
     },
 
-    selectedKind: function(kind) {
-      var that = this;
+    matchSlug(slug) {
+      return function(kind) {
+        return kind.slug == slug;
+      }
+    },
 
-      var kind = _.find(this.kinds, function(kind) {
-        return kind.slug === that.data.kind_slug;
-      });
+    selectedKind: function(kind) {
+      var kind = _.find(this.kinds, this.matchSlug(this.data.kind_slug));
 
       return (!this.hasKind(kind)) && kind;
     },
 
     hasKind: function(kind) {
-      var that = this;
-
       if (!kind) {
         return true;
       }
 
-      return _.any(this.data.kinds, function(kind) {
-        return kind.slug === that.data.kind_slug;
-      });
+      return _.any(this.data.kinds, this.matchSlug(this.data.kind_slug));
     },
 
     removeKind: function(kind) {
-      var that = this;
-
-      this.data.kinds = _.filter(this.data.kinds, function(k) {
-        return k.slug != kind.slug;
-      });
+      this.data.kinds = _.reject(this.data.kinds, this.matchSlug(kind.slug));
     }
   };
 
