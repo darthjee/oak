@@ -50,7 +50,7 @@
         controller: "Category.FormController",
         controllerAs: "gnc"
       },
-      routes: ["/categories", "/categories/new", "/categories/:category_slug", "/categories/:category_slug/edit"]
+      routes: ["/categories/new", "/categories/:category_slug/edit"]
     }, {
       config: {
         controller: "Category.IndexController",
