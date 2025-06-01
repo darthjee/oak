@@ -40,7 +40,8 @@ module Oak
       end
 
       def build_kinds
-        kinds.each do |kind_slug|
+        kinds.each do |kind_data|
+          kind_slug = kind_data[:slug]
           kind = Oak::Kind.find_by(slug: kind_slug)
           next unless kind
 
