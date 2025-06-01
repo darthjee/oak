@@ -42,7 +42,7 @@ RSpec.describe Oak::Category::CreateBuilder do
       end
 
       it 'associates the kinds with the category' do
-        expect(created_category.kinds).to match_array([kind1, kind2])
+        expect(created_category.kinds).to contain_exactly(kind1, kind2)
       end
 
       it 'does not change the count of Oak::Kind' do
