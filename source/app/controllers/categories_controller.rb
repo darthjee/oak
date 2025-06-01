@@ -27,7 +27,7 @@ class CategoriesController < ApplicationController
   end
 
   def category_params
-    params.require(:category).permit(:name, :kinds)
+    params.require(:category).permit(:name, kinds: [])
   end
 
   def update_params
