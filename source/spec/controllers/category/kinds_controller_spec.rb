@@ -8,7 +8,8 @@ RSpec.describe Category::KindsController, type: :controller do
   describe 'GET #index' do
     let(:category) { create(:oak_category) }
     let!(:kinds) { create_list(:oak_kind, 3) }
-    let!(:category_kinds) do
+
+    before do
       kinds.each { |kind| create(:oak_category_kind, category:, kind:) }
     end
 
