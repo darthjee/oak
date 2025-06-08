@@ -25,9 +25,18 @@
     _buildKindsRequester: function() {
       this.kindsRequester = this.requesterBuilder.build({
         search: this.location.$$search,
-        path: "/kinds"
+        path: this._kindsPath()
       });
       this.kindsRequester.bind(this);
+    },
+    _kindsPath: function() {
+      var category_slug = this.routeParams.category_slug;
+
+      if (this.route.match("/categories/:category_slug/items/")) {
+        return "/categories/" + category_slug + "/kinds";
+      } else {
+        return "/kinds";
+      }
     }
   };
 
