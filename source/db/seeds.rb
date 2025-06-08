@@ -30,7 +30,6 @@ other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
 pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
-Zyra.find_or_create(:oak_categorykind, category_id: category.id, kind_id: kind.id)
 
 Zyra.find_or_create(
   :oak_subscription,
@@ -98,4 +97,8 @@ end
     kind_id: pokemon_kind.id,
     description: 'A Pokemon'
   )
+end
+
+Oak::Item.all.distinct.pluck(:category_id, :kind_id).each do |(category_id, :kind_id)|
+  Zyra.find_or_create(:oak_categorykind, category_id: category_id, kind_id: kind_id)
 end
