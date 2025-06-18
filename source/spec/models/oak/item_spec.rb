@@ -3,10 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Oak::Item, type: :model do
-  subject(:item) { build(:oak_item, name:, description:, user:, category:, kind:) }
+  subject(:item) do
+    build(:oak_item, name:, description:, user:, category:, kind:, order:)
+  end
 
   let(:name) { SecureRandom.hex(10) }
   let(:description) { 'Sample description' }
+  let(:order) { 0 }
   let(:user) { build(:user) }
   let(:category) { build(:oak_category) }
   let(:kind) { build(:oak_kind) }
@@ -50,6 +53,77 @@ RSpec.describe Oak::Item, type: :model do
 
       it 'adds a proper error message' do
         expect(item.tap(&:valid?).errors[:description]).to include("can't be blank")
+      end
+    end
+
+    context 'when order is nil' do
+      it 'is valid' do
+        expect(item).to be_valid
+      end
+    end
+
+    context 'when order is within the valid range' do
+      let(:order) { 0 }
+
+      it 'is valid' do
+        expect(item).to be_valid
+      end
+
+      context 'when order is at the lower limit' do
+        let(:order) { -32_768 }
+
+        it 'is valid' do
+          expect(item).to be_valid
+        end
+      end
+
+      context 'when order is at the upper limit' do
+        let(:order) { 32_767 }
+
+        it 'is valid' do
+          expect(item).to be_valid
+        end
+      end
+    end
+
+    context 'when order is outside the valid range' do
+      context 'when order is below the lower limit' do
+        let(:order) { -32_769 }
+
+        it 'is not valid' do
+          expect(item).not_to be_valid
+        end
+
+        it 'adds a proper error message' do
+          expect(item.tap(&:valid?).errors[:order])
+            .to include('must be greater than or equal to -32768')
+        end
+      end
+
+      context 'when order is above the upper limit' do
+        let(:order) { 32_768 }
+
+        it 'is not valid' do
+          expect(item).not_to be_valid
+        end
+
+        it 'adds a proper error message' do
+          expect(item.tap(&:valid?).errors[:order])
+            .to include('must be less than or equal to 32767')
+        end
+      end
+    end
+
+    context 'when order is not an integer' do
+      let(:order) { 'invalid' }
+
+      it 'is not valid' do
+        expect(item).not_to be_valid
+      end
+
+      it 'adds a proper error message' do
+        expect(item.tap(&:valid?).errors[:order])
+          .to include('is not a number')
       end
     end
 

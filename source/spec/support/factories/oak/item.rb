@@ -7,5 +7,6 @@ FactoryBot.define do
     association :user
     association :category, factory: :oak_category
     association :kind, factory: :oak_kind
+    order { 0 }
   end
 end

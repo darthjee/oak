@@ -15,9 +15,18 @@ module Oak
 
     validates :name, presence: true, length: { maximum: 100 }
     validates :description, presence: true
+    validates :order,
+              numericality: {
+                only_integer: true,
+                greater_than_or_equal_to: -32_768,
+                less_than_or_equal_to: 32_767
+              },
+              allow_nil: true
 
     scope :for_category, ->(category) { where(category:) }
     scope :for_user, ->(user) { where(user:) }
     scope :for_kind, ->(kind) { where(kind:) }
+
+    default_scope { order(order: :asc, id: :asc) }
   end
 end
