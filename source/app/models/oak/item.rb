@@ -26,5 +26,8 @@ module Oak
     scope :for_category, ->(category) { where(category:) }
     scope :for_user, ->(user) { where(user:) }
     scope :for_kind, ->(kind) { where(kind:) }
+
+
+    default_scope { order(order: :asc, id: :asc) }
   end
 end
