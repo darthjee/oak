@@ -27,7 +27,6 @@ module Oak
     scope :for_user, ->(user) { where(user:) }
     scope :for_kind, ->(kind) { where(kind:) }
 
-
     default_scope { order(order: :asc, id: :asc) }
   end
 end
