@@ -32,7 +32,8 @@ RSpec.describe Oak::Item::UpdateBuilder do
         description: 'Updated Description',
         category_id: category.id,
         kind_id: kind.id,
-        user_id: user.id
+        user_id: user.id,
+        order: 0
       }.stringify_keys
     end
 
