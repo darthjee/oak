@@ -55,7 +55,7 @@ RSpec.describe FilesHelper do
     end
 
     context 'when the path exists' do
-      let(:files) { %w[file1.txt file2.jpg] }
+      let(:files) { %w[file1.txt file2.jpg file3.TXT file4.pdf] }
 
       before do
         files.each { |file| FileUtils.touch(File.join(path, file)) }
@@ -64,6 +64,16 @@ RSpec.describe FilesHelper do
 
       it 'returns only the files inside the path' do
         expect(described_class.files_in(path)).to match_array(files)
+      end
+
+      context 'when filtering by extension' do
+        it 'returns only files with the specified extension (case insensitive)' do
+          expect(described_class.files_in(path, extension: 'txt')).to match_array(%w[file1.txt file3.TXT])
+        end
+
+        it 'returns an empty array if no files match the extension' do
+          expect(described_class.files_in(path, extension: 'png')).to eq([])
+        end
       end
     end
 

@@ -12,12 +12,20 @@ module FilesHelper
     end
   end
 
-  def files_in(path)
+  def files_in(path, extension: nil)
     return [] unless Dir.exist?(path)
 
     Dir.entries(path).select do |entry|
       full_path = File.join(path, entry)
-      File.file?(full_path)
+      File.file?(full_path) && matches_extension?(entry, extension)
     end
+  end
+
+  private
+
+  def matches_extension?(file_name, extension)
+    return true if extension.nil?
+
+    File.extname(file_name).casecmp(".#{extension}").zero?
   end
 end
