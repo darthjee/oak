@@ -23,18 +23,21 @@ module FilesHelper
   end
 
   def entry_matches?(full_path, entry, type, extension: nil, ignored_entries: nil)
-    return unless File.public_send("#{type}?", full_path)
-    return if ignored_entry?(entry, ignored_entries)
+    return false unless File.public_send("#{type}?", full_path)
+    return false if ignored_entry?(entry, ignored_entries)
+
     matches_extension?(entry, extension)
   end
 
   def ignored_entry?(entry, ignored_entries = nil)
     return false unless ignored_entries
+
     ignored_entries.include?(entry)
   end
 
   def matches_extension?(file_name, extensions)
     return true if extensions.nil?
+
     extensions = Array(extensions)
     return true if extensions.empty?
 
