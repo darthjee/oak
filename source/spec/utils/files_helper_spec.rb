@@ -55,7 +55,7 @@ RSpec.describe FilesHelper do
     end
 
     context 'when the path exists' do
-      let(:files) { %w[file1.txt file2.jpg file3.TXT file4.pdf] }
+      let(:files) { %w[file1.txt file2.jpg file3.TXT file4.pdf file5.png] }
 
       before do
         files.each { |file| FileUtils.touch(File.join(path, file)) }
@@ -72,7 +72,11 @@ RSpec.describe FilesHelper do
         end
 
         it 'returns an empty array if no files match the extension' do
-          expect(described_class.files_in(path, extension: 'png')).to eq([])
+          expect(described_class.files_in(path, extension: 'doc')).to eq([])
+        end
+
+        it 'returns files matching any of the extensions in the array' do
+          expect(described_class.files_in(path, extension: %w[png pdf])).to match_array(%w[file4.pdf file5.png])
         end
       end
     end

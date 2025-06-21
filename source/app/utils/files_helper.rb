@@ -23,9 +23,13 @@ module FilesHelper
 
   private
 
-  def matches_extension?(file_name, extension)
-    return true if extension.nil?
+  def matches_extension?(file_name, extensions)
+    return true if extensions.nil?
+    extensions = Array(extensions)
+    return true if extensions.empty?
 
-    File.extname(file_name).casecmp(".#{extension}").zero?
+    extensions.any? do |extension|
+      File.extname(file_name).casecmp(".#{extension}").zero?
+    end
   end
 end
