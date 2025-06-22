@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe ProcessUserItemPhotosJob, type: :job do
   describe '#perform' do
-    let(:worker) { described_class.new }
     subject(:perform) { worker.perform(user.id) }
 
+    let(:worker) { described_class.new }
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
     let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/items") }

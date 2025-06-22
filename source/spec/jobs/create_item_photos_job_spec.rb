@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe CreateItemPhotosJob, type: :job do
   describe '#perform' do
-    let(:worker) { described_class.new }
     subject(:perform) { worker.perform(item.id) }
 
+    let(:worker) { described_class.new }
     let(:item) { create(:oak_item, user:) }
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
