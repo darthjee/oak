@@ -67,6 +67,8 @@ services:
     <<: *base
     container_name: oak_sidekiq
     command: /bin/bash bin/sidekiq.sh
+    volumes:
+      - ./dev_public_files:/tmp/photos
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -118,5 +120,7 @@ services:
     <<: *base
     container_name: oak_prod_sidekiq
     command: /bin/bash bin/sidekiq.sh
+    volumes:
+      - ./prod_public_files:/tmp/photos
     environment:
       RAILS_ENV: production
