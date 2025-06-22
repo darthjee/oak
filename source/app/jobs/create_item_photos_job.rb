@@ -15,13 +15,21 @@ class CreateItemPhotosJob
   def process
     return unless item
 
-    files.each do |file_name|
+    new_files.each do |file_name|
       item.photos.create!(file_name:)
     end
   end
 
   def files
     FilesHelper.files_in(folder_path, extension: %w[jpg jpeg png])
+  end
+
+  def existing_files
+    @existing_files ||= item.photos.pluck(:file_name)
+  end
+
+  def new_files
+    files - existing_files
   end
 
   def item
