@@ -1,0 +1,52 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe CreateItemPhotosJob, type: :job do
+  describe '#perform' do
+    let(:item) { create(:oak_item, user:) }
+    let(:user) { create(:user) }
+    let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
+    let(:folder_path) { File.join(photo_path, "users/#{user.id}/items/#{item.id}") }
+    let(:files) { %w[photo1.jpg photo2.jpeg photo3.png] }
+
+    before do
+      allow(Settings).to receive(:photo_path).and_return(photo_path)
+      FileUtils.mkdir_p(folder_path)
+      files.each { |file| FileUtils.touch(File.join(folder_path, file)) }
+    end
+
+    after do
+      FileUtils.rm_rf(photo_path)
+    end
+
+    context 'when the item exists' do
+      it 'creates photos for the item' do
+        expect { described_class.new.perform(item.id) }
+          .to change { item.photos.count }.by(files.size)
+      end
+
+      it 'creates photos with the correct file names' do
+        described_class.new.perform(item.id)
+
+        expect(item.photos.pluck(:file_name)).to match_array(files)
+      end
+    end
+
+    context 'when the item does not exist' do
+      it 'does not create any photos' do
+        expect { described_class.new.perform(-1) }
+          .not_to change(Oak::Photo, :count)
+      end
+    end
+
+    context 'when the folder does not contain valid files' do
+      let(:files) { %w[document.pdf text.txt] }
+
+      it 'does not create any photos' do
+        expect { described_class.new.perform(item.id) }
+          .not_to change(Oak::Photo, :count)
+      end
+    end
+  end
+end
