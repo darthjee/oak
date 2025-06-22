@@ -4,6 +4,9 @@ require 'spec_helper'
 
 RSpec.describe ProcessUserItemPhotosJob, type: :job do
   describe '#perform' do
+    let(:worker) { described_class.new }
+    subject(:perform) { worker.perform(user.id) }
+
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
     let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/items") }
@@ -11,6 +14,7 @@ RSpec.describe ProcessUserItemPhotosJob, type: :job do
 
     before do
       allow(Settings).to receive(:photos_path).and_return(photo_path)
+      allow(CreateItemPhotosJob).to receive(:perform_async)
       FileUtils.mkdir_p(items_folder_path)
       item_ids.each { |item_id| FileUtils.mkdir_p(File.join(items_folder_path, item_id)) }
     end
@@ -21,11 +25,11 @@ RSpec.describe ProcessUserItemPhotosJob, type: :job do
 
     context 'when the user has item folders' do
       it 'calls CreateItemPhotosJob for each item folder' do
-        item_ids.each do |item_id|
-          expect(CreateItemPhotosJob).to receive(:perform_async).with(item_id.to_i)
-        end
+        perform
 
-        described_class.new.perform(user.id)
+        item_ids.each do |item_id|
+          expect(CreateItemPhotosJob).to have_received(:perform_async).with(item_id.to_i)
+        end
       end
     end
 
@@ -35,9 +39,9 @@ RSpec.describe ProcessUserItemPhotosJob, type: :job do
       end
 
       it 'does not call CreateItemPhotosJob' do
-        expect(CreateItemPhotosJob).not_to receive(:perform_async)
+        perform
 
-        described_class.new.perform(user.id)
+        expect(CreateItemPhotosJob).not_to have_received(:perform_async)
       end
     end
 
@@ -45,9 +49,9 @@ RSpec.describe ProcessUserItemPhotosJob, type: :job do
       let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/non_existent_items") }
 
       it 'does not call CreateItemPhotosJob' do
-        expect(CreateItemPhotosJob).not_to receive(:perform_async)
+        perform
 
-        described_class.new.perform(user.id)
+        expect(CreateItemPhotosJob).not_to have_received(:perform_async)
       end
     end
   end
