@@ -92,6 +92,7 @@ services:
     env_file: .env.production
     container_name: oak_production
     image: darthjee/production_oak
+    depends_on: [oak_prod_sidekiq]
     build:
       context: .
       dockerfile: Dockerfile.production_oak
@@ -103,7 +104,6 @@ services:
     env_file: .env
     container_name: oak_production
     image: darthjee/production_oak
-    depends_on: [oak_prod_sidekiq]
     build:
       context: .
       dockerfile: Dockerfile.production_oak
