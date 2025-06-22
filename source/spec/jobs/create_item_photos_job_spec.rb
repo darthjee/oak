@@ -4,6 +4,9 @@ require 'spec_helper'
 
 RSpec.describe CreateItemPhotosJob, type: :job do
   describe '#perform' do
+    let(:worker) { described_class.new }
+    subject(:perform) { worker.perform(item.id) }
+
     let(:item) { create(:oak_item, user:) }
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
@@ -25,21 +28,21 @@ RSpec.describe CreateItemPhotosJob, type: :job do
       end
 
       it 'creates photos for the item' do
-        expect { described_class.new.perform(item.id) }
-          .to change { item.photos.count }.by(files.size)
+        expect { perform }.to change { item.photos.count }.by(files.size)
       end
 
       it 'creates photos with the correct file names' do
-        described_class.new.perform(item.id)
+        perform
 
         expect(item.photos.pluck(:file_name)).to match_array(files)
       end
     end
 
     context 'when the item does not exist' do
+      subject(:perform) { worker.perform(-1) }
+
       it 'does not create any photos' do
-        expect { described_class.new.perform(-1) }
-          .not_to change(Oak::Photo, :count)
+        expect { perform }.not_to change(Oak::Photo, :count)
       end
     end
 
@@ -51,15 +54,13 @@ RSpec.describe CreateItemPhotosJob, type: :job do
       let(:files) { %w[document.pdf text.txt] }
 
       it 'does not create any photos' do
-        expect { described_class.new.perform(item.id) }
-          .not_to change(Oak::Photo, :count)
+        expect { perform }.not_to change(Oak::Photo, :count)
       end
     end
 
     context 'when the folder does not exist' do
       it 'does not create any photos' do
-        expect { described_class.new.perform(item.id) }
-          .not_to change(Oak::Photo, :count)
+        expect { perform }.not_to change(Oak::Photo, :count)
       end
     end
 
@@ -73,8 +74,7 @@ RSpec.describe CreateItemPhotosJob, type: :job do
       end
 
       it 'does not create duplicate photos' do
-        expect { described_class.new.perform(item.id) }
-          .not_to change(Oak::Photo, :count)
+        expect { perform }.not_to change(Oak::Photo, :count)
       end
     end
 
@@ -89,12 +89,11 @@ RSpec.describe CreateItemPhotosJob, type: :job do
       end
 
       it 'creates only the new photos' do
-        expect { described_class.new.perform(item.id) }
-          .to change { item.photos.count }.by(new_files.size)
+        expect { perform }.to change { item.photos.count }.by(new_files.size)
       end
 
       it 'does not duplicate existing photos' do
-        described_class.new.perform(item.id)
+        perform
 
         expect(item.photos.pluck(:file_name)).to match_array(existing_files + new_files)
       end
