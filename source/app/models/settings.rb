@@ -20,6 +20,7 @@ class Settings
   setting_with_options(:cache_age, default: 1.seconds, type: :seconds)
   setting_with_options(:title, default: 'Oak')
   setting_with_options(:favicon, default: '/favicon.ico')
+  setting_with_options(:photos_path, default: '/tmp/photos')
 
   setting_with_options(:photos_server_url, default: 'http://localhost:3001')
 end

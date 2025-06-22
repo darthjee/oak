@@ -10,6 +10,7 @@ class ActiveSettings
     :cache_age,
     :title,
     :favicon,
-    :photos_server_url
+    :photos_server_url,
+    :photos_path
   )
 end
