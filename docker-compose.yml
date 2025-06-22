@@ -48,6 +48,8 @@ services:
     environment:
       RAILS_ENV: production
       REDIS_URL: redis://redis:6379/1
+    links:
+      - oak_prod_redis:redis
 
   base_build:
     <<: *base
@@ -118,7 +120,6 @@ services:
       - 127.0.0.1:3002:3000
     links:
       - oak_prod_test_mysql:mysql
-      - oak_prod_redis:redis
 
   oak_prod_sidekiq:
     <<: *prod_base
