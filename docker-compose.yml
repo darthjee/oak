@@ -8,6 +8,10 @@ services:
     ports:
       - 127.0.0.1:$OAK_MYSQL_PORT:3306
 
+  oak_redis:
+    image: redis:6.2.4
+    container_name: oak_redis
+
   oak_prod_test_mysql:
     image: mysql:9.3.0
     container_name: oak_prod_test_mysql
@@ -16,6 +20,10 @@ services:
       MYSQL_ROOT_PASSWORD: oak
     ports:
       - 127.0.0.1:$OAK_MYSQL_PORT:3306
+
+  oak_prod_redis:
+    image: redis:6.2.4
+    container_name: oak_prod_redis
 
   oak_photos:
     image: httpd:latest
@@ -31,6 +39,7 @@ services:
       - ./source:/home/app/app
     links:
       - oak_mysql:mysql
+      - oak_redis:redis
     env_file: .env
 
 
@@ -47,9 +56,19 @@ services:
     <<: *base
     container_name: oak_app
     command: /bin/bash bin/test_server.sh
-    depends_on: [base_build, oak_photos]
+    depends_on: [base_build, oak_photos, oak_sidekiq]
     ports:
       - 127.0.0.1:3000:3000
+    environment:
+      - RAILS_ENV=development
+      - OAK_MYSQL_PORT=3306
+
+  oak_sidekiq:
+    <<: *base
+    container_name: oak_sidekiq
+    command: /bin/bash bin/sidekiq.sh
+    volumes:
+      - ./dev_public_files:/tmp/photos
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -84,6 +103,7 @@ services:
     env_file: .env
     container_name: oak_production
     image: darthjee/production_oak
+    depends_on: [oak_prod_sidekiq]
     build:
       context: .
       dockerfile: Dockerfile.production_oak
@@ -94,3 +114,13 @@ services:
       RAILS_ENV: production
     links:
       - oak_prod_test_mysql:mysql
+      - oak_prod_redis:redis
+
+  oak_prod_sidekiq:
+    <<: *base
+    container_name: oak_prod_sidekiq
+    command: /bin/bash bin/sidekiq.sh
+    volumes:
+      - ./prod_public_files:/tmp/photos
+    environment:
+      RAILS_ENV: production
