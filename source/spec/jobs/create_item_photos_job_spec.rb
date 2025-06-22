@@ -11,9 +11,7 @@ RSpec.describe CreateItemPhotosJob, type: :job do
     let(:files) { %w[photo1.jpg photo2.jpeg photo3.png] }
 
     before do
-      allow(Settings).to receive(:photo_path).and_return(photo_path)
-      FileUtils.mkdir_p(folder_path)
-      files.each { |file| FileUtils.touch(File.join(folder_path, file)) }
+      allow(Settings).to receive(:photos_path).and_return(photo_path)
     end
 
     after do
@@ -21,6 +19,11 @@ RSpec.describe CreateItemPhotosJob, type: :job do
     end
 
     context 'when the item exists' do
+      before do
+        FileUtils.mkdir_p(folder_path)
+        files.each { |file| FileUtils.touch(File.join(folder_path, file)) }
+      end
+
       it 'creates photos for the item' do
         expect { described_class.new.perform(item.id) }
           .to change { item.photos.count }.by(files.size)
@@ -41,8 +44,19 @@ RSpec.describe CreateItemPhotosJob, type: :job do
     end
 
     context 'when the folder does not contain valid files' do
+      before do
+        FileUtils.mkdir_p(folder_path)
+      end
+
       let(:files) { %w[document.pdf text.txt] }
 
+      it 'does not create any photos' do
+        expect { described_class.new.perform(item.id) }
+          .not_to change(Oak::Photo, :count)
+      end
+    end
+
+    context 'when the folder does not exist' do
       it 'does not create any photos' do
         expect { described_class.new.perform(item.id) }
           .not_to change(Oak::Photo, :count)

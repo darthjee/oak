@@ -33,6 +33,6 @@ class CreateItemPhotosJob
   end
 
   def folder_path
-    @folder_path ||= File.join(Settings.photo_path, "users/#{user_id}/items/#{item_id}")
+    @folder_path ||= File.join(Settings.photos_path, "users/#{user_id}/items/#{item_id}")
   end
 end
