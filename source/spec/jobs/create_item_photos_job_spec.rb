@@ -62,5 +62,42 @@ RSpec.describe CreateItemPhotosJob, type: :job do
           .not_to change(Oak::Photo, :count)
       end
     end
+
+    context 'when the photos already exist' do
+      before do
+        FileUtils.mkdir_p(folder_path)
+        files.each do |file|
+          FileUtils.touch(File.join(folder_path, file))
+          item.photos.create!(file_name: file)
+        end
+      end
+
+      it 'does not create duplicate photos' do
+        expect { described_class.new.perform(item.id) }
+          .not_to change(Oak::Photo, :count)
+      end
+    end
+
+    context 'when some photos already exist' do
+      let(:existing_files) { %w[photo1.jpg] }
+      let(:new_files) { %w[photo2.jpeg photo3.png] }
+
+      before do
+        FileUtils.mkdir_p(folder_path)
+        (existing_files + new_files).each { |file| FileUtils.touch(File.join(folder_path, file)) }
+        existing_files.each { |file| item.photos.create!(file_name: file) }
+      end
+
+      it 'creates only the new photos' do
+        expect { described_class.new.perform(item.id) }
+          .to change { item.photos.count }.by(new_files.size)
+      end
+
+      it 'does not duplicate existing photos' do
+        described_class.new.perform(item.id)
+
+        expect(item.photos.pluck(:file_name)).to match_array(existing_files + new_files)
+      end
+    end
   end
 end
