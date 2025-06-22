@@ -56,9 +56,17 @@ services:
     <<: *base
     container_name: oak_app
     command: /bin/bash bin/test_server.sh
-    depends_on: [base_build, oak_photos]
+    depends_on: [base_build, oak_photos, oak_sidekiq]
     ports:
       - 127.0.0.1:3000:3000
+    environment:
+      - RAILS_ENV=development
+      - OAK_MYSQL_PORT=3306
+
+  oak_sidekiq:
+    <<: *base
+    container_name: oak_sidekiq
+    command: /bin/bash bin/sidekiq.sh
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -93,6 +101,7 @@ services:
     env_file: .env
     container_name: oak_production
     image: darthjee/production_oak
+    depends_on: [oak_prod_sidekiq]
     build:
       context: .
       dockerfile: Dockerfile.production_oak
@@ -104,3 +113,10 @@ services:
     links:
       - oak_prod_test_mysql:mysql
       - oak_prod_redis:redis
+
+  oak_prod_sidekiq:
+    <<: *base
+    container_name: oak_prod_sidekiq
+    command: /bin/bash bin/sidekiq.sh
+    environment:
+      RAILS_ENV: production
