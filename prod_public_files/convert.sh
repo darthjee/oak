@@ -25,17 +25,11 @@ convert_photos() {
   done
 }
 
-# Base path for the source folder (photos)
-SOURCE_DIR="./photos"
+# Generate photos
+convert_photos "./origin" "./photos" "215x215"
 
-# Base path for the destination folder (snaps)
-DEST_DIR="./snaps"
-
-# Maximum size for resizing
-MAX_SIZE="215x215"
-
-# Call the function with the source, destination directories, and max size
-convert_photos "$SOURCE_DIR" "$DEST_DIR" "$MAX_SIZE"
+# Generates snaps
+convert_photos "./origin" "./snaps" "215x215"
 
 # Sync files to remote server
 #rsync -aP ./ dreamhost:photos.oak.ffavs.net/
