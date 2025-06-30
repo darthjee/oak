@@ -27,10 +27,10 @@ convert_photos() {
 }
 
 # Generate photos
-convert_photos "./origin" "./photos" "800x1064" "true"
+convert_photos "./origin" "./photos" "800x1064" "false"
 
 # Generates snaps
-convert_photos "./origin" "./snaps" "215x215" "true"
+convert_photos "./origin" "./snaps" "215x215" "false"
 
 # Sync files to remote server
 rsync -aP ./photos/ dreamhost:photos.oak.ffavs.net/photos/
