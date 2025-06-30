@@ -4,6 +4,7 @@ convert_photos() {
   local SOURCE_DIR="$1"
   local DEST_DIR="$2"
   local MAX_SIZE="$3"
+  local FORCE="$4"
 
   # Find all files in the source folder
   find "$SOURCE_DIR" -type f | while read -r file; do
@@ -11,7 +12,7 @@ convert_photos() {
     dest_file="${file/$SOURCE_DIR/$DEST_DIR}"
 
     # Check if the destination file already exists
-    if [ ! -f "$dest_file" ]; then
+    if [ "$FORCE" == "true" ] || [ ! -f "$dest_file" ]; then
       # Create the destination directory if it doesn't exist
       mkdir -p "$(dirname "$dest_file")"
 
@@ -26,10 +27,10 @@ convert_photos() {
 }
 
 # Generate photos
-convert_photos "./origin" "./photos" "215x215"
+convert_photos "./origin" "./photos" "800x1064" "true"
 
 # Generates snaps
-convert_photos "./origin" "./snaps" "215x215"
+convert_photos "./origin" "./snaps" "215x215" "true"
 
 # Sync files to remote server
-#rsync -aP ./ dreamhost:photos.oak.ffavs.net/
+rsync -aP ./ dreamhost:photos.oak.ffavs.net/
