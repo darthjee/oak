@@ -3,6 +3,7 @@
 convert_photos() {
   local SOURCE_DIR="$1"
   local DEST_DIR="$2"
+  local MAX_SIZE="$3"
 
   # Find all files in the source folder
   find "$SOURCE_DIR" -type f | while read -r file; do
@@ -14,8 +15,8 @@ convert_photos() {
       # Create the destination directory if it doesn't exist
       mkdir -p "$(dirname "$dest_file")"
 
-      # Convert the file, resizing only if larger than 215x215
-      convert "$file" -resize 215x215\> "$dest_file"
+      # Convert the file, resizing only if larger than MAX_SIZE
+      convert "$file" -resize "${MAX_SIZE}>" "$dest_file"
 
       echo "Converted: $file -> $dest_file"
     else
@@ -30,8 +31,11 @@ SOURCE_DIR="./photos"
 # Base path for the destination folder (snaps)
 DEST_DIR="./snaps"
 
-# Call the function with the source and destination directories
-convert_photos "$SOURCE_DIR" "$DEST_DIR"
+# Maximum size for resizing
+MAX_SIZE="215x215"
+
+# Call the function with the source, destination directories, and max size
+convert_photos "$SOURCE_DIR" "$DEST_DIR" "$MAX_SIZE"
 
 # Sync files to remote server
-rsync -aP ./ dreamhost:photos.oak.ffavs.net/
+#rsync -aP ./ dreamhost:photos.oak.ffavs.net/
