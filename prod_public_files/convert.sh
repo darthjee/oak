@@ -33,4 +33,5 @@ convert_photos "./origin" "./photos" "800x1064" "true"
 convert_photos "./origin" "./snaps" "215x215" "true"
 
 # Sync files to remote server
-rsync -aP ./ dreamhost:photos.oak.ffavs.net/
+rsync -aP ./photos/ dreamhost:photos.oak.ffavs.net/photos/
+rsync -aP ./snaps/ dreamhost:photos.oak.ffavs.net/snaps/
