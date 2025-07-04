@@ -127,4 +127,4 @@ services:
     depends_on: [base_prod_build]
     command: /bin/bash bin/sidekiq.sh
     volumes:
-      - ./prod_public_files:/tmp/photos
+      - ./prod_public_files/photos:/tmp/photos
