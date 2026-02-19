@@ -105,9 +105,9 @@ services:
     command: /bin/bash
     depends_on: [base_build]
   
-  proxy_proxy:
+  oak_proxy:
     image: darthjee/tent:0.4.1
-    container_name: proxy_proxy
+    container_name: oak_proxy
     env_file: .env
     volumes:
       - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
