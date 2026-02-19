@@ -25,6 +25,13 @@ workflows:
               only: /\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
+      - release:
+          requires: [build-and-release, upload_proxy_files]
+          filters:
+            tags:
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
 jobs:
   test:
     docker:
@@ -118,3 +125,15 @@ jobs:
       - run:
           name: Copy configuration files
           command: TARGET=configuration/ deploy_frontend.sh copy_files
+  release:
+    docker:
+      - image: darthjee/vite_weave-base:0.0.4
+    steps:
+      - checkout
+      - run:
+          name: Generate key file
+          command: deploy_frontend.sh generate_key_file
+      - run:
+          name: Release assets
+          command: deploy_frontend.sh release
+
