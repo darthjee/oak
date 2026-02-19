@@ -111,6 +111,7 @@ services:
     env_file: .env
     volumes:
       - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
+      - ./docker_volumes/proxy_cache:/var/www/html/cache/
     links:
       - oak_app:backend
     depends_on:
