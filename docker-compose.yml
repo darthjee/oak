@@ -65,7 +65,7 @@ services:
       dockerfile: Dockerfile.production_oak
     command: echo done
 
-  #################### CONTAINERS ####################
+  #################### DEV CONTAINERS ####################
 
   oak_app:
     <<: *base
@@ -73,7 +73,7 @@ services:
     command: /bin/bash bin/test_server.sh
     depends_on: [base_build, oak_photos, oak_sidekiq]
     ports:
-      - 127.0.0.1:3000:3000
+      - 127.0.0.1:3010:3000
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -102,6 +102,25 @@ services:
     container_name: oak_root
     command: /bin/bash
     depends_on: [base_build]
+  
+  proxy_proxy:
+    image: darthjee/tent:0.4.1
+    container_name: proxy_proxy
+    env_file: .env
+    volumes:
+      - ./proxy/static/:/var/www/html/static/
+      - ./docker_volumes/static/index.html:/var/www/html/static/index.html
+      - ./docker_volumes/static/assets/js/:/var/www/html/static/assets/js/
+      - ./docker_volumes/static/assets/css/:/var/www/html/static/assets/css/
+      - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
+    links:
+      - oak_app:backend
+    depends_on:
+      - oak_app
+    ports:
+      - 0.0.0.0:3000:80
+  
+  #################### PROD CONTAINERS ####################
 
   oak_production:
     <<: *prod_base
