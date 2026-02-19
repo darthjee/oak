@@ -106,7 +106,7 @@ services:
     depends_on: [base_build]
   
   oak_proxy:
-    image: darthjee/tent:0.4.1
+    image: darthjee/tent:0.4.2
     container_name: oak_proxy
     env_file: .env
     volumes:
