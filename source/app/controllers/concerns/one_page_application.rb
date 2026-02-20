@@ -15,6 +15,10 @@ module OnePageApplication
   private
 
   def render_root
+    domain = ENV['REDIRECT_DOMAIN']&.chomp('/')
+
+    return "#{domain}/##{request.path}" if domain.present?
+
     "##{request.path}"
   end
 
