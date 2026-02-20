@@ -28,6 +28,7 @@ Oak is a flexible cataloging application designed to help users organize and man
 Oak is a Rails monolithic application served with Docker. The main source code lives in the `source/` directory.
 
 Key infrastructure components:
+
 - The Rails app and frontend are served together (no separate frontend server)
 - MySQL is used as the primary database
 - Redis and Sidekiq handle background job processing
