@@ -16,6 +16,7 @@ Oak is a web application catalog to showcase different types of items, including
 - Backend and frontend are served by the same Rails application (monolithic architecture, no separation yet)
 
 ### Frontend
+
 - **AngularJS** - JavaScript framework for Single Page Application
 - **Cyberhawk** (https://github.com/darthjee/cyberhawk) - Route and request management
 
@@ -26,6 +27,7 @@ Oak is a web application catalog to showcase different types of items, including
 ## Request Flow
 
 ### Navigation Pattern
+
 1. **Initial access**: User accesses any route (e.g., `/categories`)
 2. **Redirection**: Tarquinn + OnePageApplication concern redirect to root with anchor (e.g., `/#/categories`)
 3. **SPA Navigation**: All subsequent navigation happens via anchors, without page reload
@@ -50,6 +52,7 @@ AngularJS renders the page
 ```
 
 ## Development Principles
+In order to achieve maintability and readability, we follow these principles:
 
 ### Code and Best Practices
 - **Sandi Metz principles**: We follow Sandi Metz rules for object-oriented design
@@ -102,8 +105,10 @@ end
 ```
 
 ## Frontend Patterns
+Frontend is served from the same Rails app, so all templates and assets are managed within the Rails structure. AngularJS handles the dynamic rendering and Cyberhawk manages the request lifecycle for templates and data.
 
 ### AngularJS + Cyberhawk
+
 - Routes defined with anchors (`#/path`)
 - Templates loaded via AJAX with `?ajax=true` parameter
 - Data loaded via `.json` endpoints
