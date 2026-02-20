@@ -73,7 +73,7 @@ services:
     command: /bin/bash bin/test_server.sh
     depends_on: [base_build, oak_photos, oak_sidekiq]
     ports:
-      - 127.0.0.1:3000:3000
+      - 0.0.0.0:3000:3000
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -109,7 +109,7 @@ services:
     depends_on: [base_prod_build, oak_prod_sidekiq]
     command: bin/server.sh
     ports:
-      - 127.0.0.1:3002:3000
+      - 0.0.0.0:3002:3000
 
   oak_prod_test:
     <<: *prod_base
@@ -117,7 +117,7 @@ services:
     depends_on: [base_prod_build]
     command: bin/test_server.sh
     ports:
-      - 127.0.0.1:3002:3000
+      - 0.0.0.0:3002:3000
     links:
       - oak_prod_test_mysql:mysql
 
