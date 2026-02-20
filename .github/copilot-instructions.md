@@ -116,13 +116,13 @@ end
 docker-compose up
 
 # Access the Rails container
-docker-compose exec oak bash
+docker-compose exec oak_app bash
 
 # Run tests
-docker-compose exec oak bundle exec rspec
+docker-compose exec oak_app bundle exec rspec
 
 # Run RuboCop
-docker-compose exec oak bundle exec rubocop
+docker-compose exec oak_app bundle exec rubocop
 ```
 
 ## When Working on This Project
