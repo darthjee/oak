@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe OnePageApplication, type: :controller do
   controller(ApplicationController) do
+    include OnePageApplication
     def index
       render plain: 'ok'
     end
@@ -17,18 +18,18 @@ RSpec.describe OnePageApplication, type: :controller do
     context 'without REDIRECT_DOMAIN env variable' do
       before do
         ENV.delete('REDIRECT_DOMAIN')
-        get :index
+        get :index, params: { format: :html }
       end
 
       it 'redirects to hash path' do
-        expect(response).to redirect_to('#/index')
+        expect(response).to redirect_to('#/index.html')
       end
     end
 
     context 'with REDIRECT_DOMAIN env variable' do
       before do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com'
-        get :index
+        get :index, params: { format: :html }
       end
 
       after do
@@ -36,14 +37,14 @@ RSpec.describe OnePageApplication, type: :controller do
       end
 
       it 'redirects to external domain with hash path' do
-        expect(response).to redirect_to('https://example.com/#/index')
+        expect(response).to redirect_to('https://example.com/#/index.html')
       end
     end
 
     context 'with REDIRECT_DOMAIN env variable with trailing slash' do
       before do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com/'
-        get :index
+        get :index, params: { format: :html }
       end
 
       after do
@@ -51,7 +52,7 @@ RSpec.describe OnePageApplication, type: :controller do
       end
 
       it 'redirects to external domain without double slash' do
-        expect(response).to redirect_to('https://example.com/#/index')
+        expect(response).to redirect_to('https://example.com/#/index.html')
       end
     end
   end
