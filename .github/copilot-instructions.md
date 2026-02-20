@@ -11,6 +11,7 @@ Oak is a web application catalog to showcase different types of items, including
 ## Architecture and Tech Stack
 
 ### Backend
+
 - **Ruby on Rails** - Main application server
 - **Docker + Docker Compose** - Containerization and orchestration
 - Backend and frontend are served by the same Rails application (monolithic architecture, no separation yet)
@@ -21,6 +22,7 @@ Oak is a web application catalog to showcase different types of items, including
 - **Cyberhawk** (<https://github.com/darthjee/cyberhawk>) - Route and request management
 
 ### Main Libraries and Gems
+
 - **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection
 - **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
 
@@ -33,6 +35,7 @@ Oak is a web application catalog to showcase different types of items, including
 3. **SPA Navigation**: All subsequent navigation happens via anchors, without page reload
 
 ### Content Loading (AngularJS + Cyberhawk)
+
 When the user navigates to a section:
 1. **HTML Template**: Requests the template via AJAX (e.g., `/categories.html?ajax=true`)
 2. **JSON Data**: Requests the data via API (e.g., `/categories.json`)
@@ -52,9 +55,11 @@ AngularJS renders the page
 ```
 
 ## Development Principles
+
 In order to achieve maintability and readability, we follow these principles:
 
 ### Code and Best Practices
+
 - **Sandi Metz principles**: We follow Sandi Metz rules for object-oriented design
   - Classes with max 100 lines
   - Methods with max 5 lines
@@ -65,6 +70,7 @@ In order to achieve maintability and readability, we follow these principles:
 - **Tests**: Robust test coverage is fundamental
 
 ### When Suggesting Code
+
 1. Keep methods small and focused (max 5 lines when possible)
 2. Extract complex logic to service classes or builders
 3. Use decorators for presentation logic
@@ -73,9 +79,11 @@ In order to achieve maintability and readability, we follow these principles:
 6. Prefer readability over premature optimization
 
 ## Project Structure
+
 Is organized in a way that reflects the Rails conventions while also accommodating the SPA architecture and containerization setup.
 
 ### Main Directories
+
 - `source/` - Rails application source code
   - `app/controllers/` - Rails controllers
   - `app/models/` - ActiveRecord models
@@ -107,6 +115,7 @@ end
 ```
 
 ## Frontend Patterns
+
 Frontend is served from the same Rails app, so all templates and assets are managed within the Rails structure. AngularJS handles the dynamic rendering and Cyberhawk manages the request lifecycle for templates and data.
 
 ### AngularJS + Cyberhawk
