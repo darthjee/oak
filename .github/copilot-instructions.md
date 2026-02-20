@@ -18,11 +18,11 @@ Oak is a web application catalog to showcase different types of items, including
 ### Frontend
 
 - **AngularJS** - JavaScript framework for Single Page Application
-- **Cyberhawk** (https://github.com/darthjee/cyberhawk) - Route and request management
+- **Cyberhawk** (<https://github.com/darthjee/cyberhawk>) - Route and request management
 
 ### Main Libraries and Gems
-- **Tarquinn** (https://github.com/darthjee/tarquinn) - Route management and redirection
-- **OnePageApplication concern** (https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb) - Ensures navigation via anchor
+- **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection
+- **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
 
 ## Request Flow
 
@@ -73,6 +73,7 @@ In order to achieve maintability and readability, we follow these principles:
 6. Prefer readability over premature optimization
 
 ## Project Structure
+Is organized in a way that reflects the Rails conventions while also accommodating the SPA architecture and containerization setup.
 
 ### Main Directories
 - `source/` - Rails application source code
@@ -87,6 +88,7 @@ In order to achieve maintability and readability, we follow these principles:
 - `Dockerfile.*` - Docker image definitions
 
 ### Containerization
+
 - Use `docker-compose` to start the environment
 - Persistent volumes for MySQL in `docker_volumes/mysql_data/`
 - Development public files in `dev_public_files/`
