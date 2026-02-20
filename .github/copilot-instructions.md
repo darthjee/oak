@@ -3,6 +3,7 @@
 ## Project Overview
 
 Oak is a web application catalog to showcase different types of items, including:
+
 - Electronic components
 - Painted miniatures
 - GitHub projects
@@ -37,6 +38,7 @@ Oak is a web application catalog to showcase different types of items, including
 ### Content Loading (AngularJS + Cyberhawk)
 
 When the user navigates to a section:
+
 1. **HTML Template**: Requests the template via AJAX (e.g., `/categories.html?ajax=true`)
 2. **JSON Data**: Requests the data via API (e.g., `/categories.json`)
 3. **Rendering**: AngularJS combines template + data to build the page
