@@ -18,41 +18,89 @@ RSpec.describe OnePageApplication, type: :controller do
     context 'without REDIRECT_DOMAIN env variable' do
       before do
         ENV.delete('REDIRECT_DOMAIN')
-        get :index, params: { format: :html }
       end
 
-      it 'redirects to hash path' do
-        expect(response).to redirect_to('#/index.html')
+      context 'with HTML format' do
+        before do
+          get :index, params: { format: :html }
+        end
+
+        it 'redirects to hash path' do
+          expect(response).to redirect_to('#/index.html')
+        end
+      end
+
+      context "with json format" do
+        before do
+          get :index, params: { format: :json }
+        end
+
+        it 'does not redirect' do
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to eq('ok')
+        end
       end
     end
 
     context 'with REDIRECT_DOMAIN env variable' do
       before do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com'
-        get :index, params: { format: :html }
       end
 
-      after do
-        ENV.delete('REDIRECT_DOMAIN')
+      context 'with HTML format' do
+        before do
+          get :index, params: { format: :html }
+        end
+
+        after do
+          ENV.delete('REDIRECT_DOMAIN')
+        end
+
+        it 'redirects to external domain with hash path' do
+          expect(response).to redirect_to('https://example.com/#/index.html')
+        end
       end
 
-      it 'redirects to external domain with hash path' do
-        expect(response).to redirect_to('https://example.com/#/index.html')
+      context "with json format" do
+        before do
+          get :index, params: { format: :json }
+        end
+
+        it 'does not redirect' do
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to eq('ok')
+        end
       end
     end
 
     context 'with REDIRECT_DOMAIN env variable with trailing slash' do
       before do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com/'
-        get :index, params: { format: :html }
       end
 
-      after do
-        ENV.delete('REDIRECT_DOMAIN')
+      context 'with HTML format' do
+        before do
+          get :index, params: { format: :html }
+        end
+
+        after do
+          ENV.delete('REDIRECT_DOMAIN')
+        end
+
+        it 'redirects to external domain without double slash' do
+          expect(response).to redirect_to('https://example.com/#/index.html')
+        end
       end
 
-      it 'redirects to external domain without double slash' do
-        expect(response).to redirect_to('https://example.com/#/index.html')
+      context "with json format" do
+        before do
+          get :index, params: { format: :json }
+        end
+
+        it 'does not redirect' do
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to eq('ok')
+        end
       end
     end
   end
