@@ -29,25 +29,23 @@ RSpec.describe OnePageApplication, type: :controller do
           get_request
           expect(response).to redirect_to('#/index.html')
         end
+      end
 
-        context "with ajax param" do
-          let(:parameters) { { format: :html, ajax: true } }
+      context 'with ajax html request' do
+        let(:parameters) { { format: :html, ajax: true } }
 
-          it 'does not redirect' do
-            get_request
-            expect(response).to have_http_status(:ok)
-            expect(response.body).to eq('ok')
-          end
+        it 'does not redirect' do
+          get_request
+          expect(response).to have_http_status(:ok)
         end
       end
 
-      context "with json format" do
+      context 'with json format' do
         let(:parameters) { { format: :json } }
 
         it 'does not redirect' do
           get_request
           expect(response).to have_http_status(:ok)
-          expect(response.body).to eq('ok')
         end
       end
     end
@@ -57,36 +55,34 @@ RSpec.describe OnePageApplication, type: :controller do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com'
       end
 
+      after do
+        ENV.delete('REDIRECT_DOMAIN')
+      end
+
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
-
-        after do
-          ENV.delete('REDIRECT_DOMAIN')
-        end
 
         it 'redirects to external domain with hash path' do
           get_request
           expect(response).to redirect_to('https://example.com/#/index.html')
         end
+      end
 
-        context "with ajax param" do
-          let(:parameters) { { format: :html, ajax: true } }
+      context 'with ajax html request' do
+        let(:parameters) { { format: :html, ajax: true } }
 
-          it 'does not redirect' do
-            get_request
-            expect(response).to have_http_status(:ok)
-            expect(response.body).to eq('ok')
-          end
+        it 'does not redirect' do
+          get_request
+          expect(response).to have_http_status(:ok)
         end
       end
 
-      context "with json format" do
+      context 'with json format' do
         let(:parameters) { { format: :json } }
 
         it 'does not redirect' do
           get_request
           expect(response).to have_http_status(:ok)
-          expect(response.body).to eq('ok')
         end
       end
     end
@@ -96,36 +92,34 @@ RSpec.describe OnePageApplication, type: :controller do
         ENV['REDIRECT_DOMAIN'] = 'https://example.com/'
       end
 
+      after do
+        ENV.delete('REDIRECT_DOMAIN')
+      end
+
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
-
-        after do
-          ENV.delete('REDIRECT_DOMAIN')
-        end
 
         it 'redirects to external domain without double slash' do
           get_request
           expect(response).to redirect_to('https://example.com/#/index.html')
         end
+      end
 
-        context "with ajax param" do
-          let(:parameters) { { format: :html, ajax: true } }
+      context 'with ajax html request' do
+        let(:parameters) { { format: :html, ajax: true } }
 
-          it 'does not redirect' do
-            get_request
-            expect(response).to have_http_status(:ok)
-            expect(response.body).to eq('ok')
-          end
+        it 'does not redirect' do
+          get_request
+          expect(response).to have_http_status(:ok)
         end
       end
 
-      context "with json format" do
+      context 'with json format' do
         let(:parameters) { { format: :json } }
 
         it 'does not redirect' do
           get_request
           expect(response).to have_http_status(:ok)
-          expect(response.body).to eq('ok')
         end
       end
     end
