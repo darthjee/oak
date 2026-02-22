@@ -27,6 +27,9 @@ module Oak
     ].each do |path|
       config.assets.paths << Rails.root.join(*path.split('/'))
     end
+
+    # Configure allowed hosts from environment variable
+    config.hosts.concat(ENV['ALLOWED_HOSTS'].split(',').map(&:strip)) if ENV['ALLOWED_HOSTS'].present?
   end
 
   class Application < Rails::Application

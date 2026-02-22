@@ -29,3 +29,6 @@
 .env.production
 prod_public_files/*/
 prod_public_files/.dh-diag
+
+docker_volumes/mysql_data
+docker_volumes/proxy_cache
