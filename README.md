@@ -5,6 +5,10 @@
 
 ![oak](https://raw.githubusercontent.com/darthjee/oak/master/oak.png)
 
+**Current Version:** [1.4.1](https://github.com/darthjee/oak/releases/tag/1.4.1)
+
+**Next Release:** [1.5.0](https://github.com/darthjee/oak/compare/1.4.1...main)
+
 ## About
 
 Oak is a flexible cataloging application designed to help users organize and manage various types of collections, including:
