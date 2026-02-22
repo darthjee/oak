@@ -29,9 +29,7 @@ module Oak
     end
 
     # Configure allowed hosts from environment variable
-    if ENV['ALLOWED_HOSTS'].present?
-      config.hosts.concat(ENV['ALLOWED_HOSTS'].split(',').map(&:strip))
-    end
+    config.hosts.concat(ENV['ALLOWED_HOSTS'].split(',').map(&:strip)) if ENV['ALLOWED_HOSTS'].present?
   end
 
   class Application < Rails::Application
