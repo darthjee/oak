@@ -41,4 +41,4 @@ dev:
 	docker-compose run $(PROJECT)_app /bin/bash
 
 dev-up:
-	docker-compose up $(PROJECT)_app
+	docker-compose up $(PROJECT)_proxy $(PROJECT)_app
