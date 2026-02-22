@@ -15,17 +15,23 @@ workflows:
           requires: [test, checks]
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
       - upload_proxy_files:
           requires: [test, checks]
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
       - release:
           requires: [build-and-release, upload_proxy_files]
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
 jobs:
   test:
     docker:
