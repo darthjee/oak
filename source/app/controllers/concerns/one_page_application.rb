@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+## TODO: Remove this mokey patch in favor of new Tarquinn::RedirectionHandler implementation
+module Tarquinn
+  class RedirectionHandler
+    def redirect
+      controller.call(:redirect_to, redirect_path, allow_other_host: true)
+    end
+  end
+end
+
 module OnePageApplication
   extend ActiveSupport::Concern
   include Tarquinn

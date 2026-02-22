@@ -4,7 +4,10 @@ require 'spec_helper'
 
 RSpec.describe OnePageApplication, type: :controller do
   controller(ApplicationController) do
+    # rubocop:disable RSpec/DescribedClass
     include OnePageApplication
+    # rubocop:enable RSpec/DescribedClass
+
     def index
       render plain: 'ok'
     end
