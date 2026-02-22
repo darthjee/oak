@@ -24,6 +24,12 @@ Configuration::buildRule([
                     'httpCodes' => ["2xx", "3xx"]
                 ]
             ]
+        ],
+        [
+            'class' => 'Tent\Middlewares\SetHeadersMiddleware',
+            'headers' => [
+                'Host' => 'localhost'
+            ]
         ]
     ]
 ]);
