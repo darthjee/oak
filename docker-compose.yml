@@ -6,7 +6,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: oak
     ports:
-      - 127.0.0.1:$OAK_MYSQL_PORT:3306
+      - 0.0.0.0:$OAK_MYSQL_PORT:3306
+    volumes:
+      - ./docker_volumes/mysql_data:/var/lib/mysql
 
   oak_redis:
     image: redis:6.2.4
@@ -19,7 +21,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: oak
     ports:
-      - 127.0.0.1:$OAK_MYSQL_PORT:3306
+      - 0.0.0.0:$OAK_MYSQL_PORT:3306
 
   oak_prod_redis:
     image: redis:6.2.4
@@ -30,7 +32,7 @@ services:
     volumes:
       - ./dev_public_files:/usr/local/apache2/htdocs
     ports:
-      - 127.0.0.1:3001:80
+      - 0.0.0.0:3001:80
   #################### Base  ####################
 
   base: &base
@@ -65,7 +67,7 @@ services:
       dockerfile: Dockerfile.production_oak
     command: echo done
 
-  #################### CONTAINERS ####################
+  #################### DEV CONTAINERS ####################
 
   oak_app:
     <<: *base
@@ -73,7 +75,7 @@ services:
     command: /bin/bash bin/test_server.sh
     depends_on: [base_build, oak_photos, oak_sidekiq]
     ports:
-      - 127.0.0.1:3000:3000
+      - 0.0.0.0:3010:3000
     environment:
       - RAILS_ENV=development
       - OAK_MYSQL_PORT=3306
@@ -102,6 +104,22 @@ services:
     container_name: oak_root
     command: /bin/bash
     depends_on: [base_build]
+  
+  oak_proxy:
+    image: darthjee/tent:0.4.2
+    container_name: oak_proxy
+    env_file: .env
+    volumes:
+      - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
+      - ./docker_volumes/proxy_cache:/var/www/html/cache/
+    links:
+      - oak_app:backend
+    depends_on:
+      - oak_app
+    ports:
+      - 0.0.0.0:3000:80
+  
+  #################### PROD CONTAINERS ####################
 
   oak_production:
     <<: *prod_base
@@ -109,7 +127,7 @@ services:
     depends_on: [base_prod_build, oak_prod_sidekiq]
     command: bin/server.sh
     ports:
-      - 127.0.0.1:3002:3000
+      - 0.0.0.0:3002:3000
 
   oak_prod_test:
     <<: *prod_base
@@ -117,7 +135,7 @@ services:
     depends_on: [base_prod_build]
     command: bin/test_server.sh
     ports:
-      - 127.0.0.1:3002:3000
+      - 0.0.0.0:3002:3000
     links:
       - oak_prod_test_mysql:mysql
 

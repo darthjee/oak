@@ -99,6 +99,6 @@ end
   )
 end
 
-Oak::Item.all.distinct.pluck(:category_id, :kind_id).each do |(category_id, kind_id)|
+Oak::Item.unscoped.distinct.pluck(:category_id, :kind_id).each do |(category_id, kind_id)|
   Zyra.find_or_create(:oak_categorykind, category_id: category_id, kind_id: kind_id)
 end
