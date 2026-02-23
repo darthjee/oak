@@ -57,22 +57,21 @@ Key infrastructure components:
    cp .env.dev .env
    ```
 
-3. Start the development environment and enter the container shell:
+3. Run project setup (installs dependencies and prepares the database):
    ```bash
-   make dev
+   make setup
    ```
 
-4. Inside the container, run the following commands:
+4. Start the development environment and enter the container shell:
    ```bash
-   yarn install
-   rake db:create
-   rake db:migrate
-   rake db:seed  # Optional: loads sample data
+   make dev
    ```
 
 ## Running the Application
 
 The following `make` commands are available for development:
+
+- **`make setup`** — Runs initial setup inside the application container (`yarn install`, wait for DB, and `rake db:create db:migrate db:seed`).
 
 - **`make dev`** — Starts the development environment and drops you into a shell inside the container. Useful for running commands, migrations, and general development tasks.
 
