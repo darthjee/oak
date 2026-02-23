@@ -49,4 +49,8 @@ dev-up:
 	docker-compose up $(PROJECT)_proxy $(PROJECT)_app
 
 setup:
+	make .env.dev
 	docker-compose run $(PROJECT)_app bin/setup.sh
+
+.env.dev:
+	cp .env.example .env.dev
