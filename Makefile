@@ -12,6 +12,10 @@ all:
 	@echo "  make build\n    Build docker image for $(PROJECT)"
 	@echo "  make build-base\n    Build base docker image for $(PROJECT)"
 	@echo "  make push-base\n    Pushes base docker image for $(PROJECT) to dockerhub"
+	@echo "  make push\n    Pushes docker image for $(PROJECT) to dockerhub"
+	@echo "  make dev\n    Run $(PROJECT) app in development mode"
+	@echo "  make dev-up\n    Run $(PROJECT) app and proxy in development mode"
+	@echo "  make tests\n    Run $(PROJECT) tests"
 
 build-base:
 	docker tag $(BASE_IMAGE):latest $(BASE_IMAGE):cached; \
