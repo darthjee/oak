@@ -52,14 +52,14 @@ Key infrastructure components:
    cd oak
    ```
 
-2. Copy the environment file and adjust as needed:
-   ```bash
-   cp .env.dev .env
-   ```
-
-3. Run project setup (installs dependencies and prepares the database):
+2. Run project setup (creates `.env.dev`, installs dependencies, and prepares the database):
    ```bash
    make setup
+   ```
+
+3. Copy the environment file and adjust as needed:
+   ```bash
+   cp .env.dev .env
    ```
 
 4. Start the development environment and enter the container shell:
@@ -71,7 +71,7 @@ Key infrastructure components:
 
 The following `make` commands are available for development:
 
-- **`make setup`** — Runs initial setup inside the application container (`yarn install`, wait for DB, and `rake db:create db:migrate db:seed`).
+- **`make setup`** — First-time bootstrap command. Creates `.env.dev` from `.env.example`, then runs setup inside the application container (`yarn install`, wait for DB, and `rake db:create db:migrate db:seed`).
 
 - **`make dev`** — Starts the development environment and drops you into a shell inside the container. Useful for running commands, migrations, and general development tasks.
 
