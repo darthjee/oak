@@ -53,3 +53,6 @@ setup: .env
 
 .env.dev:
 	cp .env.example .env
+
+.env.production:
+	touch .env.production
