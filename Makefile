@@ -16,6 +16,7 @@ all:
 	@echo "  make dev\n    Run $(PROJECT) app in development mode"
 	@echo "  make dev-up\n    Run $(PROJECT) app and proxy in development mode"
 	@echo "  make tests\n    Run $(PROJECT) tests"
+	@echo "  make setup\n    Run $(PROJECT) setup script"
 
 build-base:
 	docker tag $(BASE_IMAGE):latest $(BASE_IMAGE):cached; \
@@ -46,3 +47,6 @@ dev:
 
 dev-up:
 	docker-compose up $(PROJECT)_proxy $(PROJECT)_app
+
+setup:
+	docker-compose run $(PROJECT)_app bin/setup.sh
