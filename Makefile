@@ -53,4 +53,4 @@ setup:
 	docker-compose run $(PROJECT)_app bin/setup.sh
 
 .env.dev:
-	cp .env.example .env.dev
+	cp .env.example .env

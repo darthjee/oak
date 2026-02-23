@@ -133,7 +133,7 @@ Frontend is served from the same Rails app, so all templates and assets are mana
 # Start the environment
 docker-compose up
 
-# Bootstrap app (dependencies + database)
+# Bootstrap app first (creates .env, installs dependencies, prepares database)
 make setup
 
 # Access the Rails container
@@ -151,7 +151,7 @@ docker-compose exec oak_app bundle exec rubocop
 1. **Always consider the SPA flow**: Route changes must respect the redirection pattern
 2. **HTML templates must respond to `?ajax=true`**: To be loaded by the frontend
 3. **APIs must have JSON version**: Controllers must respond to JSON format
-4. **Bootstrap with `make setup`**: Prefer using the project setup target for local environment initialization
+4. **Bootstrap first with `make setup`**: Use it as the first local setup step; it also generates `.env` from `.env.example`
 5. **Test everything**: Don't suggest code without corresponding tests
 6. **Clean RuboCop**: Code must pass RuboCop before commit
 7. **Follow Sandi Metz**: Question if classes/methods are getting too large
