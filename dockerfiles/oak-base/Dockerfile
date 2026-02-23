@@ -5,8 +5,8 @@ FROM darthjee/taa:1.4.2 as base
 
 FROM base as builder
 
-ADD source/Gemfile* /home/app/app/
-ADD source/package.json /home/app/app/
+COPY source/Gemfile* /home/app/app/
+COPY source/package.json /home/app/app/
 
 ENV HOME_DIR /home/app
 

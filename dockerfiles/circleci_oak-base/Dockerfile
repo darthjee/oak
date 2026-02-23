@@ -5,8 +5,8 @@ FROM darthjee/circleci_taa:1.4.2 as base
 
 FROM base as builder
 
-ADD source/Gemfile* /home/circleci/project/
-ADD source/package.json /home/circleci/project/
+COPY source/Gemfile* /home/circleci/project/
+COPY source/package.json /home/circleci/project/
 
 ENV HOME_DIR /home/circleci
 

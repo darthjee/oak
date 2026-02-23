@@ -95,7 +95,7 @@ Is organized in a way that reflects the Rails conventions while also accommodati
   - `app/assets/` - Assets (CSS, JavaScript, images)
   - `spec/` - RSpec tests
 - `docker-compose.yml` - Container orchestration
-- `Dockerfile.*` - Docker image definitions
+- `dockerfiles/` - Docker image definitions (one subdirectory per image)
 
 ### Containerization
 
