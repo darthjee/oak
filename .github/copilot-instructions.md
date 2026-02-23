@@ -60,6 +60,10 @@ AngularJS renders the page
 
 In order to achieve maintability and readability, we follow these principles:
 
+### Language Standard
+
+- **English only**: All code, PR titles/descriptions, documentation, commit messages, and code comments must be written in English.
+
 ### Code and Best Practices
 
 - **Sandi Metz principles**: We follow Sandi Metz rules for object-oriented design
@@ -130,7 +134,10 @@ Frontend is served from the same Rails app, so all templates and assets are mana
 ## Useful Docker Commands
 
 ```bash
-# Start the environment
+# Bootstrap app first (creates .env, installs dependencies, prepares database)
+make setup
+
+# Start the environment (run only after make setup)
 docker-compose up
 
 # Access the Rails container
@@ -148,9 +155,10 @@ docker-compose exec oak_app bundle exec rubocop
 1. **Always consider the SPA flow**: Route changes must respect the redirection pattern
 2. **HTML templates must respond to `?ajax=true`**: To be loaded by the frontend
 3. **APIs must have JSON version**: Controllers must respond to JSON format
-4. **Test everything**: Don't suggest code without corresponding tests
-5. **Clean RuboCop**: Code must pass RuboCop before commit
-6. **Follow Sandi Metz**: Question if classes/methods are getting too large
+4. **Run `make setup` before `docker-compose up`**: This is mandatory for local bootstrap and it generates `.env` from `.env.example`
+5. **Test everything**: Don't suggest code without corresponding tests
+6. **Clean RuboCop**: Code must pass RuboCop before commit
+7. **Follow Sandi Metz**: Question if classes/methods are getting too large
 
 ## Important Notes
 

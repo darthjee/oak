@@ -27,6 +27,7 @@
 /source/config/credentials.yml.enc
 **/*.swp
 .env.production
+.env
 prod_public_files/*/
 prod_public_files/.dh-diag
 

@@ -52,27 +52,23 @@ Key infrastructure components:
    cd oak
    ```
 
-2. Copy the environment file and adjust as needed:
+2. Run project setup (creates `.env` from `.env.example`, installs dependencies, and prepares the database):
    ```bash
-   cp .env.dev .env
+   make setup
    ```
 
-3. Start the development environment and enter the container shell:
+3. Review and adjust `.env` values if needed.
+
+4. Start the development environment and enter the container shell:
    ```bash
    make dev
-   ```
-
-4. Inside the container, run the following commands:
-   ```bash
-   yarn install
-   rake db:create
-   rake db:migrate
-   rake db:seed  # Optional: loads sample data
    ```
 
 ## Running the Application
 
 The following `make` commands are available for development:
+
+- **`make setup`** — First-time bootstrap command. Creates `.env` from `.env.example`, then runs setup inside the application container (`yarn install`, wait for DB, and `rake db:create db:migrate db:seed`).
 
 - **`make dev`** — Starts the development environment and drops you into a shell inside the container. Useful for running commands, migrations, and general development tasks.
 
@@ -84,4 +80,4 @@ The following `make` commands are available for development:
 
 - The main application runs on port **3000**
 - The photo service runs on port **3001**
-- Environment variables are configured via the `.env` file (see `.env.dev` for a development template)
+- Environment variables are configured via the `.env` file (generated from `.env.example` by `make setup`)
