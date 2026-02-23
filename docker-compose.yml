@@ -57,14 +57,14 @@ services:
     <<: *base
     build:
       context: .
-      dockerfile: Dockerfile.oak
+      dockerfile: dockerfiles/oak/Dockerfile
     command: echo done
 
   base_prod_build:
     <<: *prod_base
     build:
       context: .
-      dockerfile: Dockerfile.production_oak
+      dockerfile: dockerfiles/production_oak/Dockerfile
     command: echo done
 
   #################### DEV CONTAINERS ####################
