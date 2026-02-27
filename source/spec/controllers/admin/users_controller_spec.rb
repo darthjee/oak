@@ -26,7 +26,7 @@ describe Admin::UsersController do
       end
 
       it do
-        expect(response).to redirect_to('#/admin/users/new')
+        expect(response).to redirect_to('localhost:3000/#/admin/users/new')
       end
     end
 
@@ -141,7 +141,7 @@ describe Admin::UsersController do
         get :index
       end
 
-      it { expect(response).to redirect_to('#/admin/users') }
+      it { expect(response).to redirect_to('localhost:3000/#/admin/users') }
     end
   end
 
@@ -252,7 +252,7 @@ describe Admin::UsersController do
       end
 
       it do
-        expect(response).to redirect_to("#/admin/users/#{user_id}")
+        expect(response).to redirect_to("localhost:3000/#/admin/users/#{user_id}")
       end
     end
 

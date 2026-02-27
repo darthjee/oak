@@ -15,7 +15,7 @@ module OnePageApplication
   private
 
   def render_root
-    "##{request.path}"
+    "/##{request.path}"
   end
 
   def home?

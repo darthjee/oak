@@ -28,7 +28,7 @@ module UserRequired
   end
 
   def render_forbidden
-    '#/forbidden'
+    '/#/forbidden'
   end
 
   def missing_user?
