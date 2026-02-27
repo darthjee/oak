@@ -8,7 +8,7 @@ module OnePageApplication
     after_action :cache_control
 
     layout :layout_for_page
-    redirection_rule :render_root, :perform_angular_redirect?, domain: ENV['REDIRECT_DOMAIN']
+    redirection_rule :render_root, :perform_angular_redirect?, domain: Settings.redirect_domain
     skip_redirection_rule :render_root, :ajax?, :home?
   end
 
