@@ -72,7 +72,7 @@ RSpec.describe SubscriptionsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
+        expect(response).to redirect_to('/#/forbidden')
       end
     end
   end
