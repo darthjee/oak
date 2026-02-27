@@ -43,6 +43,7 @@ jobs:
           OAK_MYSQL_NAME: oak
           OAK_MYSQL_PASSWORD: oak
           OAK_PASSWORD_SALT: abcd
+          OAK_REDIRECT_DOMAIN: localhost:3000
       - image: circleci/mysql:5.7
         name: mysql
         environment:
@@ -83,6 +84,7 @@ jobs:
           OAK_MYSQL_NAME: oak
           OAK_MYSQL_PASSWORD: oak
           OAK_PASSWORD_SALT: abcd
+          OAK_REDIRECT_DOMAIN: localhost:3000
       - image: circleci/mysql:5.7
         name: mysql
         environment:
