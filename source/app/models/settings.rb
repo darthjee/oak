@@ -14,7 +14,7 @@ class Settings
   source :env, EnvSettings
   source :db,  ActiveSettings
 
-  setting_with_options(:password_salt)
+  with_settings(:password_salt, :redirect_domain)
   setting_with_options(:hex_code_size, default: 16, type: :integer)
   setting_with_options(:session_period, default: 2.days, type: :seconds)
   setting_with_options(:cache_age, default: 1.seconds, type: :seconds)

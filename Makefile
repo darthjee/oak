@@ -51,8 +51,8 @@ dev-up:
 setup: .env
 	docker-compose run $(PROJECT)_app bin/setup.sh
 
-.env.dev:
-	cp .env.example .env
+.env:
+	cp .env.dev.sample .env
 
 .env.production:
 	touch .env.production

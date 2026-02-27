@@ -28,8 +28,8 @@ gem 'darthjee-core_ext', '>= 2.0.0'
 gem 'docile', '>= 1.4.1'
 gem 'magicka', '~> 1.1.0'
 gem 'nokogiri', '1.18.8'
-gem 'sinclair', '3.0.0'
-gem 'tarquinn', '~> 0.3.0'
+gem 'sinclair', '>= 3.0.1'
+gem 'tarquinn', '>= 0.4.0'
 gem 'zyra',     '1.2.0'
 
 group :development, :test do

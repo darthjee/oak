@@ -80,7 +80,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
 
         it 'redirects to the correct path' do
-          expect(response).to redirect_to('#/categories')
+          expect(response).to redirect_to('localhost:3000/#/categories')
         end
       end
     end
@@ -138,7 +138,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
+        expect(response).to redirect_to('/#/forbidden')
       end
     end
   end
@@ -249,7 +249,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
+        expect(response).to redirect_to('/#/forbidden')
       end
     end
   end
@@ -274,7 +274,7 @@ RSpec.describe CategoriesController, type: :controller do
         end
 
         it 'redirects to the correct path' do
-          expect(response).to redirect_to("#/categories/#{category.slug}/edit")
+          expect(response).to redirect_to("localhost:3000/#/categories/#{category.slug}/edit")
         end
       end
 
@@ -321,7 +321,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
+        expect(response).to redirect_to('/#/forbidden')
       end
     end
   end
@@ -380,7 +380,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("#/categories/#{slug}")
+        expect(response).to redirect_to("localhost:3000/#/categories/#{slug}")
       end
     end
   end
@@ -482,7 +482,7 @@ RSpec.describe CategoriesController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('#/forbidden')
+        expect(response).to redirect_to('/#/forbidden')
       end
     end
   end
