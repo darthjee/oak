@@ -34,6 +34,9 @@ push-base:
 build:
 	docker build -f dockerfiles/$(PROJECT)/Dockerfile . -t $(IMAGE) -t $(PUSH_IMAGE) -t $(PUSH_IMAGE):$(BASE_VERSION)
 
+setup:
+	docker-compose run --rm $(PROJECT)_app rake db:create db:migrate db:seed
+
 push:
 	make build
 	docker push $(PUSH_IMAGE)
