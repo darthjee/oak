@@ -69,7 +69,7 @@ jobs:
           command: cd source && bundle exec rspec
       - run:
           name: Change coverage file
-          command: sed -e s/SF:\./SF:source/g -i source/coverage/lcov/app.info
+          command: sed -e s/SF:\./SF:source/g -i source/coverage/lcov/project.info
       - run:
           name: Upload coverage to Codacy
           command: cd source && bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov/project.lcov
