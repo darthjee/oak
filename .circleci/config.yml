@@ -53,26 +53,23 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set folder
-          command: cp source/* source/.??* ./ -r; rm source -rf
-      - run:
           name: Bundle Install
-          command: bundle install
+          command: cd source && bundle install
       - run:
           name: Yarn Install
-          command: yarn install
+          command: cd source && yarn install
       - run:
           name: Wait for database
-          command: scripts/wait_for_db.sh
+          command: cd source && scripts/wait_for_db.sh
       - run:
           name: Migrate
-          command: RAILS_ENV=test bundle exec rake db:schema:load
+          command: cd source && RAILS_ENV=test bundle exec rake db:schema:load
       - run:
           name: RSpec
-          command: bundle exec rspec
+          command: cd source && bundle exec rspec
       - run:
           name: Upload coverage to Codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov/project.lcov
+          command: cd source && bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov/project.lcov
 
   checks:
     docker:
