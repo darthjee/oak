@@ -56,9 +56,6 @@ jobs:
           name: Set folder
           command: cp source/* source/.??* ./ -r; rm source -rf
       - run:
-          name: Prepare Coverage Test Report
-          command: cc-test-reporter before-build
-      - run:
           name: Bundle Install
           command: bundle install
       - run:
