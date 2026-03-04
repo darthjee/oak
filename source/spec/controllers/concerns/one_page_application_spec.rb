@@ -86,8 +86,8 @@ RSpec.describe OnePageApplication, type: :controller do
       end
     end
 
-    context 'without X-Forwarded-Host header' do
-      let(:redirect_domain) { nil }
+    context 'with empty X-Forwarded-Host header' do
+      let(:redirect_domain) { '' }
 
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
