@@ -85,7 +85,7 @@ RSpec.describe OnePageApplication, type: :controller do
         end
       end
     end
-  
+
     context 'with OAK_REDIRECT_DOMAIN env variable' do
       before do
         allow(Settings).to receive(:redirect_domain).and_return('example.com')
