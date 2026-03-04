@@ -4,7 +4,6 @@ class ActiveSettings
   extend ActiveSettable
 
   with_settings(
-    :redirect_domain,
     :password_salt,
     :hex_code_size,
     :session_period,
