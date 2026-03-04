@@ -6,7 +6,6 @@ class EnvSettings
   settings_prefix 'OAK'
 
   with_settings(
-    :redirect_domain,
     :password_salt,
     :hex_code_size,
     :session_period,

@@ -20,10 +20,15 @@ Configuration::buildRule([
             'location' => "./cache",
             'matchers' => [
                 [
-                    'class' => 'Tent\Matchers\StatusCodeMatcher',
+                    'class'     => 'Tent\Matchers\StatusCodeMatcher',
                     'httpCodes' => ["2xx", "3xx"]
                 ]
             ]
+        ],
+        [
+            'class' => 'Tent\Middlewares\RenameHeaderMiddleware',
+            'from'  => 'Host',
+            'to'    => 'X-Forwarded-Host'
         ],
         [
             'class' => 'Tent\Middlewares\SetHeadersMiddleware',

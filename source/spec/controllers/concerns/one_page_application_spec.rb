@@ -20,17 +20,19 @@ RSpec.describe OnePageApplication, type: :controller do
   describe '#render_root' do
     subject(:get_request) { get :index, params: parameters }
 
-    context 'without OAK_REDIRECT_DOMAIN env variable' do
-      before do
-        allow(Settings).to receive(:redirect_domain).and_return(nil)
-      end
+    before do
+      request.headers['X-Forwarded-Host'] = redirect_domain
+    end
+
+    context 'without X-Forwarded-Host header' do
+      let(:redirect_domain) { nil }
 
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
 
-        it 'redirects to hash path' do
+        it 'redirects to hash path for current domain' do
           get_request
-          expect(response).to redirect_to('/#/index.html')
+          expect(response).to redirect_to('http://test.host/#/index.html')
         end
       end
 
@@ -53,17 +55,15 @@ RSpec.describe OnePageApplication, type: :controller do
       end
     end
 
-    context 'with empty OAK_REDIRECT_DOMAIN env variable' do
-      before do
-        allow(Settings).to receive(:redirect_domain).and_return('')
-      end
+    context 'with X-Forwarded-Host header' do
+      let(:redirect_domain) { 'example.com' }
 
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
 
-        it 'redirects to hash path' do
+        it 'redirects to hash path for other domain' do
           get_request
-          expect(response).to redirect_to('/#/index.html')
+          expect(response).to redirect_to('http://example.com/#/index.html')
         end
       end
 
@@ -86,17 +86,15 @@ RSpec.describe OnePageApplication, type: :controller do
       end
     end
 
-    context 'with OAK_REDIRECT_DOMAIN env variable' do
-      before do
-        allow(Settings).to receive(:redirect_domain).and_return('example.com')
-      end
+    context 'with empty X-Forwarded-Host header' do
+      let(:redirect_domain) { '' }
 
       context 'with HTML format' do
         let(:parameters) { { format: :html } }
 
-        it 'redirects to hash path' do
+        it 'redirects to hash path for current domain' do
           get_request
-          expect(response).to redirect_to('example.com/#/index.html')
+          expect(response).to redirect_to('http://test.host/#/index.html')
         end
       end
 

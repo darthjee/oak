@@ -111,7 +111,7 @@ jobs:
           command: scripts/deploy.sh deploy
   upload_proxy_files:
     docker:
-      - image: darthjee/tent:0.4.3
+      - image: darthjee/tent:0.4.4
     workdir: /var/www/html
     steps:
       - checkout

@@ -56,7 +56,7 @@ RSpec.describe KindsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to('localhost:3000/#/kinds')
+        expect(response).to redirect_to('/#/kinds')
       end
     end
   end
@@ -266,7 +266,7 @@ RSpec.describe KindsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("localhost:3000/#/kinds/#{slug}")
+        expect(response).to redirect_to("/#/kinds/#{slug}")
       end
     end
   end
