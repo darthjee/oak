@@ -79,7 +79,7 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("localhost:3000/#/categories/#{category.slug}/items")
+        expect(response).to redirect_to("/#/categories/#{category.slug}/items")
       end
     end
   end
@@ -136,7 +136,7 @@ RSpec.describe ItemsController, type: :controller do
 
       it 'redirects to the correct path' do
         expect(response)
-          .to redirect_to("localhost:3000/#/categories/#{category.slug}/items/#{item.id}")
+          .to redirect_to("/#/categories/#{category.slug}/items/#{item.id}")
       end
     end
   end
@@ -158,7 +158,7 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'redirects to the correct path' do
-        expect(response).to redirect_to("localhost:3000/#/categories/#{category.slug}/items/new")
+        expect(response).to redirect_to("/#/categories/#{category.slug}/items/new")
       end
     end
 
@@ -379,7 +379,7 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'redirects to the correct path' do
-          expect(response).to redirect_to("localhost:3000/#/categories/#{category.slug}/items/#{item.id}/edit")
+          expect(response).to redirect_to("/#/categories/#{category.slug}/items/#{item.id}/edit")
         end
       end
 
