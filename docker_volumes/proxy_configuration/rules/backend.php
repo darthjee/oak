@@ -16,7 +16,7 @@ Configuration::buildRule([
     ],
     "middlewares" => [
         [
-            'class'    => 'Tent\Middlewares\FileCacheMiddleware',
+            'class' => 'Tent\Middlewares\FileCacheMiddleware',
             'location' => "./cache",
             'matchers' => [
                 [
@@ -27,11 +27,11 @@ Configuration::buildRule([
         ],
         [
             'class' => 'Tent\Middlewares\RenameHeaderMiddleware',
-            'from'  =>  'Host',
+            'from'  => 'Host',
             'to'    => 'X-Forwarded-Host'
         ],
         [
-            'class'   => 'Tent\Middlewares\SetHeadersMiddleware',
+            'class' => 'Tent\Middlewares\SetHeadersMiddleware',
             'headers' => [
                 'Host' => 'localhost'
             ]
