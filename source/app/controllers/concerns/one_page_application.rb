@@ -8,7 +8,7 @@ module OnePageApplication
     after_action :cache_control
 
     layout :layout_for_page
-    redirection_rule :render_root, :perform_angular_redirect?, domain: :redirect_docmain
+    redirection_rule :render_root, :perform_angular_redirect?
     skip_redirection_rule :render_root, :ajax?, :home?
   end
 
@@ -16,12 +16,6 @@ module OnePageApplication
 
   def render_root
     "/##{request.path}"
-  end
-
-  def redirect_docmain
-    return unless headers['X-Forwarded-Host'] == Settings.redirect_domain
-
-    headers['X-Forwarded-Host']
   end
 
   def home?
