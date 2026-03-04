@@ -19,7 +19,9 @@ module OnePageApplication
   end
 
   def redirect_docmain
-    Settings.redirect_domain
+    return unless headers['X-Forwarded-Host'] == Settings.redirect_domain
+
+    headers['X-Forwarded-Host']
   end
 
   def home?
