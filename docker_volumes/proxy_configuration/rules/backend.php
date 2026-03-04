@@ -28,7 +28,7 @@ Configuration::buildRule([
         [
             'class' => 'Tent\Middlewares\RenameHeaderMiddleware',
             'from' =>  'Host',
-            ' to' => 'X-Forwarded-Host'
+            'to' => 'X-Forwarded-Host'
         ],
         [
             'class' => 'Tent\Middlewares\SetHeadersMiddleware',
