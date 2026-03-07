@@ -8,28 +8,13 @@ use Tent\Models\RequestMatcher;
 
 Configuration::buildRule([
     'handler' => [
-        'type' => 'proxy',
+        'type' => 'default_proxy',
         'host' => 'http://backend:3000'
     ],
     'matchers' => [
         ['method' => 'GET', 'uri' => '/', 'type' => 'begins_with']
     ],
     "middlewares" => [
-        [
-            'class' => 'Tent\Middlewares\FileCacheMiddleware',
-            'location' => "./cache",
-            'matchers' => [
-                [
-                    'class'     => 'Tent\Matchers\StatusCodeMatcher',
-                    'httpCodes' => ["2xx", "3xx"]
-                ]
-            ]
-        ],
-        [
-            'class' => 'Tent\Middlewares\RenameHeaderMiddleware',
-            'from'  => 'Host',
-            'to'    => 'X-Forwarded-Host'
-        ],
         [
             'class' => 'Tent\Middlewares\SetHeadersMiddleware',
             'headers' => [
