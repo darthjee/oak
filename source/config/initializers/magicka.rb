@@ -2,6 +2,8 @@
 
 Magicka::Form.with_element('Magicka::NgSelect', :ng_select)
 Magicka::Form.with_element('Magicka::NgTextarea', :textarea)
+Magicka::Form.with_element('Magicka::NgCheckbox', :checkbox)
 Magicka::Display.with_element('Magicka::NgSelectText', :ng_select)
 Magicka::Display.with_element('Magicka::Text', :textarea)
+Magicka::Display.with_element('Magicka::NgCheckboxText', :checkbox)
 Magicka::Display.with_element('Magicka::NgPagination', :pagination)
