@@ -33,7 +33,8 @@ RSpec.describe Oak::Item::UpdateBuilder do
         category_id: category.id,
         kind_id: kind.id,
         user_id: user.id,
-        order: 0
+        order: 0,
+        visible: true
       }.stringify_keys
     end
 
