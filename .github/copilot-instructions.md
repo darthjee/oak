@@ -26,6 +26,7 @@ Oak is a web application catalog to showcase different types of items, including
 
 - **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection
 - **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
+- **Sinclair** (<https://github.com/darthjee/sinclair>) - Dynamic method builder, configuration, options, and model helpers. See [.github/sinclair-usage.md](.github/sinclair-usage.md) for detailed usage patterns.
 
 ## Request Flow
 
@@ -107,6 +108,21 @@ Is organized in a way that reflects the Rails conventions while also accommodati
 - Persistent volumes for MySQL in `docker_volumes/mysql_data/`
 - Development public files in `dev_public_files/`
 - Production public files in `prod_public_files/`
+
+## Sinclair Usage
+
+Oak uses the **sinclair** gem extensively. Refer to [.github/sinclair-usage.md](.github/sinclair-usage.md) for the full usage guide.
+
+Key features used in this project:
+
+- **`Sinclair`** – Dynamically add instance/class methods to existing classes via builders
+- **`Sinclair::Model`** – Quick plain-Ruby models with keyword initializers and equality support
+- **`Sinclair::Options`** – Validated option/parameter objects with defaults
+- **`Sinclair::Configurable`** – Read-only application configuration with defaults
+- **`Sinclair::Comparable`** – Attribute-based `==` for models
+- **`Sinclair::Matchers`** – RSpec matchers to test builder behaviour (`add_method`, `add_class_method`, `change_method`)
+
+When building new features, prefer sinclair patterns for dynamic method generation, option handling, and plain-Ruby models over raw `attr_accessor` / `define_method` approaches.
 
 ## Controller Patterns
 
