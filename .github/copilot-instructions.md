@@ -11,105 +11,19 @@ Oak is a web application catalog to showcase different types of items, including
 
 ## Architecture and Tech Stack
 
-### Backend
-
-- **Ruby on Rails** - Main application server
-- **Docker + Docker Compose** - Containerization and orchestration
-- Backend and frontend are served by the same Rails application (monolithic architecture, no separation yet)
-
-### Frontend
-
-- **AngularJS** - JavaScript framework for Single Page Application
-- **Cyberhawk** (<https://github.com/darthjee/cyberhawk>) - Route and request management
-
-### Main Libraries and Gems
-
-- **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection. See [.github/tarquinn-usage.md](.github/tarquinn-usage.md) for detailed usage patterns.
-- **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
-- **Sinclair** (<https://github.com/darthjee/sinclair>) - Dynamic method builder, configuration, options, and model helpers. See [.github/sinclair-usage.md](.github/sinclair-usage.md) for detailed usage patterns.
-- **Azeroth** (<https://github.com/darthjee/azeroth>) - Simplifies Rails controller endpoints with `resource_for`. See [.github/azeroth-usage.md](.github/azeroth-usage.md) for detailed usage patterns.
-- **Magicka** (<https://github.com/darthjee/magicka>) - Renders AngularJS-compatible form and display elements in ERB templates. See [.github/magicka-usage.md](.github/magicka-usage.md) for detailed usage patterns.
+See [architecture-and-tech-stack.md](architecture-and-tech-stack.md) for the full details on backend, frontend, and main libraries.
 
 ## Request Flow
 
-### Navigation Pattern
-
-1. **Initial access**: User accesses any route (e.g., `/categories`)
-2. **Redirection**: Tarquinn + OnePageApplication concern redirect to root with anchor (e.g., `/#/categories`)
-3. **SPA Navigation**: All subsequent navigation happens via anchors, without page reload
-
-### Content Loading (AngularJS + Cyberhawk)
-
-When the user navigates to a section:
-
-1. **HTML Template**: Requests the template via AJAX (e.g., `/categories.html?ajax=true`)
-2. **JSON Data**: Requests the data via API (e.g., `/categories.json`)
-3. **Rendering**: AngularJS combines template + data to build the page
-
-**Complete flow example:**
-```
-User accesses: /categories
-       ↓
-Redirected to: /#/categories
-       ↓
-Cyberhawk intercepts and makes:
-  - GET /categories.html?ajax=true (template)
-  - GET /categories.json (data)
-       ↓
-AngularJS renders the page
-```
+See [request-flow.md](request-flow.md) for the full details on navigation pattern and content loading.
 
 ## Development Principles
 
-In order to achieve maintability and readability, we follow these principles:
-
-### Language Standard
-
-- **English only**: All code, PR titles/descriptions, documentation, commit messages, and code comments must be written in English.
-
-### Code and Best Practices
-
-- **Sandi Metz principles**: We follow Sandi Metz rules for object-oriented design
-  - Classes with max 100 lines
-  - Methods with max 5 lines
-  - Pass max 4 parameters
-  - Controllers instantiate only one object
-- **Understandable code**: Priority for clarity and maintainability over "clever code"
-- **RuboCop**: Mandatory linter for style consistency
-- **Tests**: Robust test coverage is fundamental
-
-### When Suggesting Code
-
-1. Keep methods small and focused (max 5 lines when possible)
-2. Extract complex logic to service classes or builders
-3. Use decorators for presentation logic
-4. Suggest tests along with implementations
-5. Follow RuboCop conventions
-6. Prefer readability over premature optimization
+See [development-principles.md](development-principles.md) for the full details on language standards, best practices, and code guidelines.
 
 ## Project Structure
 
-Is organized in a way that reflects the Rails conventions while also accommodating the SPA architecture and containerization setup.
-
-### Main Directories
-
-- `source/` - Rails application source code
-  - `app/controllers/` - Rails controllers
-  - `app/models/` - ActiveRecord models
-  - `app/builders/` - Classes for building complex objects
-  - `app/decorators/` - Decorators for presentation logic
-  - `app/views/` - ERB templates and partials
-  - `app/assets/` - Assets (CSS, JavaScript, images)
-  - `spec/` - RSpec tests
-- `docker-compose.yml` - Container orchestration
-- `dockerfiles/` - Docker image definitions (one subdirectory per image)
-
-### Containerization
-
-- Use `docker-compose` to start the environment
-- Persistent volumes for MySQL in `docker_volumes/mysql_data/`
-- Development public files in `dev_public_files/`
-- Production public files in `prod_public_files/`
+See [project-structure.md](project-structure.md) for the full details on main directories and containerization setup.
 
 ## Sinclair Usage
 
