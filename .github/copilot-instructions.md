@@ -27,6 +27,7 @@ Oak is a web application catalog to showcase different types of items, including
 - **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection
 - **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
 - **Sinclair** (<https://github.com/darthjee/sinclair>) - Dynamic method builder, configuration, options, and model helpers. See [.github/sinclair-usage.md](.github/sinclair-usage.md) for detailed usage patterns.
+- **Azeroth** (<https://github.com/darthjee/azeroth>) - Simplifies Rails controller endpoints with `resource_for`. See [.github/azeroth-usage.md](.github/azeroth-usage.md) for detailed usage patterns.
 
 ## Request Flow
 
@@ -123,6 +124,18 @@ Key features used in this project:
 - **`Sinclair::Matchers`** – RSpec matchers to test builder behaviour (`add_method`, `add_class_method`, `change_method`)
 
 When building new features, prefer sinclair patterns for dynamic method generation, option handling, and plain-Ruby models over raw `attr_accessor` / `define_method` approaches.
+
+## Azeroth Usage
+
+Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [.github/azeroth-usage.md](.github/azeroth-usage.md) for the full usage guide.
+
+Key features used in this project:
+
+- **`resource_for`** – Generates standard CRUD actions (`create`, `show`, `index`, `update`, `delete`, `edit`) for a resource, handling both HTML and JSON formats transparently
+- **`model_for`** – Adds resource accessor methods to a controller without generating HTTP actions; useful for parent/context resources
+- **`Azeroth::Decorator`** – Controls JSON serialization by exposing selected attributes via `expose`
+
+When building new controller endpoints for standard resources, prefer `resource_for` over hand-written CRUD actions to ensure consistent behavior.
 
 ## Controller Patterns
 
