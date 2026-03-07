@@ -82,6 +82,65 @@ RSpec.describe ItemsController, type: :controller do
         expect(response).to redirect_to("/#/categories/#{category.slug}/items")
       end
     end
+
+    context 'when filtering by visibility' do
+      let(:other_user) { create(:user) }
+      let!(:visible_item) { create(:oak_item, category:, user: other_user, visible: true) }
+      let!(:invisible_other_item) { create(:oak_item, category:, user: other_user, visible: false) }
+      let!(:own_invisible_item) { create(:oak_item, category:, user:, visible: false) }
+      let(:parameters) { { category_slug: category.slug, format: :json } }
+
+      context 'when user is not logged in' do
+        before do
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'includes visible items' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).to include(visible_item.id)
+        end
+
+        it 'excludes invisible items from other users' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).not_to include(invisible_other_item.id)
+        end
+
+        it 'excludes own invisible items' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).not_to include(own_invisible_item.id)
+        end
+      end
+
+      context 'when user is logged in' do
+        before do
+          cookies.signed[:session] = session.id
+          get :index, params: parameters
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'includes visible items from other users' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).to include(visible_item.id)
+        end
+
+        it 'excludes invisible items from other users' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).not_to include(invisible_other_item.id)
+        end
+
+        it 'includes own invisible items' do
+          ids = response_json.map { |i| i['id'] }
+          expect(ids).to include(own_invisible_item.id)
+        end
+      end
+    end
   end
 
   describe 'GET #show' do
@@ -137,6 +196,52 @@ RSpec.describe ItemsController, type: :controller do
       it 'redirects to the correct path' do
         expect(response)
           .to redirect_to("/#/categories/#{category.slug}/items/#{item.id}")
+      end
+    end
+
+    context 'when filtering by visibility' do
+      let(:other_user) { create(:user) }
+      let(:params) { { category_slug: category.slug, id: item.id, format: :json } }
+
+      context 'when item is visible' do
+        let(:item) { create(:oak_item, category:, user: other_user, visible: true) }
+
+        before { get :show, params: params }
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context 'when item is invisible and belongs to another user' do
+        let(:item) { create(:oak_item, category:, user: other_user, visible: false) }
+
+        it 'raises a record not found error' do
+          expect { get :show, params: params }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context 'when item is invisible and belongs to the logged-in user' do
+        let(:item) { create(:oak_item, category:, user:, visible: false) }
+
+        before do
+          cookies.signed[:session] = session.id
+          get :show, params: params
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+      end
+
+      context 'when item is invisible and no user is logged in' do
+        let(:item) { create(:oak_item, category:, user: other_user, visible: false) }
+
+        it 'raises a record not found error' do
+          expect { get :show, params: params }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
       end
     end
   end

@@ -31,7 +31,7 @@ class ItemsController < ApplicationController
   private
 
   def items
-    @items ||= category.items.includes(:main_photo)
+    @items ||= category.items.visible_for(logged_user).includes(:main_photo)
   end
 
   def kind
