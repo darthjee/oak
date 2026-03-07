@@ -24,7 +24,7 @@ Oak is a web application catalog to showcase different types of items, including
 
 ### Main Libraries and Gems
 
-- **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection
+- **Tarquinn** (<https://github.com/darthjee/tarquinn>) - Route management and redirection. See [.github/tarquinn-usage.md](.github/tarquinn-usage.md) for detailed usage patterns.
 - **OnePageApplication concern** (<https://github.com/darthjee/oak/blob/main/source/app/controllers/concerns/one_page_application.rb>) - Ensures navigation via anchor
 - **Sinclair** (<https://github.com/darthjee/sinclair>) - Dynamic method builder, configuration, options, and model helpers. See [.github/sinclair-usage.md](.github/sinclair-usage.md) for detailed usage patterns.
 - **Azeroth** (<https://github.com/darthjee/azeroth>) - Simplifies Rails controller endpoints with `resource_for`. See [.github/azeroth-usage.md](.github/azeroth-usage.md) for detailed usage patterns.
@@ -136,6 +136,18 @@ Key features used in this project:
 - **`Azeroth::Decorator`** – Controls JSON serialization by exposing selected attributes via `expose`
 
 When building new controller endpoints for standard resources, prefer `resource_for` over hand-written CRUD actions to ensure consistent behavior.
+
+## Tarquinn Usage
+
+Oak uses the **tarquinn** gem for controller-level redirections. Refer to [.github/tarquinn-usage.md](.github/tarquinn-usage.md) for the full usage guide.
+
+Key features used in this project:
+
+- **`redirection_rule`** – Declares a redirect with one or more condition methods (or a block); fires when any condition is truthy
+- **`skip_redirection_rule`** – Prevents an inherited rule from firing when a condition is truthy
+- **`skip_redirection`** – Bypasses a rule for specific controller actions
+
+When adding new redirection logic, prefer `redirection_rule` in base controllers and use `skip_redirection_rule` / `skip_redirection` in child controllers to override inherited rules.
 
 ## Controller Patterns
 
