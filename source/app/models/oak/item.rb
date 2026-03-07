@@ -26,6 +26,13 @@ module Oak
     scope :for_category, ->(category) { where(category:) }
     scope :for_user, ->(user) { where(user:) }
     scope :for_kind, ->(kind) { where(kind:) }
+    scope :visible_for, ->(user = nil) {
+      if user
+        where('items.visible = ? OR items.user_id = ?', true, user.id)
+      else
+        where(visible: true)
+      end
+    }
 
     default_scope { order(order: :asc, id: :asc) }
   end
