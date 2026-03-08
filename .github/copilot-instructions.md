@@ -4,7 +4,7 @@
 
 ## Behaviors
 
-This section points to [.github/behaviors.md](.github/behaviors.md).
+See [.github/behaviors.md](.github/behaviors.md) for the full details.
 
 ## Project Structure
 
