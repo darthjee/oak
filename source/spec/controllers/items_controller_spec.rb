@@ -216,9 +216,12 @@ RSpec.describe ItemsController, type: :controller do
       context 'when item is invisible and belongs to another user' do
         let(:item) { create(:oak_item, category:, user: other_user, visible: false) }
 
-        it 'raises a record not found error' do
-          expect { get :show, params: params }
-            .to raise_error(ActiveRecord::RecordNotFound)
+        before do
+          get :show, params: params
+        end
+
+        it 'returns a not found response' do
+          expect(response).to have_http_status(:not_found)
         end
       end
 
@@ -238,9 +241,12 @@ RSpec.describe ItemsController, type: :controller do
       context 'when item is invisible and no user is logged in' do
         let(:item) { create(:oak_item, category:, user: other_user, visible: false) }
 
-        it 'raises a record not found error' do
-          expect { get :show, params: params }
-            .to raise_error(ActiveRecord::RecordNotFound)
+        before do
+          get :show, params: params
+        end
+
+        it 'returns a not found response' do
+          expect(response).to have_http_status(:not_found)
         end
       end
     end
