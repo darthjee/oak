@@ -18,6 +18,7 @@ RSpec.describe Oak::Item::FormDecorator do
         id: item.id,
         name:,
         description:,
+        visible: item.visible,
         category_slug:,
         kind_slug:,
         links: []
@@ -38,6 +39,7 @@ RSpec.describe Oak::Item::FormDecorator do
           id: item.id,
           name:,
           description:,
+          visible: item.visible,
           category_slug:,
           kind_slug:,
           links: [
@@ -60,6 +62,7 @@ RSpec.describe Oak::Item::FormDecorator do
           id: item.id,
           name:,
           description:,
+          visible: item.visible,
           category_slug:,
           kind_slug:,
           errors:,
