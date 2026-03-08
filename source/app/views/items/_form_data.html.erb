@@ -38,3 +38,5 @@
 <div class="form-group">
   <%= form.textarea(:description, placeholder: "Description", class: "form-control") %>
 </div>
+
+<%= form.checkbox(:visible, label: "Visible", ng_errors: "gnc.data.errors.visible") %>

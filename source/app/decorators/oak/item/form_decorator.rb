@@ -6,6 +6,7 @@ module Oak
       expose :id
       expose :name
       expose :description
+      expose :visible
       expose :category_slug
       expose :kind_slug
       expose :links, decorator: Oak::Link::Decorator
