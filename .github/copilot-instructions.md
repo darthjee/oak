@@ -78,6 +78,18 @@ Key features used in this project:
 
 When adding new redirection logic, prefer `redirection_rule` in base controllers and use `skip_redirection_rule` / `skip_redirection` in child controllers to override inherited rules.
 
+## Jace Usage
+
+Oak uses the **jace** gem for internal event-driven logic. Refer to [.github/jace-usage.md](.github/jace-usage.md) for the full usage guide.
+
+Key features used in this project:
+
+- **`Jace::Registry`** – Central object that stores event-to-handler mappings; instantiate once per service/module
+- **`registry.register(event, instant = :after, &block)`** – Adds a `before` or `after` handler for a named event; handlers are `instance_eval`'d inside the trigger context
+- **`registry.trigger(event, context, &block)`** – Fires the named event, running `:before` handlers, the main block, then `:after` handlers
+
+When implementing lifecycle hooks or side-effects for service operations (e.g. logging, notifications, validations), prefer a `Jace::Registry` over ad-hoc callbacks or observer patterns.
+
 ## Controller Patterns
 
 Controllers should use the `OnePageApplication` concern to ensure SPA behavior:
