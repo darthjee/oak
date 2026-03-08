@@ -28,7 +28,7 @@ module Oak
     scope :for_kind, ->(kind) { where(kind:) }
     scope :visible, -> { where(visible: true) }
     scope :visible_for_user, ->(user) { where(visible: true).or(where(user: user)) }
-    scope :visible_for, ->(user = nil) { user ? visible_for_user(user) : visible }
+    scope :visible_for, ->(user) { user ? visible_for_user(user) : visible }
 
     default_scope { order(order: :asc, id: :asc) }
   end
