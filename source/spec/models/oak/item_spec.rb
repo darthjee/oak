@@ -182,6 +182,29 @@ RSpec.describe Oak::Item, type: :model do
       end
     end
 
+    describe '.visible_for_user' do
+      subject(:result) { described_class.visible_for_user(owner) }
+
+      let(:owner) { create(:user) }
+      let(:other_user) { create(:user) }
+      let(:category) { create(:oak_category) }
+      let!(:visible_item) { create(:oak_item, category:, user: other_user, visible: true) }
+      let!(:invisible_item) { create(:oak_item, category:, user: other_user, visible: false) }
+      let!(:own_invisible_item) { create(:oak_item, category:, user: owner, visible: false) }
+
+      it 'returns visible items from other users' do
+        expect(result).to include(visible_item)
+      end
+
+      it 'does not return invisible items from other users' do
+        expect(result).not_to include(invisible_item)
+      end
+
+      it 'returns invisible items from the provided user' do
+        expect(result).to include(own_invisible_item)
+      end
+    end
+
     describe '.visible_for' do
       let(:owner) { create(:user) }
       let(:other_user) { create(:user) }
