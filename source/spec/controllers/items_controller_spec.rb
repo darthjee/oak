@@ -217,6 +217,7 @@ RSpec.describe ItemsController, type: :controller do
         let(:item) { create(:oak_item, category:, user: other_user, visible: false) }
 
         before do
+          cookies.signed[:session] = session.id
           get :show, params: params
         end
 
