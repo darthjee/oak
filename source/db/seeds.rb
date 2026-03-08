@@ -25,8 +25,18 @@ user = Zyra.find_or_create(
 user.password = '123456'
 user.save
 
+other_user = Zyra.find_or_create(
+  :user,
+  email: 'other_email@srv.com',
+  login: 'other_user',
+  name: 'other_user'
+)
+other_user.password = '123456'
+other_user.save
+
 category = Zyra.find_or_create(:oak_category, name: 'Arduino')
 other_category = Zyra.find_or_create(:oak_category, name: 'Pokemon')
+other_user_category = Zyra.find_or_create(:oak_category, name: 'Other Arduino')
 kind = Zyra.find_or_create(:oak_kind, name: 'Arduino')
 ohter_kind = Zyra.find_or_create(:oak_kind, name: 'Component')
 pokemon_kind = Zyra.find_or_create(:oak_kind, name: 'Normal')
@@ -98,6 +108,16 @@ end
     description: 'A Pokemon'
   )
 end
+
+item = Zyra.find_or_create(
+  :oak_item,
+  name: 'Other Arduino',
+  user_id: other_user.id,
+  category_id: other_user_category.id,
+  kind_id: kind.id,
+  description: 'An arduino',
+  visible: false
+)
 
 Oak::Item.unscoped.distinct.pluck(:category_id, :kind_id).each do |(category_id, kind_id)|
   Zyra.find_or_create(:oak_categorykind, category_id: category_id, kind_id: kind_id)
