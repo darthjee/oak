@@ -174,7 +174,7 @@ RSpec.describe Oak::Item, type: :model do
       let!(:own_invisible_item) { create(:oak_item, category:, user: owner, visible: false) }
 
       context 'when no user is provided' do
-        subject(:result) { Oak::Item.visible_for }
+        subject(:result) { described_class.visible_for }
 
         it 'returns only visible items' do
           expect(result).to include(visible_item)
@@ -190,7 +190,7 @@ RSpec.describe Oak::Item, type: :model do
       end
 
       context 'when a user is provided' do
-        subject(:result) { Oak::Item.visible_for(owner) }
+        subject(:result) { described_class.visible_for(owner) }
 
         it 'returns visible items from other users' do
           expect(result).to include(visible_item)
