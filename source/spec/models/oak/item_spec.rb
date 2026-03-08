@@ -164,6 +164,89 @@ RSpec.describe Oak::Item, type: :model do
     end
   end
 
+  describe 'scopes' do
+    describe '.visible' do
+      subject(:result) { described_class.visible }
+
+      let(:category) { create(:oak_category) }
+      let(:user) { create(:user) }
+      let!(:visible_item) { create(:oak_item, category:, user:, visible: true) }
+      let!(:invisible_item) { create(:oak_item, category:, user:, visible: false) }
+
+      it 'returns visible items' do
+        expect(result).to include(visible_item)
+      end
+
+      it 'does not return invisible items' do
+        expect(result).not_to include(invisible_item)
+      end
+    end
+
+    describe '.visible_for_user' do
+      subject(:result) { described_class.visible_for_user(owner) }
+
+      let(:owner) { create(:user) }
+      let(:other_user) { create(:user) }
+      let(:category) { create(:oak_category) }
+      let!(:visible_item) { create(:oak_item, category:, user: other_user, visible: true) }
+      let!(:invisible_item) { create(:oak_item, category:, user: other_user, visible: false) }
+      let!(:own_invisible_item) { create(:oak_item, category:, user: owner, visible: false) }
+
+      it 'returns visible items from other users' do
+        expect(result).to include(visible_item)
+      end
+
+      it 'does not return invisible items from other users' do
+        expect(result).not_to include(invisible_item)
+      end
+
+      it 'returns invisible items from the provided user' do
+        expect(result).to include(own_invisible_item)
+      end
+    end
+
+    describe '.visible_for' do
+      let(:owner) { create(:user) }
+      let(:other_user) { create(:user) }
+      let(:category) { create(:oak_category) }
+      let!(:visible_item) { create(:oak_item, category:, user: other_user, visible: true) }
+      let!(:invisible_item) { create(:oak_item, category:, user: other_user, visible: false) }
+      let!(:own_invisible_item) { create(:oak_item, category:, user: owner, visible: false) }
+
+      context 'when no user is provided' do
+        subject(:result) { described_class.visible_for(nil) }
+
+        it 'returns only visible items' do
+          expect(result).to include(visible_item)
+        end
+
+        it 'excludes invisible items' do
+          expect(result).not_to include(invisible_item)
+        end
+
+        it 'excludes invisible items even for the owner' do
+          expect(result).not_to include(own_invisible_item)
+        end
+      end
+
+      context 'when a user is provided' do
+        subject(:result) { described_class.visible_for(owner) }
+
+        it 'returns visible items from other users' do
+          expect(result).to include(visible_item)
+        end
+
+        it 'excludes invisible items from other users' do
+          expect(result).not_to include(invisible_item)
+        end
+
+        it 'includes own invisible items' do
+          expect(result).to include(own_invisible_item)
+        end
+      end
+    end
+  end
+
   describe 'associations' do
     describe '#main_photo' do
       context 'when there are no photos' do
