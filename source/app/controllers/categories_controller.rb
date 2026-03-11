@@ -17,6 +17,10 @@ class CategoriesController < ApplicationController
 
   private
 
+  def category
+    @category ||= Oak::Category.eager_load(:main_photo).find_by(slug: params[:slug])
+  end
+
   def category_params
     params.require(:category).permit(:name, kinds: [:slug])
   end

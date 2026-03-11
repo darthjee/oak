@@ -14,6 +14,6 @@ class IndexCategoriesController < ApplicationController
   private
 
   def categories
-    @categories ||= Oak::Category.includes(:main_photo)
+    @categories ||= Oak::Category.eager_load(:main_photo)
   end
 end
