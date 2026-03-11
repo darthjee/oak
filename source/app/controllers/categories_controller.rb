@@ -3,14 +3,8 @@
 class CategoriesController < ApplicationController
   include UserRequired
 
-  protect_from_forgery except: %i[index create]
+  protect_from_forgery except: :create
   require_user_for :new, :create, :edit, :update
-
-  resource_for Oak::Category,
-               only: :index,
-               decorator: Oak::Category::Decorator,
-               paginated: true,
-               per_page: 20
 
   resource_for Oak::Category,
                only: %i[new create show edit update],
@@ -23,8 +17,8 @@ class CategoriesController < ApplicationController
 
   private
 
-  def categories
-    @categories ||= Oak::Category.includes(:main_photo)
+  def category
+    @category ||= Oak::Category.eager_load(:main_photo).find_by(slug: params[:slug])
   end
 
   def category_params
