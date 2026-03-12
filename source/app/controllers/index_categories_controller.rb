@@ -14,6 +14,9 @@ class IndexCategoriesController < ApplicationController
   private
 
   def categories
-    @categories ||= Oak::Category.eager_load(:main_photo)
+    @categories ||= begin
+      relation = Oak::Category.eager_load(:main_photo)
+      logged_user ? relation : relation.where(id: Oak::Item.select(:category_id))
+    end
   end
 end
