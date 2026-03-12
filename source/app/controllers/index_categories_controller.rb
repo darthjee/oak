@@ -14,6 +14,15 @@ class IndexCategoriesController < ApplicationController
   private
 
   def categories
-    @categories ||= Oak::Category.eager_load(:main_photo)
+    @categories ||= begin
+      relation = Oak::Category.eager_load(:main_photo)
+      return relation if include_empty?
+
+      relation.where(id: Oak::Item.visible_for(logged_user).select(:category_id))
+    end
+  end
+
+  def include_empty?
+    params.dig(:filters, :include_empty) == 'true'
   end
 end
