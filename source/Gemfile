@@ -16,6 +16,7 @@ gem 'stimulus-rails'
 gem 'turbo-rails'
 gem 'rake', '>= 13.2.1'
 gem 'turbolinks', '>= 5.2.1'
+gem 'observer', '>= 0.1.2'
 
 gem 'bootsnap', require: false
 gem 'globalid', '>= 1.1.0'

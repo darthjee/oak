@@ -246,6 +246,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.1-x86_64-linux-musl)
       racc (~> 1.4)
+    observer (0.1.2)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.8.0)
@@ -518,6 +519,7 @@ DEPENDENCIES
   magicka (>= 1.2.0)
   mysql2
   nokogiri (>= 1.19.1)
+  observer (>= 0.1.2)
   pry (>= 0.14.2)
   pry-nav (>= 1.0.0)
   pry-rails (>= 0.3.11)
