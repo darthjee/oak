@@ -151,12 +151,6 @@ Rails/ResponseParsedBody:
     - 'spec/controllers/subscriptions_controller_spec.rb'
     - 'spec/controllers/user/categories_controller_spec.rb'
 
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/RootPathnameMethods:
-  Exclude:
-    - 'spec/spec_helper.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:

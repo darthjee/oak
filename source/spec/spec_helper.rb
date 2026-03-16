@@ -25,8 +25,8 @@ Zonebie.set_random_timezone
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join('spec/support/models/**/*.rb')].each { |f| require f }
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Rails.root.glob('spec/support/models/**/*.rb').each { |f| require f }
+Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
 
 # Automatically maintain test database schema.
 # If you are not using ActiveRecord, you can remove this line.
