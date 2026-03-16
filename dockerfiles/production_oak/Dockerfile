@@ -4,7 +4,7 @@ FROM darthjee/production_oak-base:0.1.0 as base
 
 FROM base as builder
 
-COPY --chown=app:app ./source/ /home/app/app/
+COPY --chown=app:app ./ /home/app/app/
 
 RUN bundle install --without development test;
 

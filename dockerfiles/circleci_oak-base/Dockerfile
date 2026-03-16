@@ -5,8 +5,8 @@ FROM circleci_taa:1.5.0 as base
 
 FROM base as builder
 
-COPY source/Gemfile* /home/circleci/project/
-COPY source/package.json /home/circleci/project/
+COPY Gemfile* /home/circleci/project/
+COPY package.json /home/circleci/project/
 
 ENV HOME_DIR /home/circleci
 
