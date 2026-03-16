@@ -100,17 +100,17 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'includes visible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(visible_item.id)
         end
 
         it 'excludes invisible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(invisible_other_item.id)
         end
 
         it 'excludes own invisible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(own_invisible_item.id)
         end
       end
@@ -126,17 +126,17 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'includes visible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(visible_item.id)
         end
 
         it 'excludes invisible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(invisible_other_item.id)
         end
 
         it 'includes own invisible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(own_invisible_item.id)
         end
       end

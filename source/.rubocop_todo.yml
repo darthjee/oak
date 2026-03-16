@@ -100,14 +100,6 @@ Rails/NotNullColumn:
   Exclude:
     - 'db/migrate/20250512184628_add_file_name_to_photos.rb'
 
-# Offense count: 8
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/Pluck:
-  Exclude:
-    - 'app/builders/oak/category/update_builder.rb'
-    - 'app/builders/oak/item/update_builder.rb'
-    - 'spec/controllers/items_controller_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
