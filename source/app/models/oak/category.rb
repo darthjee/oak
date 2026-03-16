@@ -8,7 +8,7 @@ module Oak
     validates :name, presence: true, length: { maximum: 40 }
 
     has_many :items, class_name: 'Oak::Item', dependent: :destroy
-    has_one :sample_item, -> { order(:id) }, class_name: 'Oak::Item'
+    has_one :sample_item, -> { order(:id) }, class_name: 'Oak::Item', inverse_of: :category
     has_one :main_photo, -> { order(:id) }, class_name: 'Oak::Photo', through: :sample_item
 
     # Association with kinds through category_kinds

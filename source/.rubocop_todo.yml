@@ -86,13 +86,6 @@ Rails/I18nLocaleTexts:
     - 'app/models/oak/category_kind.rb'
     - 'app/models/oak/subscription.rb'
 
-# Offense count: 4
-# Configuration parameters: IgnoreScopes.
-Rails/InverseOf:
-  Exclude:
-    - 'app/models/oak/category.rb'
-    - 'app/models/oak/kind.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
