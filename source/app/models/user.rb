@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  validates_presence_of :name, :login, :email, :encrypted_password
+  validates :name, :login, :email, :encrypted_password, presence: true
 
   has_many :sessions
   has_many :subscriptions, class_name: 'Oak::Subscription', dependent: :destroy

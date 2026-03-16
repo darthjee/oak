@@ -174,12 +174,6 @@ Rails/TimeZone:
     - 'spec/controllers/login_controller_spec.rb'
 
 # Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Rails/Validation:
-  Exclude:
-    - 'app/models/user.rb'
-
-# Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
   Exclude:
