@@ -38,14 +38,6 @@ Naming/PredicatePrefix:
 RSpec/NestedGroups:
   Max: 5
 
-# Offense count: 7
-# This cop supports safe autocorrection (--autocorrect).
-RSpecRails/HttpStatusNameConsistency:
-  Exclude:
-    - 'spec/controllers/categories_controller_spec.rb'
-    - 'spec/controllers/items_controller_spec.rb'
-    - 'spec/controllers/kinds_controller_spec.rb'
-    
 # Offense count: 1
 # Configuration parameters: Database.
 # SupportedDatabases: mysql, postgresql

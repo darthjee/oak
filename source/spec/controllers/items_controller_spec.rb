@@ -414,7 +414,7 @@ RSpec.describe ItemsController do
       it do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do
@@ -445,7 +445,7 @@ RSpec.describe ItemsController do
       it 'returns unprocessable entity status' do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do
@@ -637,7 +637,7 @@ RSpec.describe ItemsController do
       it 'returns unprocessable entity status' do
         put :update, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do
@@ -669,7 +669,7 @@ RSpec.describe ItemsController do
       it 'returns unprocessable entity status' do
         put :update, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do

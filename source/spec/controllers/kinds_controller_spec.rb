@@ -185,7 +185,7 @@ RSpec.describe KindsController do
       it do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do
