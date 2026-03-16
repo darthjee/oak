@@ -108,13 +108,6 @@ Rails/Pluck:
     - 'app/builders/oak/item/update_builder.rb'
     - 'spec/controllers/items_controller_spec.rb'
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-Rails/PluralizationGrammar:
-  Exclude:
-    - 'app/models/settings.rb'
-    - 'spec/support/factories/session.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
