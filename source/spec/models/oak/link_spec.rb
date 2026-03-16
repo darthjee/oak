@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Link, type: :model do
+RSpec.describe Oak::Link do
   subject(:link) { build(:oak_link, item:, order:, url:, text:) }
 
   let(:item) { build(:oak_item) }

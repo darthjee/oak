@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IndexCategoriesController, type: :controller do
+RSpec.describe IndexCategoriesController do
   let(:response_json) { response.parsed_body }
   let(:parameters)    { { ajax: true, format: :json } }
 

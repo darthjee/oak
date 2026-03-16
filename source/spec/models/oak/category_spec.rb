@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Category, type: :model do
+RSpec.describe Oak::Category do
   subject(:category) { build(:oak_category, name:) }
 
   let(:name) { SecureRandom.hex(10) }

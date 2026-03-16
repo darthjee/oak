@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CategoriesController, type: :controller do
+RSpec.describe CategoriesController do
   let(:response_json) { response.parsed_body }
 
   describe 'GET #new' do

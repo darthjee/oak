@@ -45,13 +45,7 @@ RSpecRails/HttpStatusNameConsistency:
     - 'spec/controllers/categories_controller_spec.rb'
     - 'spec/controllers/items_controller_spec.rb'
     - 'spec/controllers/kinds_controller_spec.rb'
-
-# Offense count: 18
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Inferences.
-RSpecRails/InferredSpecType:
-  Enabled: false
-
+    
 # Offense count: 1
 # Configuration parameters: Database.
 # SupportedDatabases: mysql, postgresql

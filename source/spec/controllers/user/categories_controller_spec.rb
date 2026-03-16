@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe User::CategoriesController, type: :controller do
+RSpec.describe User::CategoriesController do
   describe 'GET #index' do
     let!(:categories) { create_list(:oak_category, 3) }
 

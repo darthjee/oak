@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Photo, type: :model do
+RSpec.describe Oak::Photo do
   subject(:photo) { build(:oak_photo, item:, order:, file_name:) }
 
   let(:item) { build(:oak_item) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Subscription, type: :model do
+RSpec.describe Oak::Subscription do
   subject(:subscription) { build(:oak_subscription, user:, category:) }
 
   let(:user) { build(:user) }

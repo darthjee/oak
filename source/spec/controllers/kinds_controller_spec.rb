@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe KindsController, type: :controller do
+RSpec.describe KindsController do
   let(:response_json) { response.parsed_body }
 
   describe 'GET #index' do

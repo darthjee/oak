@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ItemsController, type: :controller do
+RSpec.describe ItemsController do
   let(:response_json) { response.parsed_body }
   let(:user) { create(:user) }
   let(:session) { create(:session, user:) }
