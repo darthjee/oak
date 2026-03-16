@@ -5,8 +5,8 @@ FROM darthjee/production_taa:1.5.0 as base
 
 FROM base as builder
 
-COPY source/Gemfile* /home/app/app/
-COPY source/package.json /home/app/app/
+COPY Gemfile* /home/app/app/
+COPY package.json /home/app/app/
 
 ENV HOME_DIR /home/app
 
