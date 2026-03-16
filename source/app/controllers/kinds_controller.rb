@@ -22,7 +22,7 @@ class KindsController < ApplicationController
   private
 
   def kinds
-    @kinds ||= Oak::Kind.all.includes(:main_photo)
+    @kinds ||= Oak::Kind.includes(:main_photo)
   end
 
   def kind_params

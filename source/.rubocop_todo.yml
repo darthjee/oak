@@ -116,14 +116,6 @@ Rails/PluralizationGrammar:
     - 'spec/support/factories/session.rb'
 
 # Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowedReceivers.
-# AllowedReceivers: ActionMailer::Preview, ActiveSupport::TimeZone
-Rails/RedundantActiveRecordAllMethod:
-  Exclude:
-    - 'app/controllers/kinds_controller.rb'
-
-# Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
   Exclude:
