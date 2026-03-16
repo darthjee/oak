@@ -1,4 +1,4 @@
-FROM darthjee/oak-base:0.0.4
+FROM darthjee/oak-base:0.1.0
 
 WORKDIR /home/app/app
 COPY --chown=app:app Gemfile* /home/app/app/
