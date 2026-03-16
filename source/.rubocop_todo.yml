@@ -163,16 +163,6 @@ Rails/SquishedSQLHeredocs:
   Exclude:
     - 'db/migrate/20250519230830_populate_items_description.rb'
 
-# Offense count: 4
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: strict, flexible
-Rails/TimeZone:
-  Exclude:
-    - 'app/models/session.rb'
-    - 'spec/controllers/concerns/logged_user/processor_spec.rb'
-    - 'spec/controllers/login_controller_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
