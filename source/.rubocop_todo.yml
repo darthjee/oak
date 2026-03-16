@@ -94,13 +94,6 @@ Rails/InverseOf:
     - 'app/models/oak/kind.rb'
 
 # Offense count: 1
-# Configuration parameters: Database.
-# SupportedDatabases: mysql
-Rails/NotNullColumn:
-  Exclude:
-    - 'db/migrate/20250512184628_add_file_name_to_photos.rb'
-
-# Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
   Exclude:
