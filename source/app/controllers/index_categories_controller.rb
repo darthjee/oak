@@ -18,7 +18,7 @@ class IndexCategoriesController < ApplicationController
       relation = Oak::Category.eager_load(:main_photo)
       return relation if include_empty?
 
-      relation.where(id: Oak::Item.visible_for(logged_user).select(:category_id))
+      relation.where(id: Oak::Item.visible_for(logged_user).distinct.select(:category_id))
     end
   end
 
