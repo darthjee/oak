@@ -123,13 +123,6 @@ Rails/RedundantActiveRecordAllMethod:
   Exclude:
     - 'app/controllers/kinds_controller.rb'
 
-# Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-Rails/RedundantForeignKey:
-  Exclude:
-    - 'app/models/oak/category.rb'
-    - 'app/models/oak/kind.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
