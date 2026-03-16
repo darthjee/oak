@@ -6,7 +6,6 @@ module Oak
     belongs_to :item
 
     # Validations
-    validates :item, presence: true
     validates :url, presence: true, format: URI::DEFAULT_PARSER.make_regexp(%w[http https])
     validates :text, presence: true, length: { maximum: 255 }
     validates :order,

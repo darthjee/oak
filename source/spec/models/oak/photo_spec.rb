@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Photo, type: :model do
+RSpec.describe Oak::Photo do
   subject(:photo) { build(:oak_photo, item:, order:, file_name:) }
 
   let(:item) { build(:oak_item) }
@@ -25,7 +25,7 @@ RSpec.describe Oak::Photo, type: :model do
 
       it 'adds an error on item' do
         photo.valid? # Trigger validations
-        expect(photo.errors[:item]).to include("can't be blank")
+        expect(photo.errors[:item]).to include('must exist')
       end
     end
 

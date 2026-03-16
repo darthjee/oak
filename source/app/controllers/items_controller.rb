@@ -35,7 +35,9 @@ class ItemsController < ApplicationController
   end
 
   def kind
-    @kind ||= Oak::Kind.find_by(slug: params.require(:item)[:kind_slug])
+    return @kind if defined?(@kind)
+
+    @kind = Oak::Kind.find_by(slug: params.require(:item)[:kind_slug])
   end
 
   def item_params

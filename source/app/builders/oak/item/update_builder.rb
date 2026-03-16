@@ -62,7 +62,7 @@ module Oak
       end
 
       def delete_removed_links
-        payload_ids = links.map { |link| link[:id] }.compact
+        payload_ids = links.pluck(:id).compact
         item.links.where.not(id: payload_ids).destroy_all
       end
     end

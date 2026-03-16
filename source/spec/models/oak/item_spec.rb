@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Item, type: :model do
+RSpec.describe Oak::Item do
   subject(:item) do
     build(:oak_item, name:, description:, user:, category:, kind:, order:)
   end

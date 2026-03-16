@@ -17,7 +17,7 @@ class Settings
   with_settings(:password_salt)
   setting_with_options(:hex_code_size, default: 16, type: :integer)
   setting_with_options(:session_period, default: 2.days, type: :seconds)
-  setting_with_options(:cache_age, default: 1.seconds, type: :seconds)
+  setting_with_options(:cache_age, default: 1.second, type: :seconds)
   setting_with_options(:title, default: 'Oak')
   setting_with_options(:favicon, default: '/favicon.ico')
   setting_with_options(:photos_path, default: '/tmp/photos')

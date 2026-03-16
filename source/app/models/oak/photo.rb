@@ -6,7 +6,6 @@ module Oak
     belongs_to :item
 
     # Validations
-    validates :item, presence: true
     validates :order,
               numericality: {
                 only_integer: true,

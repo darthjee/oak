@@ -14,12 +14,17 @@ class IndexCategoriesController < ApplicationController
   private
 
   def categories
-    @categories ||= begin
-      relation = Oak::Category.eager_load(:main_photo)
-      return relation if include_empty?
+    @categories ||= fetch_categories
+  end
 
-      relation.where(id: Oak::Item.visible_for(logged_user).distinct.select(:category_id))
-    end
+  def fetch_categories
+    return all_categories if include_empty?
+
+    all_categories.where(id: Oak::Item.visible_for(logged_user).distinct.select(:category_id))
+  end
+
+  def all_categories
+    Oak::Category.eager_load(:main_photo)
   end
 
   def include_empty?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Session < ApplicationRecord
-  scope :active, -> { where('expiration IS NULL OR expiration > ?', Time.now) }
+  scope :active, -> { where('expiration IS NULL OR expiration > ?', Time.zone.now) }
 
   belongs_to :user
 

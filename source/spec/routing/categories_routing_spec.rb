@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'categories routing', type: :routing do
+RSpec.describe 'categories routing' do
   it 'routes GET /categories to index_categories#index' do
     expect(get: '/categories').to route_to('index_categories#index')
   end

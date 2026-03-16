@@ -65,7 +65,7 @@ module Oak
       end
 
       def kinds_slugs
-        @kinds_slugs ||= kinds.map { |kind_data| kind_data[:slug] }
+        @kinds_slugs ||= kinds.pluck(:slug)
       end
     end
   end

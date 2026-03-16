@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe KindsController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+RSpec.describe KindsController do
+  let(:response_json) { response.parsed_body }
 
   describe 'GET #index' do
     context 'when format is JSON' do
@@ -185,7 +185,7 @@ RSpec.describe KindsController, type: :controller do
       it do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do

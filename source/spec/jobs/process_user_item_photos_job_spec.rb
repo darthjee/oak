@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProcessUserItemPhotosJob, type: :job do
+RSpec.describe ProcessUserItemPhotosJob do
   describe '#perform' do
     subject(:perform) { worker.perform(user.id) }
 

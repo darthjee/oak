@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oak::Kind, type: :model do
+RSpec.describe Oak::Kind do
   subject(:kind) { build(:oak_kind, name:) }
 
   let(:name) { SecureRandom.hex(10) }

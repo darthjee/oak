@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe CategoriesController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+RSpec.describe CategoriesController do
+  let(:response_json) { response.parsed_body }
 
   describe 'GET #new' do
     let(:session) { create(:session, user:) }
@@ -146,7 +146,7 @@ RSpec.describe CategoriesController, type: :controller do
       it 'returns an unprocessable entity response' do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do
@@ -379,7 +379,7 @@ RSpec.describe CategoriesController, type: :controller do
       it 'returns an unprocessable entity response' do
         patch :update, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do

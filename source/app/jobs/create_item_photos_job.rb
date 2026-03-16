@@ -33,7 +33,9 @@ class CreateItemPhotosJob
   end
 
   def item
-    @item ||= Oak::Item.find_by(id: item_id)
+    return @item if defined?(@item)
+
+    @item = Oak::Item.find_by(id: item_id)
   end
 
   def user_id

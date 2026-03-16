@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe SubscriptionsController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+RSpec.describe SubscriptionsController do
+  let(:response_json) { response.parsed_body }
   let(:user) { create(:user) }
   let(:session) { create(:session, user:) }
   let(:category) { create(:oak_category, name: 'Sample Category') }

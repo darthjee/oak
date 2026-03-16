@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Category::KindsController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+RSpec.describe Category::KindsController do
+  let(:response_json) { response.parsed_body }
 
   describe 'GET #index' do
     let(:category) { create(:oak_category) }

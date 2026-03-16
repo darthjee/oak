@@ -5,7 +5,7 @@ FactoryBot.define do
     user
 
     trait :expired do
-      expiration { 1.days.ago }
+      expiration { 1.day.ago }
     end
   end
 end

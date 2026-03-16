@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe ItemsController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+RSpec.describe ItemsController do
+  let(:response_json) { response.parsed_body }
   let(:user) { create(:user) }
   let(:session) { create(:session, user:) }
 
@@ -28,7 +28,7 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          expect(response.parsed_body).to eq(expected.map(&:stringify_keys))
         end
       end
 
@@ -46,7 +46,7 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          expect(response.parsed_body).to eq(expected.map(&:stringify_keys))
         end
       end
     end
@@ -100,17 +100,17 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'includes visible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(visible_item.id)
         end
 
         it 'excludes invisible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(invisible_other_item.id)
         end
 
         it 'excludes own invisible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(own_invisible_item.id)
         end
       end
@@ -126,17 +126,17 @@ RSpec.describe ItemsController, type: :controller do
         end
 
         it 'includes visible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(visible_item.id)
         end
 
         it 'excludes invisible items from other users' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).not_to include(invisible_other_item.id)
         end
 
         it 'includes own invisible items' do
-          ids = response_json.map { |i| i['id'] }
+          ids = response_json.pluck('id')
           expect(ids).to include(own_invisible_item.id)
         end
       end
@@ -160,7 +160,7 @@ RSpec.describe ItemsController, type: :controller do
       end
 
       it 'renders the correct JSON using the decorator' do
-        expect(JSON.parse(response.body)).to eq(expected.stringify_keys)
+        expect(response.parsed_body).to eq(expected.stringify_keys)
       end
     end
 
@@ -414,7 +414,7 @@ RSpec.describe ItemsController, type: :controller do
       it do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns errors as JSON' do
@@ -445,7 +445,7 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns unprocessable entity status' do
         post :create, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do
@@ -637,7 +637,7 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns unprocessable entity status' do
         put :update, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do
@@ -669,7 +669,7 @@ RSpec.describe ItemsController, type: :controller do
       it 'returns unprocessable entity status' do
         put :update, params: parameters
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors as JSON' do

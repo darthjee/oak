@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe OnePageApplication, type: :controller do
+RSpec.describe OnePageApplication do
   controller(ApplicationController) do
     # rubocop:disable RSpec/DescribedClass
     include OnePageApplication

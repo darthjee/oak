@@ -182,7 +182,7 @@ describe LoggedUser::Processor do
         processor.logoff
 
         expect(session.reload.expiration)
-          .to be < Time.now
+          .to be < Time.zone.now
       end
 
       it 'deletes session cookie' do
