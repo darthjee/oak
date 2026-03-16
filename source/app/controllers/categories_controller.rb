@@ -18,7 +18,9 @@ class CategoriesController < ApplicationController
   private
 
   def category
-    @category ||= Oak::Category.eager_load(:main_photo).find_by(slug: params[:slug])
+    return @category if defined?(@category)
+
+    @category = Oak::Category.eager_load(:main_photo).find_by(slug: params[:slug])
   end
 
   def category_params

@@ -64,14 +64,6 @@ Rails/CreateTableWithTimestamps:
   Exclude:
     - 'db/migrate/20200921210137_create_sessions.rb'
 
-# Offense count: 3
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/FindByOrAssignmentMemoization:
-  Exclude:
-    - 'app/controllers/categories_controller.rb'
-    - 'app/controllers/items_controller.rb'
-    - 'app/jobs/create_item_photos_job.rb'
-
 # Offense count: 5
 Rails/HasManyOrHasOneDependent:
   Exclude:
