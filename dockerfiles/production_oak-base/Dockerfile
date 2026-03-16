@@ -23,4 +23,4 @@ RUN /bin/bash bundle_builder.sh --without development test
 FROM base
 
 COPY --chown=app:app --from=builder /home/app/bundle/ /usr/local/bundle/
-COPY --chown=app:app --from=builder /home/app/node_modules/ /usr/lib/node_modules
+COPY --chown=app:app --from=builder /home/app/yarn/new/ /usr/local/share/.cache/yarn/v6/
