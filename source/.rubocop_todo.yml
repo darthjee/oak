@@ -157,12 +157,6 @@ Rails/RootPathnameMethods:
   Exclude:
     - 'spec/spec_helper.rb'
 
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/SquishedSQLHeredocs:
-  Exclude:
-    - 'db/migrate/20250519230830_populate_items_description.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:
