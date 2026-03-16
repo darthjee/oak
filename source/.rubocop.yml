@@ -1,4 +1,9 @@
-inherit_from: .rubocop_todo.yml
+plugins:
+  - rubocop-rspec
+  - rubocop-factory_bot
+  - rubocop-rails
+  - rubocop-rake
+  - rubocop-rspec_rails
 
 require: rubocop-rspec
 
