@@ -1,12 +1,12 @@
-FROM darthjee/scripts:0.4.3 as scripts
-FROM darthjee/taa:1.4.2 as base
+FROM darthjee/scripts:0.8.0 as scripts
+FROM darthjee/taa:1.5.0 as base
 
 ######################################
 
 FROM base as builder
 
-COPY source/Gemfile* /home/app/app/
-COPY source/package.json /home/app/app/
+COPY Gemfile* /home/app/app/
+COPY package.json /home/app/app/
 
 ENV HOME_DIR /home/app
 
@@ -23,4 +23,4 @@ RUN /bin/bash bundle_builder.sh
 FROM base
 
 COPY --chown=app:app --from=builder /home/app/bundle/ /usr/local/bundle/
-COPY --chown=app:app --from=builder /home/app/node_modules/ /usr/lib/node_modules
+COPY --chown=app:app --from=builder /home/app/yarn/new/ /usr/local/share/.cache/yarn/v6/

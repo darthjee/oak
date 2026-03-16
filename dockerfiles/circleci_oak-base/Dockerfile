@@ -1,12 +1,12 @@
-FROM darthjee/scripts:0.4.3 as scripts
-FROM darthjee/circleci_taa:1.4.2 as base
+FROM darthjee/scripts:0.8.0 as scripts
+FROM darthjee/circleci_taa:1.5.0 as base
 
 ######################################
 
 FROM base as builder
 
-COPY source/Gemfile* /home/circleci/project/
-COPY source/package.json /home/circleci/project/
+COPY Gemfile* /home/circleci/project/
+COPY package.json /home/circleci/project/
 
 ENV HOME_DIR /home/circleci
 
@@ -25,4 +25,4 @@ USER circleci
 FROM base
 
 COPY --chown=circleci:circleci --from=builder /home/circleci/bundle/ /home/circleci/.rubygems/
-COPY --chown=circleci:circleci --from=builder /home/circleci/node_modules/ /usr/lib/node_modules
+COPY --chown=circleci:circleci --from=builder /home/circleci/yarn/new/ /usr/local/share/.cache/yarn/v6/
