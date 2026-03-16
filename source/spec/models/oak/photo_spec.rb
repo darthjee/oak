@@ -25,7 +25,7 @@ RSpec.describe Oak::Photo, type: :model do
 
       it 'adds an error on item' do
         photo.valid? # Trigger validations
-        expect(photo.errors[:item]).to include("can't be blank")
+        expect(photo.errors[:item]).to include('must exist')
       end
     end
 

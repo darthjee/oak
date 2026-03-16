@@ -130,15 +130,6 @@ Rails/RedundantForeignKey:
     - 'app/models/oak/category.rb'
     - 'app/models/oak/kind.rb'
 
-# Offense count: 6
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/RedundantPresenceValidationOnBelongsTo:
-  Exclude:
-    - 'app/models/oak/category_kind.rb'
-    - 'app/models/oak/link.rb'
-    - 'app/models/oak/photo.rb'
-    - 'app/models/oak/subscription.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:

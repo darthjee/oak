@@ -24,7 +24,7 @@ RSpec.describe Oak::Subscription, type: :model do
 
       it 'adds an error on user' do
         subscription.valid? # Trigger validations
-        expect(subscription.errors[:user]).to include("can't be blank")
+        expect(subscription.errors[:user]).to include('must exist')
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Oak::Subscription, type: :model do
 
       it 'adds an error on category' do
         subscription.valid? # Trigger validations
-        expect(subscription.errors[:category]).to include("can't be blank")
+        expect(subscription.errors[:category]).to include('must exist')
       end
     end
 

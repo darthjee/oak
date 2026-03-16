@@ -26,7 +26,7 @@ RSpec.describe Oak::Link, type: :model do
 
       it 'adds an error on item' do
         link.valid? # Trigger validations
-        expect(link.errors[:item]).to include("can't be blank")
+        expect(link.errors[:item]).to include('must exist')
       end
     end
 

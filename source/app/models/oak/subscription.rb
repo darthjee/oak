@@ -7,8 +7,6 @@ module Oak
     belongs_to :category, class_name: 'Oak::Category'
 
     # Validations
-    validates :user, presence: true
-    validates :category, presence: true
 
     # Validates the uniqueness of the category within the scope of a user
     validates :category, uniqueness: { scope: :user, message: 'has already been subscribed by this user' }

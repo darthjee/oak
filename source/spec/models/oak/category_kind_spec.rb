@@ -24,7 +24,7 @@ RSpec.describe Oak::CategoryKind, type: :model do
 
       it 'adds an error on category' do
         category_kind.valid? # Trigger validations
-        expect(category_kind.errors[:category]).to include("can't be blank")
+        expect(category_kind.errors[:category]).to include('must exist')
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Oak::CategoryKind, type: :model do
 
       it 'adds an error on kind' do
         category_kind.valid? # Trigger validations
-        expect(category_kind.errors[:kind]).to include("can't be blank")
+        expect(category_kind.errors[:kind]).to include('must exist')
       end
     end
 
