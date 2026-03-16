@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe KindsController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   describe 'GET #index' do
     context 'when format is JSON' do

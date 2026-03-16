@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe IndexCategoriesController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
   let(:parameters)    { { ajax: true, format: :json } }
 
   describe 'GET #index' do

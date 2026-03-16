@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CategoriesController, type: :controller do
-  let(:response_json) { JSON.parse(response.body) }
+  let(:response_json) { response.parsed_body }
 
   describe 'GET #new' do
     let(:session) { create(:session, user:) }

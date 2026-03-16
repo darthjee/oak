@@ -139,18 +139,6 @@ Rails/RedundantPresenceValidationOnBelongsTo:
     - 'app/models/oak/photo.rb'
     - 'app/models/oak/subscription.rb'
 
-# Offense count: 12
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ResponseParsedBody:
-  Exclude:
-    - 'spec/controllers/categories_controller_spec.rb'
-    - 'spec/controllers/category/kinds_controller_spec.rb'
-    - 'spec/controllers/index_categories_controller_spec.rb'
-    - 'spec/controllers/items_controller_spec.rb'
-    - 'spec/controllers/kinds_controller_spec.rb'
-    - 'spec/controllers/subscriptions_controller_spec.rb'
-    - 'spec/controllers/user/categories_controller_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowedClasses.
 Style/OneClassPerFile:

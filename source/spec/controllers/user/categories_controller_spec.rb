@@ -22,7 +22,7 @@ RSpec.describe User::CategoriesController, type: :controller do
       end
 
       it 'renders the correct JSON using the decorator' do
-        expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+        expect(response.parsed_body).to eq(expected.map(&:stringify_keys))
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe User::CategoriesController, type: :controller do
         end
 
         it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          expect(response.parsed_body).to eq(expected.map(&:stringify_keys))
         end
       end
 
@@ -78,7 +78,7 @@ RSpec.describe User::CategoriesController, type: :controller do
         end
 
         it 'renders the correct JSON using the decorator' do
-          expect(JSON.parse(response.body)).to eq(expected.map(&:stringify_keys))
+          expect(response.parsed_body).to eq(expected.map(&:stringify_keys))
         end
       end
     end
