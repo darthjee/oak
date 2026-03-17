@@ -10,7 +10,8 @@ module Oak
                         category: nil,
                         kind: nil,
                         user: nil,
-                        links: []
+                        links: [],
+                        visible: true
                       }, **{})
 
       def self.build(**params)
