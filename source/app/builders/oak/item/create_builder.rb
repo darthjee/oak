@@ -2,20 +2,10 @@
 
 module Oak
   class Item
-    class CreateBuilder < Sinclair::Model
-      initialize_with({
-                        scope: nil,
-                        name: nil,
-                        description: nil,
-                        category: nil,
-                        kind: nil,
-                        user: nil,
-                        links: [],
-                        visible: true
-                      }, **{})
-
-      def self.build(**params)
-        new(**params).build
+    class CreateBuilder < BaseBuilder
+      def initialize(scope: nil, **attributes)
+        super(**attributes)
+        @scope = scope
       end
 
       def build
@@ -31,16 +21,6 @@ module Oak
 
       def scope
         @scope ||= Oak::Item.all
-      end
-
-      def item_params
-        {
-          name:,
-          description:,
-          category:,
-          kind:,
-          user:
-        }.compact
       end
 
       def build_links
