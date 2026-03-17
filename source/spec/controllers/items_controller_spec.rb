@@ -327,7 +327,10 @@ RSpec.describe ItemsController do
     let!(:kind) { create(:oak_kind) }
     let(:category) { create(:oak_category) }
     let(:item_params) do
-      { name: 'New Item', kind_slug: kind.slug, description: 'desc', links: links_data }
+      {
+        name: 'New Item', kind_slug: kind.slug,
+        description: 'desc', links: links_data, visible: true
+      }
     end
     let(:parameters) do
       { item: item_params, category_slug: category.slug, format: :json }
@@ -558,7 +561,8 @@ RSpec.describe ItemsController do
         name: 'Updated Item',
         description: 'Updated description',
         kind_slug: kind.slug,
-        links: links_data
+        links: links_data,
+        visible: false
       }
     end
 
