@@ -10,7 +10,8 @@ module Oak
           category: nil,
           kind: nil,
           user: nil,
-          links: []
+          links: [],
+          visible: true
         }, **{}
       )
 
@@ -45,7 +46,8 @@ module Oak
           description:,
           category:,
           kind:,
-          user:
+          user:,
+          visible:
         }
       end
 
