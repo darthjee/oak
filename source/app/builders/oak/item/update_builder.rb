@@ -2,17 +2,11 @@
 
 module Oak
   class Item
-    class UpdateBuilder < Sinclair::Model
-      initialize_with(
-        :item, {
-          name: nil,
-          description: nil,
-          category: nil,
-          kind: nil,
-          user: nil,
-          links: []
-        }, **{}
-      )
+    class UpdateBuilder < BaseBuilder
+      def initialize(item:, **attributes)
+        super(**attributes)
+        @item = item
+      end
 
       def self.build(**params)
         new(**params).build
@@ -37,16 +31,6 @@ module Oak
 
       def update_item
         item.assign_attributes(item_params)
-      end
-
-      def item_params
-        {
-          name:,
-          description:,
-          category:,
-          kind:,
-          user:
-        }
       end
 
       def update_links
