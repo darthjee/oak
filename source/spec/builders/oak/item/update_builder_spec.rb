@@ -14,7 +14,8 @@ RSpec.describe Oak::Item::UpdateBuilder do
         category: category,
         kind: kind,
         user: user,
-        links: links_data
+        links: links_data,
+        visible: false
       }.compact
     end
 
@@ -34,7 +35,7 @@ RSpec.describe Oak::Item::UpdateBuilder do
         kind_id: kind.id,
         user_id: user.id,
         order: 0,
-        visible: true
+        visible: false
       }.stringify_keys
     end
 
