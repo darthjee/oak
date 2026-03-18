@@ -6,9 +6,9 @@
 
 ![oak](https://raw.githubusercontent.com/darthjee/oak/master/oak.png)
 
-**Current Version:** [1.6.3](https://github.com/darthjee/oak/releases/tag/1.6.3)
+**Current Version:** [1.6.4](https://github.com/darthjee/oak/releases/tag/1.6.4)
 
-**Next Release:** [1.6.4](https://github.com/darthjee/oak/compare/1.6.3...main)
+**Next Release:** [1.6.5](https://github.com/darthjee/oak/compare/1.6.4...main)
 
 ## About
 
