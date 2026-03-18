@@ -24,7 +24,7 @@ class IndexCategoriesController < ApplicationController
   end
 
   def all_categories
-    Oak::Category.eager_load(:main_photo)
+    Oak::Category.includes(:main_photo)
   end
 
   def include_empty?
