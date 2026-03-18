@@ -7,6 +7,38 @@ RSpec.describe Oak::Category do
 
   let(:name) { SecureRandom.hex(10) }
 
+  describe 'scopes' do
+    describe '.with_items_visible_for' do
+      let(:user) { create(:user) }
+      let!(:category_with_visible_item) { create(:oak_category) }
+      let!(:category_with_invisible_item) { create(:oak_category) }
+      let!(:category_owned_by_user) { create(:oak_category) }
+      let!(:category_without_items) { create(:oak_category) }
+
+      before do
+        create(:oak_item, category: category_with_visible_item, visible: true)
+        create(:oak_item, category: category_with_invisible_item, visible: false)
+        create(:oak_item, category: category_owned_by_user, visible: false, user: user)
+      end
+
+      it 'returns categories with items visible to the user' do
+        expect(described_class.with_items_visible_for(user)).to include(category_with_visible_item)
+      end
+
+      it 'does not return categories with items not visible to the user' do
+        expect(described_class.with_items_visible_for(user)).not_to include(category_with_invisible_item)
+      end
+
+      it 'returns categories with items invisible owned by the user' do
+        expect(described_class.with_items_visible_for(user)).to include(category_owned_by_user)
+      end
+
+      it 'does not return categories without items' do
+        expect(described_class.with_items_visible_for(user)).not_to include(category_without_items)
+      end
+    end
+  end
+
   describe 'validations' do
     context 'with valid attributes' do
       it 'is valid' do

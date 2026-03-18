@@ -20,11 +20,11 @@ class IndexCategoriesController < ApplicationController
   def fetch_categories
     return all_categories if include_empty?
 
-    all_categories.where(id: Oak::Item.visible_for(logged_user).distinct.select(:category_id))
+    all_categories.with_items_visible_for(logged_user)
   end
 
   def all_categories
-    Oak::Category.eager_load(:main_photo)
+    Oak::Category.includes(:main_photo)
   end
 
   def include_empty?
