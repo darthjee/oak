@@ -16,7 +16,8 @@ RUN /bin/bash yarn_builder.sh
 USER app
 
 COPY --chown=app:app --from=scripts /home/scripts/builder/bundle_builder.sh /usr/local/sbin/bundle_builder.sh
-RUN /bin/bash bundle_builder.sh --without development test
+RUN bundle config set without 'development test'
+RUN /bin/bash bundle_builder.sh
 
 #######################
 #FINAL IMAGE

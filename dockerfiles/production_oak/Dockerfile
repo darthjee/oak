@@ -6,7 +6,8 @@ FROM base as builder
 
 COPY --chown=app:app ./ /home/app/app/
 
-RUN bundle install --without development test;
+RUN bundle config set without 'development test'
+RUN bundle install
 
 RUN rm /home/app/app/config/master.key -f
 RUN rm /home/app/app/config/credentials.yml.enc -f
@@ -27,4 +28,5 @@ FROM base
 
 COPY --chown=app:app --from=builder /home/app/app/ /home/app/app/
 
-RUN bundle install --without development test
+RUN bundle config set without 'development test'
+RUN bundle install
