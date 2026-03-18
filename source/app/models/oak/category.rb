@@ -15,8 +15,8 @@ module Oak
     has_many :category_kinds, class_name: 'Oak::CategoryKind', dependent: :destroy
     has_many :kinds, through: :category_kinds, source: :kind
 
-    scope :with_items_visible_for, ->(user) do
+    scope :with_items_visible_for, lambda { |user|
       where(id: Oak::Item.visible_for(user).distinct.select(:category_id))
-    end
+    }
   end
 end

@@ -22,19 +22,19 @@ RSpec.describe Oak::Category do
       end
 
       it 'returns categories with items visible to the user' do
-        expect(Oak::Category.with_items_visible_for(user)).to include(category_with_visible_item)
+        expect(described_class.with_items_visible_for(user)).to include(category_with_visible_item)
       end
 
       it 'does not return categories with items not visible to the user' do
-        expect(Oak::Category.with_items_visible_for(user)).not_to include(category_with_invisible_item)
+        expect(described_class.with_items_visible_for(user)).not_to include(category_with_invisible_item)
       end
 
       it 'returns categories with items invisible owned by the user' do
-        expect(Oak::Category.with_items_visible_for(user)).to include(category_owned_by_user)
+        expect(described_class.with_items_visible_for(user)).to include(category_owned_by_user)
       end
 
       it 'does not return categories without items' do
-        expect(Oak::Category.with_items_visible_for(user)).not_to include(category_without_items)
+        expect(described_class.with_items_visible_for(user)).not_to include(category_without_items)
       end
     end
   end
