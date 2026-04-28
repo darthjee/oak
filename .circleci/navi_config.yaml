@@ -34,8 +34,6 @@ resources:
       status: 200
     - url: /categories/:category_slug/items/:id?ajax=true
       status: 200
-    - url: /kinds/:slug?ajax=true
-      status: 200
 
   categories:
     - url: /categories.json
