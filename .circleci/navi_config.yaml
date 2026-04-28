@@ -31,10 +31,10 @@ resources:
       actions:
         - resource: category
           parameters:
-            slug: parsed_body.slug
+            slug: parsedBody.slug
         - resource: category_items
           parameters:
-            category_slug: parsed_body.slug
+            category_slug: parsedBody.slug
     - url: /categories
       status: 302
     - url: /#/categories
@@ -58,8 +58,8 @@ resources:
       actions:
         - resource: category_item
           parameters:
-            id: parsed_body.id
-            category_slug: parsed_body.category_slug
+            id: parsedBody.id
+            category_slug: parsedBody.category_slug
     - url: /categories/{:category_slug}/items
       status: 302
     - url: /#/categories/{:category_slug}/items
@@ -83,7 +83,7 @@ resources:
       actions:
         - resource: kind
           parameters:
-            slug: parsed_body.slug
+            slug: parsedBody.slug
     - url: /kinds
       status: 302
     - url: /#/kinds
