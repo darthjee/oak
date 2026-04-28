@@ -32,6 +32,7 @@ Parameters for individual resources are discovered dynamically from listing endp
 | URL | Purpose |
 |-----|---------|
 | `/` | Loads `index.html` with all JS and CSS assets |
+| `/?ajax=true` | Home template — fetched by Cyberhawk when navigating to `/#/` within the SPA |
 | `/user/categories.json` | Loads the user's subscribed categories — used in the header menu on every page |
 
 ### Resource: `categories` (listing)
