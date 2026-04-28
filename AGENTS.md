@@ -17,6 +17,10 @@ See [architecture.md](docs/agents/architecture.md) for the full details on backe
 
 See [request-flow.md](docs/agents/request-flow.md) for the full details on navigation pattern and content loading.
 
+## Routes
+
+See [routes.md](docs/agents/routes.md) for the full list of resource and utility routes.
+
 ## Contributing
 
 See [contributing.md](docs/agents/contributing.md) for the full details on language standards, best practices, and code guidelines.
@@ -362,6 +366,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | [Architecture](docs/agents/architecture.md) | Infrastructure, source layout, request routing, gems, and template patterns. |
 | [Contributing](docs/agents/contributing.md) | Commit guidelines, PR template, definition of done, and CI checks. |
 | [Flow](docs/agents/flow.md) | Main runtime flow of the application. |
+| [Routes](docs/agents/routes.md) | Full list of resource and utility routes, with descriptions. |
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
 | [HOW_TO_USE_NAVI](docs/agents/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
