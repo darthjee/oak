@@ -25,6 +25,18 @@ resources:
     - url: /user/categories.json
       status: 200
 
+  templates:
+    - url: /categories?ajax=true
+      status: 200
+    - url: /categories/:slug?ajax=true
+      status: 200
+    - url: /categories/:slug/items?ajax=true
+      status: 200
+    - url: /categories/:category_slug/items/:id?ajax=true
+      status: 200
+    - url: /kinds/:slug?ajax=true
+      status: 200
+
   categories:
     - url: /categories.json
       status: 200
@@ -39,8 +51,6 @@ resources:
       status: 302
     - url: /#/categories
       status: 200
-    - url: /categories?ajax=true
-      status: 200
 
   category:
     - url: /categories/{:slug}.json
@@ -48,8 +58,6 @@ resources:
     - url: /categories/{:slug}
       status: 302
     - url: /#/categories/{:slug}
-      status: 200
-    - url: /categories/{:slug}?ajax=true
       status: 200
 
   category_items:
@@ -64,8 +72,6 @@ resources:
       status: 302
     - url: /#/categories/{:category_slug}/items
       status: 200
-    - url: /categories/{:category_slug}/items?ajax=true
-      status: 200
 
   category_item:
     - url: /categories/{:category_slug}/items/{:id}.json
@@ -73,8 +79,6 @@ resources:
     - url: /categories/{:category_slug}/items/{:id}
       status: 302
     - url: /#/categories/{:category_slug}/items/{:id}
-      status: 200
-    - url: /categories/{:category_slug}/items/{:id}?ajax=true
       status: 200
 
   kinds:
@@ -97,6 +101,4 @@ resources:
     - url: /kinds/{:slug}
       status: 302
     - url: /#/kinds/{:slug}
-      status: 200
-    - url: /kinds/{:slug}?ajax=true
       status: 200
