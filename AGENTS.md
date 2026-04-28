@@ -363,6 +363,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | [Flow](docs/agents/flow.md) | Main runtime flow of the application. |
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
+| [HOW_TO_USE_NAVI](docs/agents/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
 
 ### Issues (`docs/agents/issues/`)
 
