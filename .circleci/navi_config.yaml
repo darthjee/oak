@@ -1,13 +1,13 @@
 workers:
   quantity: 5
-  retry_cooldown: 2000
+  retry_cooldown: 3000
   sleep: 500
-  max-retries: 3
+  max-retries: 10
 
 clients:
   default:
     base_url: $OAK_PRODUCTION_URL
-    timeout: 5000
+    timeout: 3000
 
 resources:
   home:
