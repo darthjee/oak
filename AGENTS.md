@@ -11,27 +11,27 @@ Oak is a web application catalog to showcase different types of items, including
 
 ## Architecture and Tech Stack
 
-See [architecture-and-tech-stack.md](architecture-and-tech-stack.md) for the full details on backend, frontend, and main libraries.
+See [architecture-and-tech-stack.md](docs/agents/architecture-and-tech-stack.md) for the full details on backend, frontend, and main libraries.
 
 ## Request Flow
 
-See [request-flow.md](request-flow.md) for the full details on navigation pattern and content loading.
+See [request-flow.md](docs/agents/request-flow.md) for the full details on navigation pattern and content loading.
 
 ## Development Principles
 
-See [development-principles.md](development-principles.md) for the full details on language standards, best practices, and code guidelines.
+See [development-principles.md](docs/agents/development-principles.md) for the full details on language standards, best practices, and code guidelines.
 
 ## Behaviors
 
-See [.github/behaviors.md](.github/behaviors.md) for the full details.
+See [behaviors.md](docs/agents/behaviors.md) for the full details.
 
 ## Project Structure
 
-See [project-structure.md](project-structure.md) for the full details on main directories and containerization setup.
+See [project-structure.md](docs/agents/project-structure.md) for the full details on main directories and containerization setup.
 
 ## Sinclair Usage
 
-Oak uses the **sinclair** gem extensively. Refer to [.github/sinclair-usage.md](.github/sinclair-usage.md) for the full usage guide.
+Oak uses the **sinclair** gem extensively. Refer to [.github/sinclair-usage.md](docs/agents/sinclair-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -46,7 +46,7 @@ When building new features, prefer sinclair patterns for dynamic method generati
 
 ## Azeroth Usage
 
-Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [.github/azeroth-usage.md](.github/azeroth-usage.md) for the full usage guide.
+Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [.github/azeroth-usage.md](docs/agents/azeroth-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -58,7 +58,7 @@ When building new controller endpoints for standard resources, prefer `resource_
 
 ## Magicka Usage
 
-Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [.github/magicka-usage.md](.github/magicka-usage.md) for the full usage guide.
+Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [.github/magicka-usage.md](docs/agents/magicka-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -72,7 +72,7 @@ When adding fields to views, prefer Magicka's built-in elements before creating 
 
 ## Tarquinn Usage
 
-Oak uses the **tarquinn** gem for controller-level redirections. Refer to [.github/tarquinn-usage.md](.github/tarquinn-usage.md) for the full usage guide.
+Oak uses the **tarquinn** gem for controller-level redirections. Refer to [.github/tarquinn-usage.md](docs/agents/tarquinn-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -84,7 +84,7 @@ When adding new redirection logic, prefer `redirection_rule` in base controllers
 
 ## Jace Usage
 
-Oak uses the **jace** gem for internal event-driven logic. Refer to [.github/jace-usage.md](.github/jace-usage.md) for the full usage guide.
+Oak uses the **jace** gem for internal event-driven logic. Refer to [.github/jace-usage.md](docs/agents/jace-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -248,7 +248,7 @@ If the field is a nested attribute or an array, include the appropriate structur
 
 ### 4. Update the Views with Magicka
 
-Refer to [.github/magicka-usage.md](.github/magicka-usage.md) for the full Magicka reference.
+Refer to [.github/magicka-usage.md](docs/agents/magicka-usage.md) for the full Magicka reference.
 
 Views are typically organised as:
 
@@ -322,7 +322,7 @@ class Oak::Item::Decorator < Azeroth::Decorator
 end
 ```
 
-Refer to [.github/azeroth-usage.md](.github/azeroth-usage.md) for the full decorator reference.
+Refer to [.github/azeroth-usage.md](docs/agents/azeroth-usage.md) for the full decorator reference.
 
 ### 6. Creating a New Magicka Element (if needed)
 
