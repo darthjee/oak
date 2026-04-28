@@ -1,0 +1,102 @@
+workers:
+  quantity: 5
+  retry_cooldown: 2000
+  sleep: 500
+  max-retries: 3
+
+clients:
+  default:
+    base_url: $OAK_PRODUCTION_URL
+    timeout: 5000
+
+resources:
+  home:
+    - url: /
+      status: 200
+      assets:
+        - selector: 'link[rel="stylesheet"]'
+          attribute: href
+        - selector: 'script[src]'
+          attribute: src
+    - url: /?ajax=true
+      status: 200
+
+  user_navigation:
+    - url: /user/categories.json
+      status: 200
+
+  categories:
+    - url: /categories.json
+      status: 200
+      actions:
+        - resource: category
+          parameters:
+            slug: parsed_body.slug
+        - resource: category_items
+          parameters:
+            category_slug: parsed_body.slug
+    - url: /categories
+      status: 302
+    - url: /#/categories
+      status: 200
+    - url: /categories?ajax=true
+      status: 200
+
+  category:
+    - url: /categories/{:slug}.json
+      status: 200
+    - url: /categories/{:slug}
+      status: 302
+    - url: /#/categories/{:slug}
+      status: 200
+    - url: /categories/{:slug}?ajax=true
+      status: 200
+
+  category_items:
+    - url: /categories/{:category_slug}/items.json
+      status: 200
+      actions:
+        - resource: category_item
+          parameters:
+            id: parsed_body.id
+            category_slug: parsed_body.category_slug
+    - url: /categories/{:category_slug}/items
+      status: 302
+    - url: /#/categories/{:category_slug}/items
+      status: 200
+    - url: /categories/{:category_slug}/items?ajax=true
+      status: 200
+
+  category_item:
+    - url: /categories/{:category_slug}/items/{:id}.json
+      status: 200
+    - url: /categories/{:category_slug}/items/{:id}
+      status: 302
+    - url: /#/categories/{:category_slug}/items/{:id}
+      status: 200
+    - url: /categories/{:category_slug}/items/{:id}?ajax=true
+      status: 200
+
+  kinds:
+    - url: /kinds.json
+      status: 200
+      actions:
+        - resource: kind
+          parameters:
+            slug: parsed_body.slug
+    - url: /kinds
+      status: 302
+    - url: /#/kinds
+      status: 200
+    - url: /kinds?ajax=true
+      status: 200
+
+  kind:
+    - url: /kinds/{:slug}.json
+      status: 200
+    - url: /kinds/{:slug}
+      status: 302
+    - url: /#/kinds/{:slug}
+      status: 200
+    - url: /kinds/{:slug}?ajax=true
+      status: 200
