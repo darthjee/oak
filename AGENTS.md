@@ -15,7 +15,7 @@ See [architecture.md](docs/agents/architecture.md) for the full details on backe
 
 ## Request Flow
 
-See [request-flow.md](docs/agents/request-flow.md) for the full details on navigation pattern and content loading.
+See [flow.md](docs/agents/flow.md) for the full details on navigation pattern and content loading.
 
 ## Routes
 
@@ -25,13 +25,6 @@ See [routes.md](docs/agents/routes.md) for the full list of resource and utility
 
 See [contributing.md](docs/agents/contributing.md) for the full details on language standards, best practices, and code guidelines.
 
-## Behaviors
-
-See [behaviors.md](docs/agents/behaviors.md) for the full details.
-
-## Project Structure
-
-See [project-structure.md](docs/agents/project-structure.md) for the full details on main directories and containerization setup.
 
 ## Sinclair Usage
 
