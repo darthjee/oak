@@ -17,9 +17,9 @@ See [architecture.md](docs/agents/architecture.md) for the full details on backe
 
 See [request-flow.md](docs/agents/request-flow.md) for the full details on navigation pattern and content loading.
 
-## Development Principles
+## Contributing
 
-See [development-principles.md](docs/agents/development-principles.md) for the full details on language standards, best practices, and code guidelines.
+See [contributing.md](docs/agents/contributing.md) for the full details on language standards, best practices, and code guidelines.
 
 ## Behaviors
 
@@ -31,7 +31,7 @@ See [project-structure.md](docs/agents/project-structure.md) for the full detail
 
 ## Sinclair Usage
 
-Oak uses the **sinclair** gem extensively. Refer to [.github/sinclair-usage.md](docs/agents/sinclair-usage.md) for the full usage guide.
+Oak uses the **sinclair** gem extensively. Refer to [sinclair-usage.md](docs/agents/sinclair-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -46,7 +46,7 @@ When building new features, prefer sinclair patterns for dynamic method generati
 
 ## Azeroth Usage
 
-Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [.github/azeroth-usage.md](docs/agents/azeroth-usage.md) for the full usage guide.
+Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [azeroth-usage.md](docs/agents/azeroth-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -58,7 +58,7 @@ When building new controller endpoints for standard resources, prefer `resource_
 
 ## Magicka Usage
 
-Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [.github/magicka-usage.md](docs/agents/magicka-usage.md) for the full usage guide.
+Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [magicka-usage.md](docs/agents/magicka-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -72,7 +72,7 @@ When adding fields to views, prefer Magicka's built-in elements before creating 
 
 ## Tarquinn Usage
 
-Oak uses the **tarquinn** gem for controller-level redirections. Refer to [.github/tarquinn-usage.md](docs/agents/tarquinn-usage.md) for the full usage guide.
+Oak uses the **tarquinn** gem for controller-level redirections. Refer to [tarquinn-usage.md](docs/agents/tarquinn-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -84,7 +84,7 @@ When adding new redirection logic, prefer `redirection_rule` in base controllers
 
 ## Jace Usage
 
-Oak uses the **jace** gem for internal event-driven logic. Refer to [.github/jace-usage.md](docs/agents/jace-usage.md) for the full usage guide.
+Oak uses the **jace** gem for internal event-driven logic. Refer to [jace-usage.md](docs/agents/jace-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -248,7 +248,7 @@ If the field is a nested attribute or an array, include the appropriate structur
 
 ### 4. Update the Views with Magicka
 
-Refer to [.github/magicka-usage.md](docs/agents/magicka-usage.md) for the full Magicka reference.
+Refer to [magicka-usage.md](docs/agents/magicka-usage.md) for the full Magicka reference.
 
 Views are typically organised as:
 
@@ -322,7 +322,7 @@ class Oak::Item::Decorator < Azeroth::Decorator
 end
 ```
 
-Refer to [.github/azeroth-usage.md](docs/agents/azeroth-usage.md) for the full decorator reference.
+Refer to [azeroth-usage.md](docs/agents/azeroth-usage.md) for the full decorator reference.
 
 ### 6. Creating a New Magicka Element (if needed)
 
@@ -360,6 +360,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 |------|----------|
 | [Folder Structure](docs/agents/folder-structure.md) | Top-level directory layout and the role of each folder. |
 | [Architecture](docs/agents/architecture.md) | Infrastructure, source layout, request routing, gems, and template patterns. |
+| [Contributing](docs/agents/contributing.md) | Commit guidelines, PR template, definition of done, and CI checks. |
 | [Flow](docs/agents/flow.md) | Main runtime flow of the application. |
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
