@@ -33,9 +33,12 @@ workflows:
             branches:
               ignore: /.*/
       - warm-up-cache:
+          requires: [release]
           filters:
+            tags:
+              only: /\d+\.\d+\.\d+/
             branches:
-              only: /.*/
+              ignore: /.*/
 jobs:
   test:
     docker:
@@ -142,8 +145,6 @@ jobs:
   warm-up-cache:
     docker:
       - image: darthjee/navi-hey:latest
-        environment:
-          LOG_LEVEL: debug
     steps:
       - checkout
       - run:
