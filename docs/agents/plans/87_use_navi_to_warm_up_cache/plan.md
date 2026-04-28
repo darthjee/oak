@@ -4,69 +4,146 @@
 
 Add a `warm-up-cache` CircleCI job that runs immediately after `release` and uses `darthjee/navi-hey` to pre-populate the proxy cache for all public-facing resources.
 
+Two files change: the navi YAML configuration (`.circleci/navi_config.yaml`) and the CircleCI pipeline (`.circleci/config.yml`).
+
 ## Context
 
 The deployment process clears the proxy cache (darthjee/tent) on the `release` step. Without a warm-up, the first real users after a deploy hit cold-cache responses, increasing load on Rails and degrading performance.
 
-Navi is configured via a file inside `.circleci/` and executed by the `darthjee/navi-hey` Docker image. It discovers individual resource slugs/IDs dynamically from listing endpoints before fetching each resource's full set of URLs.
+Navi supports **resource chaining** via `actions`: after fetching a listing endpoint it automatically enqueues individual-resource URLs using values extracted from the JSON response. This covers the dynamic slug/ID discovery without any scripting.
+
+The recommended integration for CircleCI is **Option C** from `HOW_TO_USE_NAVI.md`: declare `darthjee/navi-hey:latest` as the job's executor image. Since `navi-hey` is installed globally in that image, no Docker-in-Docker or npm install step is needed.
 
 ## Implementation Steps
 
-### Step 1 — Create the navi configuration file
+### Step 1 — Create `.circleci/navi_config.yaml`
 
-Create `.circleci/navi_warm_up.yml` (or equivalent format per `docs/agents/HOW_TO_USE_NAVI.md`) defining the full list of URLs to warm up:
+```yaml
+workers:
+  quantity: 5
+  retry_cooldown: 2000
+  sleep: 500
+  max-retries: 3
 
-**Base (every page):**
-- `/`
-- `/?ajax=true`
-- `/user/categories.json`
+clients:
+  default:
+    base_url: $OAK_PRODUCTION_URL
+    timeout: 5000
 
-**Resource: `categories` (listing):**
-- `/categories.json`
-- `/categories`
-- `/#/categories`
-- `/categories?ajax=true`
+resources:
+  home:
+    - url: /
+      status: 200
+      assets:
+        - selector: 'link[rel="stylesheet"]'
+          attribute: href
+        - selector: 'script[src]'
+          attribute: src
+    - url: /?ajax=true
+      status: 200
 
-**Resource: `category` (single — discovered from `/categories.json` → `slug`):**
-- `/categories/{slug}.json`
-- `/categories/{slug}`
-- `/#/categories/{slug}`
-- `/categories/{slug}?ajax=true`
+  user_navigation:
+    - url: /user/categories.json
+      status: 200
 
-**Resource: `category_items` (discovered from `/categories.json` → `slug` as `category_slug`):**
-- `/categories/{category_slug}/items.json`
-- `/categories/{category_slug}/items`
-- `/#/categories/{category_slug}/items`
-- `/categories/{category_slug}/items?ajax=true`
+  categories:
+    - url: /categories.json
+      status: 200
+      actions:
+        - resource: category
+          parameters:
+            slug: parsed_body.slug
+        - resource: category_items
+          parameters:
+            category_slug: parsed_body.slug
+    - url: /categories
+      status: 302
+    - url: /#/categories
+      status: 200
+    - url: /categories?ajax=true
+      status: 200
 
-**Resource: `category_item` (discovered from `/categories/{slug}/items.json` → `id` + `category_slug`):**
-- `/categories/{category_slug}/items/{id}.json`
-- `/categories/{category_slug}/items/{id}`
-- `/#/categories/{category_slug}/items/{id}`
-- `/categories/{category_slug}/items/{id}?ajax=true`
+  category:
+    - url: /categories/{:slug}.json
+      status: 200
+    - url: /categories/{:slug}
+      status: 302
+    - url: /#/categories/{:slug}
+      status: 200
+    - url: /categories/{:slug}?ajax=true
+      status: 200
 
-**Resource: `kinds` (listing):**
-- `/kinds.json`
-- `/kinds`
-- `/#/kinds`
-- `/kinds?ajax=true`
+  category_items:
+    - url: /categories/{:category_slug}/items.json
+      status: 200
+      actions:
+        - resource: category_item
+          parameters:
+            id: parsed_body.id
+            category_slug: parsed_body.category_slug
+    - url: /categories/{:category_slug}/items
+      status: 302
+    - url: /#/categories/{:category_slug}/items
+      status: 200
+    - url: /categories/{:category_slug}/items?ajax=true
+      status: 200
 
-**Resource: `kind` (single — discovered from `/kinds.json` → `slug`):**
-- `/kinds/{slug}.json`
-- `/kinds/{slug}`
-- `/#/kinds/{slug}`
-- `/kinds/{slug}?ajax=true`
+  category_item:
+    - url: /categories/{:category_slug}/items/{:id}.json
+      status: 200
+    - url: /categories/{:category_slug}/items/{:id}
+      status: 302
+    - url: /#/categories/{:category_slug}/items/{:id}
+      status: 200
+    - url: /categories/{:category_slug}/items/{:id}?ajax=true
+      status: 200
+
+  kinds:
+    - url: /kinds.json
+      status: 200
+      actions:
+        - resource: kind
+          parameters:
+            slug: parsed_body.slug
+    - url: /kinds
+      status: 302
+    - url: /#/kinds
+      status: 200
+    - url: /kinds?ajax=true
+      status: 200
+
+  kind:
+    - url: /kinds/{:slug}.json
+      status: 200
+    - url: /kinds/{:slug}
+      status: 302
+    - url: /#/kinds/{:slug}
+      status: 200
+    - url: /kinds/{:slug}?ajax=true
+      status: 200
+```
+
+Key points:
+- `/` uses `assets` to also warm the linked CSS and JS bundles automatically.
+- Chaining: `categories` → `category` + `category_items` → `category_item`, using `slug`/`id`/`category_slug` extracted from JSON responses.
+- `$OAK_PRODUCTION_URL` must be set as a CircleCI project environment variable.
 
 ### Step 2 — Add the `warm-up-cache` job to `.circleci/config.yml`
 
-Add a new job `warm-up-cache` that:
-- Uses the `darthjee/navi-hey` Docker image
-- Checks out the repository (to access the navi config file in `.circleci/`)
-- Runs navi pointing at the production URL and the config file
+```yaml
+warm-up-cache:
+  docker:
+    - image: darthjee/navi-hey:latest
+  steps:
+    - checkout
+    - run:
+        name: Warm up proxy cache
+        command: navi-hey --config .circleci/navi_config.yaml
+```
 
 ### Step 3 — Wire the job into the release workflow
 
-In the `workflows` section of `.circleci/config.yml`, add `warm-up-cache` after `release`:
+In the `workflows` section, add `warm-up-cache` after `release`:
 
 ```yaml
 - warm-up-cache:
@@ -80,11 +157,18 @@ In the `workflows` section of `.circleci/config.yml`, add `warm-up-cache` after 
 
 ## Files to Change
 
-- `.circleci/navi_warm_up.yml` — new navi configuration file listing all URLs to warm up
-- `.circleci/config.yml` — add `warm-up-cache` job definition and wire it into the workflow after `release`
+- `.circleci/navi_config.yaml` — new file; full navi configuration with all resources and chaining
+- `.circleci/config.yml` — add `warm-up-cache` job and wire it into the workflow after `release`
 
 ## Notes
 
-- The exact format of the navi configuration file depends on `docs/agents/HOW_TO_USE_NAVI.md` — needs to be confirmed before implementation.
-- The production URL must be available to the job (likely via an environment variable already set in CircleCI).
-- The navi config filename and format may differ from `.yml` depending on what `darthjee/navi-hey` expects.
+- `$OAK_PRODUCTION_URL` must be defined as a CircleCI project/context environment variable before this job can run (e.g. `https://oak.example.com`).
+- The `home` resource uses `assets` extraction — navi will parse the HTML from `/` and automatically enqueue all `<link rel="stylesheet">` and `<script src>` URLs for warming.
+- Redirect URLs (`/categories`, `/kinds`, etc.) are expected to return `302`. If the proxy or load balancer returns a different code, the `status` values may need adjusting.
+- `user_navigation` is a standalone resource (not chained from anything) — it is always fetched regardless of login state, returning all categories for anonymous users.
+
+## CI Checks
+
+Before opening a PR, run the following checks for the folders being modified:
+
+- `.circleci/`: no local CI command — changes are validated by the CircleCI pipeline itself on push.
