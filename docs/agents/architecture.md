@@ -46,7 +46,7 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 ## Frontend
 
 - **AngularJS** — handles client-side routing via URL anchors (`#/<path>`).
-- **Cyberhawk** — manages the request lifecycle: intercepts anchor navigation, fetches `?ajax=true` templates and `.json` data, then renders the page.
+- **Cyberhawk** (<https://github.com/darthjee/cyberhawk>) — manages the request lifecycle: intercepts anchor navigation, fetches `?ajax=true` templates and `.json` data, then renders the page.
 - **Bootstrap** — CSS framework used in all ERB templates.
 - Routes are defined with anchors; no full page reloads happen after the initial load.
 
@@ -74,11 +74,11 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 
 | Gem | Role |
 |-----|------|
-| **Azeroth** | Generates standard CRUD controller actions and JSON serialization via decorators. |
-| **Magicka** | Renders AngularJS-compatible form and display elements inside ERB templates. |
-| **Sinclair** | Dynamic method builder; also used for configuration (`Sinclair::Configurable`), option objects, and plain models. |
-| **Tarquinn** | Declarative controller-level redirection rules (powers the SPA redirect). |
-| **Jace** | Internal event/lifecycle hooks for service operations. |
+| **[Azeroth](https://github.com/darthjee/azeroth)** | Generates standard CRUD controller actions and JSON serialization via decorators. See [azeroth-usage.md](azeroth-usage.md). |
+| **[Magicka](https://github.com/darthjee/magicka)** | Renders AngularJS-compatible form and display elements inside ERB templates. See [magicka-usage.md](magicka-usage.md). |
+| **[Sinclair](https://github.com/darthjee/sinclair)** | Dynamic method builder; also used for configuration (`Sinclair::Configurable`), option objects, and plain models. See [sinclair-usage.md](sinclair-usage.md). |
+| **[Tarquinn](https://github.com/darthjee/tarquinn)** | Declarative controller-level redirection rules (powers the SPA redirect). See [tarquinn-usage.md](tarquinn-usage.md). |
+| **[Jace](https://github.com/darthjee/jace)** | Internal event/lifecycle hooks for service operations. See [jace-usage.md](jace-usage.md). |
 | **Sidekiq** | Background job processing (photo upload pipeline). |
 
 ---

@@ -11,7 +11,7 @@ Oak is a web application catalog to showcase different types of items, including
 
 ## Architecture and Tech Stack
 
-See [architecture-and-tech-stack.md](docs/agents/architecture-and-tech-stack.md) for the full details on backend, frontend, and main libraries.
+See [architecture.md](docs/agents/architecture.md) for the full details on backend, frontend, and main libraries.
 
 ## Request Flow
 
@@ -359,7 +359,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | File | Contents |
 |------|----------|
 | [Folder Structure](docs/agents/folder-structure.md) | Top-level directory layout and the role of each folder. |
-| [Architecture](docs/agents/architecture.md) | Source layout, modules, code style, and implementation guidelines. |
+| [Architecture](docs/agents/architecture.md) | Infrastructure, source layout, request routing, gems, and template patterns. |
 | [Flow](docs/agents/flow.md) | Main runtime flow of the application. |
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
