@@ -42,13 +42,12 @@ resources:
   categories:
     - url: /categories.json
       status: 200
-      actions:
-        - resource: category
-          parameters:
-            slug: parsedBody.slug
-        - resource: category_items
-          parameters:
-            category_slug: parsedBody.slug
+      paginated_actions:
+        - resource: paginated_categories
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
     - url: /categories
       status: 302
     - url: /#/categories
@@ -80,11 +79,12 @@ resources:
   category_items:
     - url: /categories/{:category_slug}/items.json
       status: 200
-      actions:
-        - resource: category_item
-          parameters:
-            id: parsedBody.id
-            category_slug: parsedBody.category_slug
+      paginated_actions:
+        - resource: paginated_category_items
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
     - url: /categories/{:category_slug}/items
       status: 302
     - url: /#/categories/{:category_slug}/items
@@ -114,10 +114,12 @@ resources:
   kinds:
     - url: /kinds.json
       status: 200
-      actions:
-        - resource: kind
-          parameters:
-            slug: parsedBody.slug
+      paginated_actions:
+        - resource: paginated_kinds
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
     - url: /kinds
       status: 302
     - url: /#/kinds
