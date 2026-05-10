@@ -122,7 +122,17 @@ resources:
       status: 302
     - url: /#/kinds
       status: 200
-    - url: /kinds?ajax=true
+
+  paginated_kinds:
+    - url: /kinds.json?page={:page}
+      status: 200
+      actions:
+        - resource: kind
+          parameters:
+            slug: parsedBody.slug
+    - url: /kinds?page={:page}
+      status: 302
+    - url: /#/kinds?page={:page}
       status: 200
 
   kind:
