@@ -4,6 +4,9 @@ workers:
   sleep: 500
   max-retries: 50
 
+failure:
+  threshold: 0.0
+
 clients:
   default:
     base_url: $OAK_PRODUCTION_URL
