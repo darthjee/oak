@@ -34,9 +34,27 @@ resources:
       status: 200
     - url: /categories/:category_slug/items/:id?ajax=true
       status: 200
+    - url: /kinds?ajax=true
+      status: 200
+    - url: /kinds/:slub?ajax=true
+      status: 200
 
   categories:
     - url: /categories.json
+      status: 200
+      paginated_actions:
+        - resource: paginated_categories
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
+    - url: /categories
+      status: 302
+    - url: /#/categories
+      status: 200
+
+  paginated_categories:
+    - url: /categories.json?page={:page}
       status: 200
       actions:
         - resource: category
@@ -45,9 +63,9 @@ resources:
         - resource: category_items
           parameters:
             category_slug: parsedBody.slug
-    - url: /categories
+    - url: /categories?page={:page}
       status: 302
-    - url: /#/categories
+    - url: /#/categories?page={:page}
       status: 200
 
   category:
@@ -61,14 +79,28 @@ resources:
   category_items:
     - url: /categories/{:category_slug}/items.json
       status: 200
+      paginated_actions:
+        - resource: paginated_category_items
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
+    - url: /categories/{:category_slug}/items
+      status: 302
+    - url: /#/categories/{:category_slug}/items
+      status: 200
+
+  paginated_category_items:
+    - url: /categories/{:category_slug}/items.json?page={:page}
+      status: 200
       actions:
         - resource: category_item
           parameters:
             id: parsedBody.id
             category_slug: parsedBody.category_slug
-    - url: /categories/{:category_slug}/items
+    - url: /categories/{:category_slug}/items?page={:page}
       status: 302
-    - url: /#/categories/{:category_slug}/items
+    - url: /#/categories/{:category_slug}/items?page={:page}
       status: 200
 
   category_item:
@@ -82,15 +114,27 @@ resources:
   kinds:
     - url: /kinds.json
       status: 200
-      actions:
-        - resource: kind
-          parameters:
-            slug: parsedBody.slug
+      paginated_actions:
+        - resource: paginated_kinds
+          pagination:
+            - pages: headers['pages']
+            - page_key: page
+            - zero_indexed: false
     - url: /kinds
       status: 302
     - url: /#/kinds
       status: 200
-    - url: /kinds?ajax=true
+
+  paginated_kinds:
+    - url: /kinds.json?page={:page}
+      status: 200
+      actions:
+        - resource: kind
+          parameters:
+            slug: parsedBody.slug
+    - url: /kinds?page={:page}
+      status: 302
+    - url: /#/kinds?page={:page}
       status: 200
 
   kind:
