@@ -21,8 +21,6 @@ resources:
           attribute: href
         - selector: 'script[src]'
           attribute: src
-    - url: /?ajax=true
-      status: 200
 
   user_navigation:
     - url: /user/categories.json
@@ -33,15 +31,15 @@ resources:
       status: 200
     - url: /categories?ajax=true
       status: 200
-    - url: /categories/:slug?ajax=true
+    - url: /categories/:category_slug?ajax=true
       status: 200
-    - url: /categories/:slug/items?ajax=true
+    - url: /categories/:category_slug/items?ajax=true
       status: 200
     - url: /categories/:category_slug/items/:id?ajax=true
       status: 200
     - url: /kinds?ajax=true
       status: 200
-    - url: /kinds/:slub?ajax=true
+    - url: /kinds/:king_slug?ajax=true
       status: 200
 
   categories:
