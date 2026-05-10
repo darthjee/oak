@@ -86,6 +86,19 @@ resources:
     - url: /#/categories/{:category_slug}/items
       status: 200
 
+  paginated_category_items:
+    - url: /categories/{:category_slug}/items.json?page={:page}
+      status: 200
+      actions:
+        - resource: category_item
+          parameters:
+            id: parsedBody.id
+            category_slug: parsedBody.category_slug
+    - url: /categories/{:category_slug}/items?page={:page}
+      status: 302
+    - url: /#/categories/{:category_slug}/items?page={:page}
+      status: 200
+
   category_item:
     - url: /categories/{:category_slug}/items/{:id}.json
       status: 200
