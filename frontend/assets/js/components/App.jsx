@@ -1,3 +1,10 @@
+import Header from './elements/Header.jsx';
+
 export default function App() {
-  return <p>placeholder</p>;
+  return (
+    <>
+      <Header />
+      <p>placeholder</p>
+    </>
+  );
 }

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "vite build",
     "server": "vite dev --host 0.0.0.0 --port 8080",
-    "test": "nyc npx jasmine spec/**/*.js",
+    "test": "NODE_OPTIONS='--loader ./spec/support/jsx-loader.mjs' nyc npx jasmine spec/**/*.js",
     "lint": "eslint .",
     "lint_fix": "eslint . --fix"
   },
