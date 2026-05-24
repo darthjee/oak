@@ -1,9 +1,12 @@
+import HeaderClient from './HeaderClient.js';
+
 export default class HeaderController {
-  constructor(setLogged, setCategories, setLoading, setError) {
+  constructor(setLogged, setCategories, setLoading, setError, client = new HeaderClient()) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
     this.setLoading = setLoading;
     this.setError = setError;
+    this.client = client;
 
     this.handleLogoff = this.handleLogoff.bind(this);
   }
@@ -26,50 +29,21 @@ export default class HeaderController {
       event.preventDefault();
     }
 
-    return fetch('/users/logoff', {
-      method: 'DELETE',
-      headers: { Accept: 'application/json' },
-    })
+    return this.client.logoff()
       .then(() => this.#handleLogoffSuccess())
       .catch((error) => this.#handleError(error, 'Unable to logoff.'));
   }
 
   #checkLogin(safeSet) {
-    return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-
-        if ([401, 403, 404].includes(response.status)) {
-          return null;
-        }
-
-        throw new Error('Unable to check login status.');
-      })
-      .then((session) => {
-        safeSet(this.setLogged, Boolean(session));
-      });
+    return this.client.checkLogin()
+      .then((response) => this.#parseLoginResponse(response))
+      .then((session) => this.#setLoggedFromSession(safeSet, session));
   }
 
   #fetchCategories(safeSet) {
-    return fetch('/user/categories.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Unable to load categories.');
-        }
-
-        return response.json();
-      })
-      .then((payload) => {
-        const categories = Array.isArray(payload) ? payload : [];
-
-        safeSet(this.setCategories, categories);
-      });
+    return this.client.fetchCategories()
+      .then((response) => this.#parseCategoriesResponse(response))
+      .then((payload) => this.#setCategoriesFromPayload(safeSet, payload));
   }
 
   #buildSafeSetter(isMounted) {
@@ -97,6 +71,36 @@ export default class HeaderController {
     this.setLogged(false);
 
     return this.#fetchCategories(this.#unsafeSet.bind(this));
+  }
+
+  #parseLoginResponse(response) {
+    if (response.ok) {
+      return response.json();
+    }
+
+    if ([401, 403, 404].includes(response.status)) {
+      return null;
+    }
+
+    throw new Error('Unable to check login status.');
+  }
+
+  #setLoggedFromSession(safeSet, session) {
+    safeSet(this.setLogged, Boolean(session));
+  }
+
+  #parseCategoriesResponse(response) {
+    if (!response.ok) {
+      throw new Error('Unable to load categories.');
+    }
+
+    return response.json();
+  }
+
+  #setCategoriesFromPayload(safeSet, payload) {
+    const categories = Array.isArray(payload) ? payload : [];
+
+    safeSet(this.setCategories, categories);
   }
 
   #handleSafeError(safeSet, error, fallbackMessage) {
