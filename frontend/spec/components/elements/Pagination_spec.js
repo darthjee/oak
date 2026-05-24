@@ -1,5 +1,5 @@
-import Pagination from '../../../assets/js/components/elements/Pagination.js';
-import PaginationHelper from '../../../assets/js/components/elements/helpers/PaginationHelper.js';
+import Pagination from '../../../assets/js/components/elements/Pagination.jsx';
+import PaginationHelper from '../../../assets/js/components/elements/helpers/PaginationHelper.jsx';
 
 describe('Pagination', function() {
   it('delegates rendering to PaginationHelper', function() {

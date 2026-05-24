@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import PaginationHelper from '../../../../assets/js/components/elements/helpers/PaginationHelper.js';
+import PaginationHelper from '../../../../assets/js/components/elements/helpers/PaginationHelper.jsx';
 
 describe('PaginationHelper', function() {
   it('renders nothing when there is one page', function() {

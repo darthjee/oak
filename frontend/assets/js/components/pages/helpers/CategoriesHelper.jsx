@@ -1,5 +1,5 @@
 import React from 'react';
-import Pagination from '../../elements/Pagination.js';
+import Pagination from '../../elements/Pagination.jsx';
 
 export default class CategoriesHelper {
   static renderLoading() {

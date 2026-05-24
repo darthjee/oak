@@ -1,3 +1,5 @@
-import Pagination from './Pagination.js';
+import PaginationHelper from './helpers/PaginationHelper.jsx';
 
-export default Pagination;
+export default function Pagination({ currentPage, totalPages, perPage, basePath }) {
+  return PaginationHelper.render(currentPage, totalPages, perPage, basePath);
+}

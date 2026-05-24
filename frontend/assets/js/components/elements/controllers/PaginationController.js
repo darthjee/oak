@@ -9,29 +9,53 @@ export default class PaginationController {
       return [];
     }
 
-    const pages = new Set();
+    return new PaginationBuilder(this.currentPage, this.totalPages)
+      .addFirstPages()
+      .addLastPages()
+      .addCurrentPageWindow()
+      .build();
+  }
+}
 
-    this.#addRange(pages, 1, 3);
-    this.#addRange(pages, this.totalPages - 2, this.totalPages);
-    this.#addRange(pages, this.currentPage - 3, this.currentPage + 3);
+class PaginationBuilder {
+  constructor(currentPage, totalPages) {
+    this.currentPage = currentPage;
+    this.totalPages = totalPages;
+    this.pages = new Set();
+  }
 
-    const sortedPages = [...pages].sort((left, right) => left - right);
+  addFirstPages() {
+    return this.#addRange(1, 3);
+  }
+
+  addLastPages() {
+    return this.#addRange(this.totalPages - 2, this.totalPages);
+  }
+
+  addCurrentPageWindow() {
+    return this.#addRange(this.currentPage - 3, this.currentPage + 3);
+  }
+
+  build() {
+    const sortedPages = [...this.pages].sort((left, right) => left - right);
 
     return this.#withGaps(sortedPages);
   }
 
-  #addRange(pages, start, finish) {
+  #addRange(start, finish) {
     for (let page = start; page <= finish; page += 1) {
-      this.#addPage(pages, page);
+      this.#addPage(page);
     }
+
+    return this;
   }
 
-  #addPage(pages, page) {
+  #addPage(page) {
     if (page < 1 || page > this.totalPages) {
       return;
     }
 
-    pages.add(page);
+    this.pages.add(page);
   }
 
   #withGaps(sortedPages) {
