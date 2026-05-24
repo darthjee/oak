@@ -34,3 +34,4 @@ prod_public_files/.dh-diag
 docker_volumes/mysql_data
 docker_volumes/proxy_cache
 docker_volumes/node_modules/
+frontend/.vite/

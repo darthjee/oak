@@ -9,7 +9,7 @@ use Tent\Models\RequestMatcher;
 if (getenv('FRONTEND_DEV_MODE') === 'true') {
     Configuration::buildRule([
         'handler' => [
-            'type' => 'default_proxy',
+            'type' => 'proxy',
             'host' => 'http://frontend:8080'
         ],
         'matchers' => [
