@@ -12,14 +12,12 @@ export default class PaginationHelper {
     const { page, totalPages: pages, itemsPerPage } = normalizedPagination;
     const pageList = new PaginationController(page, pages).buildPageList();
 
-    return (
-      <nav aria-label='Categories pages' className='mt-4'>
-        <ul className='pagination justify-content-center'>
-          {this.#renderPreviousButton(page, itemsPerPage, basePath)}
-          {pageList.map((entry, index) => this.#renderPageEntry(entry, index, page, itemsPerPage, basePath))}
-          {this.#renderNextButton(page, pages, itemsPerPage, basePath)}
-        </ul>
-      </nav>
+    return this.#renderPaginationContainer(
+      pageList,
+      page,
+      pages,
+      itemsPerPage,
+      basePath
     );
   }
 
@@ -51,19 +49,13 @@ export default class PaginationHelper {
 
   static #renderPreviousButton(currentPage, perPage, basePath) {
     if (currentPage <= 1) {
-      return (
-        <li className='page-item disabled' aria-disabled='true'>
-          <span className='page-link' aria-hidden='true'>«</span>
-        </li>
-      );
+      return this.#renderDisabledNavigationButton('«');
     }
 
-    return (
-      <li className='page-item'>
-        <a className='page-link' href={this.#buildPageLink(basePath, currentPage - 1, perPage)} aria-label='Previous'>
-          <span aria-hidden='true'>«</span>
-        </a>
-      </li>
+    return this.#renderNavigationButton(
+      this.#buildPageLink(basePath, currentPage - 1, perPage),
+      'Previous',
+      '«'
     );
   }
 
@@ -122,6 +114,18 @@ export default class PaginationHelper {
           {entry}
         </a>
       </li>
+    );
+  }
+
+  static #renderPaginationContainer(pageList, page, totalPages, itemsPerPage, basePath) {
+    return (
+      <nav aria-label='Categories pages' className='mt-4'>
+        <ul className='pagination justify-content-center'>
+          {this.#renderPreviousButton(page, itemsPerPage, basePath)}
+          {pageList.map((entry, index) => this.#renderPageEntry(entry, index, page, itemsPerPage, basePath))}
+          {this.#renderNextButton(page, totalPages, itemsPerPage, basePath)}
+        </ul>
+      </nav>
     );
   }
 }
