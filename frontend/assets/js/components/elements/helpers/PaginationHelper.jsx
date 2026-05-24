@@ -69,36 +69,56 @@ export default class PaginationHelper {
 
   static #renderNextButton(currentPage, totalPages, perPage, basePath) {
     if (currentPage >= totalPages) {
-      return (
-        <li className='page-item disabled' aria-disabled='true'>
-          <span className='page-link' aria-hidden='true'>»</span>
-        </li>
-      );
+      return this.#renderDisabledNavigationButton('»');
     }
 
-    return (
-      <li className='page-item'>
-        <a className='page-link' href={this.#buildPageLink(basePath, currentPage + 1, perPage)} aria-label='Next'>
-          <span aria-hidden='true'>»</span>
-        </a>
-      </li>
+    return this.#renderNavigationButton(
+      this.#buildPageLink(basePath, currentPage + 1, perPage),
+      'Next',
+      '»'
     );
   }
 
   static #renderPageEntry(entry, index, currentPage, perPage, basePath) {
     if (entry === null) {
-      return (
-        <li key={`gap-${index}`} className='page-item disabled' aria-disabled='true'>
-          <span className='page-link'>…</span>
-        </li>
-      );
+      return this.#renderGapEntry(index);
     }
 
     const activeClass = entry === currentPage ? ' active' : '';
 
+    return this.#renderNumberedEntry(entry, activeClass, this.#buildPageLink(basePath, entry, perPage));
+  }
+
+  static #renderDisabledNavigationButton(symbol) {
+    return (
+      <li className='page-item disabled' aria-disabled='true'>
+        <span className='page-link' aria-hidden='true'>{symbol}</span>
+      </li>
+    );
+  }
+
+  static #renderNavigationButton(href, ariaLabel, symbol) {
+    return (
+      <li className='page-item'>
+        <a className='page-link' href={href} aria-label={ariaLabel}>
+          <span aria-hidden='true'>{symbol}</span>
+        </a>
+      </li>
+    );
+  }
+
+  static #renderGapEntry(index) {
+    return (
+      <li key={`gap-${index}`} className='page-item disabled' aria-disabled='true'>
+        <span className='page-link'>…</span>
+      </li>
+    );
+  }
+
+  static #renderNumberedEntry(entry, activeClass, href) {
     return (
       <li key={`page-${entry}`} className={`page-item${activeClass}`}>
-        <a className='page-link' href={this.#buildPageLink(basePath, entry, perPage)}>
+        <a className='page-link' href={href}>
           {entry}
         </a>
       </li>
