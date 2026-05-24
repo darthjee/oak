@@ -21,6 +21,20 @@ This plan is split into four files:
 | [plan_ci.md](plan_ci.md) | Step 7: CircleCI jobs for the frontend |
 | [plan_cleanup.md](plan_cleanup.md) | Step 8: Remove AngularJS from Rails |
 
+## Sub-Issues
+
+This issue depends on the following sub-issues, to be resolved in order:
+
+- [ ] #93
+- [ ] #94
+- [ ] #95
+- [ ] #107
+- [ ] #108
+- [ ] #109
+- [ ] #97
+- [ ] #98
+- [ ] #101
+
 ## Execution Order
 
 Steps 1–5 (infrastructure) can be done without breaking the current app — AngularJS continues to run via Rails while the new stack is wired up. Step 6 (React) is the largest phase and will likely be broken into sub-issues per resource. Step 8 (cleanup) must only happen after Step 6 is validated in production.
