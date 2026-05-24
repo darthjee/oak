@@ -1,27 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Header from './elements/Header.jsx';
 import Categories from './pages/Categories.jsx';
-
-function getPage() {
-  const hash = window.location.hash;
-
-  if (hash === '#/categories' || hash === '#/categories/') {
-    return 'categories';
-  }
-
-  return 'home';
-}
+import AppController from './AppController.js';
 
 export default function App() {
-  const [page, setPage] = useState(getPage());
+  const [page, setPage] = useState(() => new AppController(null).getPage());
+
+  const controller = useMemo(() => new AppController(setPage), []);
 
   useEffect(() => {
-    const handleHashChange = () => setPage(getPage());
+    const effect = controller.buildEffect();
 
-    window.addEventListener('hashchange', handleHashChange);
-
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+    return effect();
+  }, [controller]);
 
   return (
     <>

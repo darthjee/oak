@@ -1,0 +1,60 @@
+import AppController from '../../../assets/js/components/AppController.js';
+
+describe('AppController', function() {
+  describe('#getPage', function() {
+    it('returns "categories" for #/categories', function() {
+      const controller = new AppController(null, null, () => '#/categories');
+
+      expect(controller.getPage()).toBe('categories');
+    });
+
+    it('returns "categories" for #/categories/', function() {
+      const controller = new AppController(null, null, () => '#/categories/');
+
+      expect(controller.getPage()).toBe('categories');
+    });
+
+    it('returns "home" for empty hash', function() {
+      const controller = new AppController(null, null, () => '');
+
+      expect(controller.getPage()).toBe('home');
+    });
+
+    it('returns "home" for unrecognised hash', function() {
+      const controller = new AppController(null, null, () => '#/other');
+
+      expect(controller.getPage()).toBe('home');
+    });
+  });
+
+  describe('#buildEffect', function() {
+    it('adds and removes a hashchange listener', function() {
+      const setPage = jasmine.createSpy('setPage');
+      const mockTarget = jasmine.createSpyObj('eventTarget', ['addEventListener', 'removeEventListener']);
+      const controller = new AppController(setPage, mockTarget, () => '#/categories');
+
+      const cleanup = controller.buildEffect()();
+
+      expect(mockTarget.addEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
+
+      cleanup();
+
+      expect(mockTarget.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
+    });
+
+    it('calls setPage with the current page when hash changes', function() {
+      const setPage = jasmine.createSpy('setPage');
+      let capturedHandler;
+      const mockTarget = {
+        addEventListener: (event, handler) => { capturedHandler = handler; },
+        removeEventListener: jasmine.createSpy('removeEventListener'),
+      };
+      const controller = new AppController(setPage, mockTarget, () => '#/categories');
+
+      controller.buildEffect()();
+      capturedHandler();
+
+      expect(setPage).toHaveBeenCalledWith('categories');
+    });
+  });
+});
