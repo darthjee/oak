@@ -363,6 +363,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
 | [HOW_TO_USE_NAVI](docs/agents/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
+| [Front-End](docs/agents/frontend.md) | React + Vite front-end architecture, component pattern (component / controller / helper), Docker setup, and proxy modes. |
 
 ### Issues (`docs/agents/issues/`)
 
