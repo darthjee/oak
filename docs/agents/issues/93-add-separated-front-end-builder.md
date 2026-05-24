@@ -37,5 +37,9 @@ Add a new Docker container using Vite to build the front-end with React and Boot
 - Enables independent front-end development with HMR via Vite.
 - Modernizes the stack without breaking the existing Rails JSON API.
 
+## Parent Issue
+
+Sub-issue of #92 — Use React Front-End.
+
 ---
 See issue for details: https://github.com/darthjee/oak/issues/93
