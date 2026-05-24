@@ -11,15 +11,23 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - jasmine:
+          filters:
+            tags:
+              only: /.*/
+      - frontend-checks:
+          filters:
+            tags:
+              only: /.*/
       - build-and-release:
-          requires: [test, checks]
+          requires: [test, checks, jasmine, frontend-checks]
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
       - upload_proxy_files:
-          requires: [test, checks]
+          requires: [test, checks, jasmine, frontend-checks]
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
@@ -109,6 +117,34 @@ jobs:
       - run:
           name: Rubocop
           command: rubocop
+  jasmine:
+    docker:
+      - image: darthjee/circleci_node:0.2.1
+    steps:
+      - checkout
+      - run:
+          name: Set folder
+          command: rm source -rf; cp frontend/* frontend/.??* ./ -r; rm frontend -rf
+      - run:
+          name: Yarn install
+          command: yarn install
+      - run:
+          name: Tests
+          command: npm test
+  frontend-checks:
+    docker:
+      - image: darthjee/circleci_node:0.2.1
+    steps:
+      - checkout
+      - run:
+          name: Set folder
+          command: rm source -rf; cp frontend/* frontend/.??* ./ -r; rm frontend -rf
+      - run:
+          name: Yarn install
+          command: yarn install
+      - run:
+          name: Check JS Lint
+          command: npm run lint
   build-and-release:
     machine: true
     steps:
