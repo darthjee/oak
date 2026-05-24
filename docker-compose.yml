@@ -124,9 +124,6 @@ services:
     env_file: .env
     volumes:
       - ./proxy/static/:/var/www/html/static/
-      - ./docker_volumes/static/index.html:/var/www/html/static/index.html
-      - ./docker_volumes/static/assets/js/:/var/www/html/static/assets/js/
-      - ./docker_volumes/static/assets/css/:/var/www/html/static/assets/css/
       - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
       - ./docker_volumes/proxy_cache:/var/www/html/cache/
     links:
