@@ -11,25 +11,9 @@ export default class HeaderController {
   buildEffect() {
     return () => {
       let mounted = true;
+      const safeSet = this.#buildSafeSetter(() => mounted);
 
-      const safeSet = (setter, value) => {
-        if (!mounted) {
-          return;
-        }
-
-        setter(value);
-      };
-
-      Promise.all([
-        this.#checkLogin(safeSet),
-        this.#fetchCategories(safeSet),
-      ])
-        .catch((error) => {
-          safeSet(this.setError, error.message || 'Unexpected error while loading header.');
-        })
-        .finally(() => {
-          safeSet(this.setLoading, false);
-        });
+      this.#loadHeaderData(safeSet);
 
       return () => {
         mounted = false;
@@ -46,14 +30,8 @@ export default class HeaderController {
       method: 'DELETE',
       headers: { Accept: 'application/json' },
     })
-      .then(() => {
-        this.setLogged(false);
-
-        return this.#fetchCategories((setter, value) => setter(value));
-      })
-      .catch((error) => {
-        this.setError(error.message || 'Unable to logoff.');
-      });
+      .then(() => this.#handleLogoffSuccess())
+      .catch((error) => this.#handleError(error, 'Unable to logoff.'));
   }
 
   #checkLogin(safeSet) {
@@ -92,5 +70,48 @@ export default class HeaderController {
 
         safeSet(this.setCategories, categories);
       });
+  }
+
+  #buildSafeSetter(isMounted) {
+    return (setter, value) => {
+      if (!isMounted()) {
+        return;
+      }
+
+      setter(value);
+    };
+  }
+
+  #loadHeaderData(safeSet) {
+    Promise.all([
+      this.#checkLogin(safeSet),
+      this.#fetchCategories(safeSet),
+    ])
+      .catch((error) => this.#handleSafeError(safeSet, error, 'Unexpected error while loading header.'))
+      .finally(() => {
+        safeSet(this.setLoading, false);
+      });
+  }
+
+  #handleLogoffSuccess() {
+    this.setLogged(false);
+
+    return this.#fetchCategories(this.#unsafeSet.bind(this));
+  }
+
+  #handleSafeError(safeSet, error, fallbackMessage) {
+    safeSet(this.setError, this.#resolveErrorMessage(error, fallbackMessage));
+  }
+
+  #handleError(error, fallbackMessage) {
+    this.setError(this.#resolveErrorMessage(error, fallbackMessage));
+  }
+
+  #resolveErrorMessage(error, fallbackMessage) {
+    return error?.message || fallbackMessage;
+  }
+
+  #unsafeSet(setter, value) {
+    setter(value);
   }
 }
