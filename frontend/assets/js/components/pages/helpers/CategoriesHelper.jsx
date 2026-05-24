@@ -1,4 +1,5 @@
 import React from 'react';
+import Pagination from '../../elements/Pagination.js';
 
 export default class CategoriesHelper {
   static renderLoading() {
@@ -17,7 +18,11 @@ export default class CategoriesHelper {
     );
   }
 
-  static render(categories, logged) {
+  static render(categories, logged, pagination) {
+    const page = pagination?.page ?? 1;
+    const pages = pagination?.pages ?? 1;
+    const perPage = pagination?.perPage ?? 10;
+
     return (
       <div className='container mt-4'>
         {logged && (
@@ -28,6 +33,12 @@ export default class CategoriesHelper {
         <div className='row'>
           {categories.map((category) => this.#renderCard(category))}
         </div>
+        <Pagination
+          currentPage={page}
+          totalPages={pages}
+          perPage={perPage}
+          basePath='/#/categories'
+        />
       </div>
     );
   }

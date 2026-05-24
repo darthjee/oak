@@ -1,0 +1,107 @@
+import React from 'react';
+import PaginationController from '../controllers/PaginationController.js';
+
+export default class PaginationHelper {
+  static render(currentPage, totalPages, perPage, basePath) {
+    const normalizedPagination = this.#normalizePagination(currentPage, totalPages, perPage);
+
+    if (normalizedPagination.totalPages <= 1) {
+      return null;
+    }
+
+    const { page, totalPages: pages, itemsPerPage } = normalizedPagination;
+    const pageList = new PaginationController(page, pages).buildPageList();
+
+    return (
+      <nav aria-label='Categories pages' className='mt-4'>
+        <ul className='pagination justify-content-center'>
+          {this.#renderPreviousButton(page, itemsPerPage, basePath)}
+          {pageList.map((entry, index) => this.#renderPageEntry(entry, index, page, itemsPerPage, basePath))}
+          {this.#renderNextButton(page, pages, itemsPerPage, basePath)}
+        </ul>
+      </nav>
+    );
+  }
+
+  static #normalizePagination(currentPage, totalPages, perPage) {
+    const pages = this.#normalizePositiveInteger(totalPages, 1);
+    const page = this.#clamp(this.#normalizePositiveInteger(currentPage, 1), 1, pages);
+    const itemsPerPage = this.#normalizePositiveInteger(perPage, 10);
+
+    return { page, totalPages: pages, itemsPerPage };
+  }
+
+  static #normalizePositiveInteger(value, fallback) {
+    const parsed = Number.parseInt(value, 10);
+
+    if (Number.isNaN(parsed) || parsed < 1) {
+      return fallback;
+    }
+
+    return parsed;
+  }
+
+  static #clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  static #buildPageLink(basePath, page, perPage) {
+    return `${basePath}?page=${page}&per_page=${perPage}`;
+  }
+
+  static #renderPreviousButton(currentPage, perPage, basePath) {
+    if (currentPage <= 1) {
+      return (
+        <li className='page-item disabled' aria-disabled='true'>
+          <span className='page-link' aria-hidden='true'>«</span>
+        </li>
+      );
+    }
+
+    return (
+      <li className='page-item'>
+        <a className='page-link' href={this.#buildPageLink(basePath, currentPage - 1, perPage)} aria-label='Previous'>
+          <span aria-hidden='true'>«</span>
+        </a>
+      </li>
+    );
+  }
+
+  static #renderNextButton(currentPage, totalPages, perPage, basePath) {
+    if (currentPage >= totalPages) {
+      return (
+        <li className='page-item disabled' aria-disabled='true'>
+          <span className='page-link' aria-hidden='true'>»</span>
+        </li>
+      );
+    }
+
+    return (
+      <li className='page-item'>
+        <a className='page-link' href={this.#buildPageLink(basePath, currentPage + 1, perPage)} aria-label='Next'>
+          <span aria-hidden='true'>»</span>
+        </a>
+      </li>
+    );
+  }
+
+  static #renderPageEntry(entry, index, currentPage, perPage, basePath) {
+    if (entry === null) {
+      return (
+        <li key={`gap-${index}`} className='page-item disabled' aria-disabled='true'>
+          <span className='page-link'>…</span>
+        </li>
+      );
+    }
+
+    const activeClass = entry === currentPage ? ' active' : '';
+
+    return (
+      <li key={`page-${entry}`} className={`page-item${activeClass}`}>
+        <a className='page-link' href={this.#buildPageLink(basePath, entry, perPage)}>
+          {entry}
+        </a>
+      </li>
+    );
+  }
+}
