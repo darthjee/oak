@@ -4,6 +4,8 @@
 
 Sub-issue of #92 — Use React Front-End.
 
+
+
 ## Description
 
 Add a reusable `Pagination` element to the new React front-end and wire it into the categories
