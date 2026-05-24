@@ -1,4 +1,4 @@
-import AppHelper from './helpers/AppHelper.js';
+import AppHelper from './helpers/AppHelper.jsx';
 
 export default class AppController {
   constructor(setPage, eventTarget = window, locationProvider = () => window.location.hash) {
