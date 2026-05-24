@@ -1,5 +1,9 @@
 # Issue: Build Header
 
+## Parent Issue
+
+Sub-issue of #92 — Use React Front-End.
+
 ## Description
 
 Build the navigation header component for the new React front-end, replacing the AngularJS header defined in `source/app/views/layouts/_header.html.erb`.
