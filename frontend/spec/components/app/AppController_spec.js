@@ -27,6 +27,16 @@ describe('AppController', function() {
     });
   });
 
+  describe('#renderPage', function() {
+    it('delegates to AppHelper and returns a React element', function() {
+      const controller = new AppController(null, null, () => '');
+      const element = controller.renderPage('home');
+
+      expect(element).not.toBeNull();
+      expect(typeof element).toBe('object');
+    });
+  });
+
   describe('#buildEffect', function() {
     it('adds and removes a hashchange listener', function() {
       const setPage = jasmine.createSpy('setPage');

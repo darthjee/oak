@@ -1,6 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import Header from './elements/Header.jsx';
-import Categories from './pages/Categories.jsx';
 import AppController from './AppController.js';
 
 export default function App() {
@@ -14,11 +12,5 @@ export default function App() {
     return effect();
   }, [controller]);
 
-  return (
-    <>
-      <Header />
-      {page === 'categories' && <Categories />}
-      {page === 'home' && <p>placeholder</p>}
-    </>
-  );
+  return controller.renderPage(page);
 }

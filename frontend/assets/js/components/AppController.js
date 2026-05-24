@@ -1,3 +1,5 @@
+import AppHelper from './helpers/AppHelper.js';
+
 export default class AppController {
   constructor(setPage, eventTarget = window, locationProvider = () => window.location.hash) {
     this.setPage = setPage;
@@ -13,6 +15,10 @@ export default class AppController {
     }
 
     return 'home';
+  }
+
+  renderPage(page) {
+    return AppHelper.render(page);
   }
 
   buildEffect() {
