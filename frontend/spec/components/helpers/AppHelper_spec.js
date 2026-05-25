@@ -21,6 +21,12 @@ describe('AppHelper', function() {
       expect(html).not.toContain('Loading categories...');
     });
 
+    it('does not render CategoryItems for "home" page', function() {
+      const html = renderToStaticMarkup(AppHelper.render('home'));
+
+      expect(html).not.toContain('Loading category items...');
+    });
+
     it('renders the Categories component for "categories" page', function() {
       const html = renderToStaticMarkup(AppHelper.render('categories'));
 
@@ -31,6 +37,12 @@ describe('AppHelper', function() {
       const html = renderToStaticMarkup(AppHelper.render('categories'));
 
       expect(html).not.toContain('placeholder');
+    });
+
+    it('renders the CategoryItems component for "categoryItems" page', function() {
+      const html = renderToStaticMarkup(AppHelper.render('categoryItems'));
+
+      expect(html).toContain('Loading category items...');
     });
   });
 });
