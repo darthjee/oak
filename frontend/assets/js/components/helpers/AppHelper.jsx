@@ -1,9 +1,11 @@
 import React from 'react';
 import Header from '../elements/Header.jsx';
 import Categories from '../pages/Categories.jsx';
+import CategoryItems from '../pages/CategoryItems.jsx';
 
 const PAGES = {
   categories: <Categories />,
+  categoryItems: <CategoryItems />,
   home: <p>placeholder</p>,
 };
 
