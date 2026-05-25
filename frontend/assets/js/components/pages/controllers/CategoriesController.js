@@ -95,14 +95,21 @@ export default class CategoriesController {
   }
 
   #fetchCategories() {
-    const queryString = getHashQueryParams(this.hashProvider()).toString();
-    const categoriesPath = queryString.length > 0 ? `/categories.json?${queryString}` : '/categories.json';
-
-    return fetch(categoriesPath, {
+    return fetch(this.#categoriesPath(), {
       headers: { Accept: 'application/json' },
     })
       .then((response) => this.#handleCategoriesResponse(response))
       .then(({ payload, pagination }) => this.#normalizeCategoriesData(payload, pagination));
+  }
+
+  #categoriesPath() {
+    const queryString = getHashQueryParams(this.hashProvider()).toString();
+
+    if (queryString.length === 0) {
+      return '/categories.json';
+    }
+
+    return `/categories.json?${queryString}`;
   }
 
   #handleCategoriesResponse(response) {
