@@ -44,5 +44,11 @@ describe('AppHelper', function() {
 
       expect(html).toContain('Loading category items...');
     });
+
+    it('renders the CategoryItem component for "categoryItem" page', function() {
+      const html = renderToStaticMarkup(AppHelper.render('categoryItem'));
+
+      expect(html).toContain('Loading category item...');
+    });
   });
 });
