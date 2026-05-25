@@ -1,4 +1,20 @@
 /**
+ * Builds URLSearchParams from the current hash route query string.
+ *
+ * @param {string} [hash=''] current location hash
+ * @returns {URLSearchParams} parsed query params from the hash route
+ */
+export function getHashQueryParams(hash = '') {
+  const questionMarkIndex = hash.indexOf('?');
+
+  if (questionMarkIndex === -1) {
+    return new URLSearchParams();
+  }
+
+  return new URLSearchParams(hash.slice(questionMarkIndex + 1));
+}
+
+/**
  * Manages categories page state by fetching categories and login status from the API.
  */
 export default class CategoriesController {
@@ -10,13 +26,22 @@ export default class CategoriesController {
    * @param {Function} setLogged state setter for updating the logged-in flag
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
+   * @param {Function} [hashProvider] function returning the current location hash
    */
-  constructor(setCategories, setPagination, setLogged, setLoading, setError) {
+  constructor(
+    setCategories,
+    setPagination,
+    setLogged,
+    setLoading,
+    setError,
+    hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash)
+  ) {
     this.setCategories = setCategories;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
+    this.hashProvider = hashProvider;
   }
 
   /**
@@ -70,7 +95,10 @@ export default class CategoriesController {
   }
 
   #fetchCategories() {
-    return fetch('/categories.json', {
+    const queryString = getHashQueryParams(this.hashProvider()).toString();
+    const categoriesPath = queryString.length > 0 ? `/categories.json?${queryString}` : '/categories.json';
+
+    return fetch(categoriesPath, {
       headers: { Accept: 'application/json' },
     })
       .then((response) => this.#handleCategoriesResponse(response))

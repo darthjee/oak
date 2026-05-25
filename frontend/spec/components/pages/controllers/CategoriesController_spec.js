@@ -1,4 +1,4 @@
-import CategoriesController from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
+import CategoriesController, { getHashQueryParams } from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
 
 const flushPromises = async () => {
   await new Promise((resolve) => {
@@ -103,6 +103,88 @@ describe('CategoriesController', function() {
     cleanup();
   });
 
+  it('fetches categories using page query param from hash', async function() {
+    const setCategories = jasmine.createSpy('setCategories');
+    const setPagination = jasmine.createSpy('setPagination');
+    const setLogged = jasmine.createSpy('setLogged');
+    const setLoading = jasmine.createSpy('setLoading');
+    const setError = jasmine.createSpy('setError');
+
+    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+      if (url === '/categories.json?page=2') {
+        return Promise.resolve({
+          ok: true,
+          headers,
+          json: () => Promise.resolve([]),
+        });
+      }
+
+      if (url === '/users/login.json') {
+        return Promise.resolve({ ok: false, status: 404 });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const controller = new CategoriesController(
+      setCategories,
+      setPagination,
+      setLogged,
+      setLoading,
+      setError,
+      () => '#/categories?page=2'
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=2', { headers: { Accept: 'application/json' } });
+    expect(setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
+  it('fetches categories using all query params from hash', async function() {
+    const setCategories = jasmine.createSpy('setCategories');
+    const setPagination = jasmine.createSpy('setPagination');
+    const setLogged = jasmine.createSpy('setLogged');
+    const setLoading = jasmine.createSpy('setLoading');
+    const setError = jasmine.createSpy('setError');
+
+    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+      if (url === '/categories.json?page=3&per_page=5') {
+        return Promise.resolve({
+          ok: true,
+          headers,
+          json: () => Promise.resolve([]),
+        });
+      }
+
+      if (url === '/users/login.json') {
+        return Promise.resolve({ ok: false, status: 404 });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const controller = new CategoriesController(
+      setCategories,
+      setPagination,
+      setLogged,
+      setLoading,
+      setError,
+      () => '#/categories?page=3&per_page=5'
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=3&per_page=5', { headers: { Accept: 'application/json' } });
+    expect(setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
   it('calls setError when categories fetch fails', async function() {
     const setCategories = jasmine.createSpy('setCategories');
     const setPagination = jasmine.createSpy('setPagination');
@@ -202,5 +284,17 @@ describe('CategoriesController', function() {
     expect(setError).not.toHaveBeenCalled();
 
     cleanup();
+  });
+});
+
+describe('getHashQueryParams', function() {
+  it('returns empty params when hash has no query params', function() {
+    expect(getHashQueryParams('#/categories').toString()).toEqual('');
+  });
+  it('extracts single query param from hash', function() {
+    expect(getHashQueryParams('#/categories?page=2').toString()).toEqual('page=2');
+  });
+  it('extracts all query params from hash', function() {
+    expect(getHashQueryParams('#/categories?page=3&per_page=5').toString()).toEqual('page=3&per_page=5');
   });
 });
