@@ -1,6 +1,12 @@
 import React from 'react';
 import OptionalImage from './OptionalImage.jsx';
 
+/**
+ * Renders a standard card with optional image and footer content.
+ *
+ * @param {{href: string, title: string, imageSrc?: string, imageAlt?: string, footer?: JSX.Element}} props card attributes
+ * @returns {JSX.Element} card markup
+ */
 export default function CatalogCard({ href, title, imageSrc, imageAlt, footer }) {
   return (
     <div className='col-sm-6 col-md-4 col-lg-3 mb-4'>
