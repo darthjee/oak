@@ -122,17 +122,21 @@ export default class CategoryItemHelper {
       <div className='mb-4'>
         <h5>Photos</h5>
         <Carousel>
-          {photos.map((photo) => (
-            <Carousel.Item key={photo.photo_url}>
-              <img
-                className='d-block w-100'
-                src={photo.photo_url}
-                alt={name}
-              />
-            </Carousel.Item>
-          ))}
+          {photos.map((photo) => this.#renderPhotoItem(photo, name))}
         </Carousel>
       </div>
+    );
+  }
+
+  static #renderPhotoItem(photo, name) {
+    return (
+      <Carousel.Item key={photo.photo_url}>
+        <img
+          className='d-block w-100'
+          src={photo.photo_url}
+          alt={name}
+        />
+      </Carousel.Item>
     );
   }
 }
