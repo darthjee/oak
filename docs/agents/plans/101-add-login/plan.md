@@ -37,9 +37,10 @@ dependency array and triggers a re-fetch.
 
 ## Implementation Steps
 
-### Step 1 — `LoginModalController.jsx`
+### Step 1 — `LoginModalController.js`
 
-Create `frontend/assets/js/components/elements/controllers/LoginModalController.jsx`.
+Create `frontend/assets/js/components/elements/controllers/LoginModalController.js`
+(plain `.js`, not `.jsx` — controllers follow the `.js` convention, e.g. `HeaderController.js`).
 
 Plain JS class. Constructor receives `setLogin`, `setPassword`, `setIncorrect`, `setError`,
 `onSuccess`.
@@ -56,7 +57,7 @@ Methods:
 
 Create `frontend/assets/js/components/elements/helpers/LoginModalHelper.jsx`.
 
-Static class. `render(state, handlers)`:
+Static class. `render(show, state, handlers)`:
 
 Returns a `react-bootstrap` `<Modal>` containing:
 

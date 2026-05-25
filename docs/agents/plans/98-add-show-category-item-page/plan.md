@@ -45,13 +45,14 @@ Item JSON shape:
 
 ### Step 1 — URL param extraction
 
-Add a utility (or extend the pattern from #97) to extract both the slug and the id from the hash:
+Add a utility (or extend the pattern from #97) to extract both the slug and the id from the hash.
+Follow the regex style used in `getCategorySlugFromHash`:
 
 ```js
-function getCategoryItemParamsFromHash() {
-  const path = window.location.hash.split('?')[0];
-  const parts = path.split('/');
-  return { slug: parts[2], id: parts[4] };
+export function getCategoryItemParamsFromHash(hash = '') {
+  const path = hash.split('?')[0];
+  const match = path.match(/^#\/categories\/([^/]+)\/items\/([^/]+)\/?$/);
+  return { slug: match?.[1] || '', id: match?.[2] || '' };
 }
 ```
 
@@ -61,10 +62,11 @@ Create `frontend/assets/js/components/pages/controllers/CategoryItemController.j
 `.js`, not `.jsx` — consistent with `CategoriesController.js` and `HeaderController.js`).
 
 Constructor receives `setItem`, `setLogged`, `setLoading`, `setError`,
-`hashProvider = () => window.location.hash`, and `client = new GenericClient(hashProvider)`.
+and `client = null`. Inside the constructor: `this.client = client ?? new GenericClient()`.
+This follows the same pattern as `CategoryItemsController.js`.
 
 `buildEffect()`:
-1. Extract `{ slug, id }` via `getCategoryItemParamsFromHash(this.hashProvider())`
+1. Extract `{ slug, id }` via `getCategoryItemParamsFromHash(this.client.currentHash())`
 2. Call `this.client.fetch(`/categories/${slug}/items/${id}.json`)` for the item data
 3. Check login via a direct `fetch('/users/login.json')` (no hash params should be forwarded)
 4. Set state from both results via `Promise.all`
