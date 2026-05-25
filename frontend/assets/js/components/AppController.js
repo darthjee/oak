@@ -25,6 +25,10 @@ export default class AppController {
   getPage() {
     const hash = this.locationProvider();
 
+    if (/^#\/categories\/[^/]+\/items\/[^/]+\/?(\?.*)?$/.test(hash)) {
+      return 'categoryItem';
+    }
+
     if (/^#\/categories\/[^/]+\/items\/?(\?.*)?$/.test(hash)) {
       return 'categoryItems';
     }

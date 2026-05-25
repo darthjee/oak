@@ -1,4 +1,5 @@
 import React from 'react';
+import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
 
 /**
@@ -11,11 +12,7 @@ export default class CategoriesHelper {
    * @returns {JSX.Element} loading placeholder
    */
   static renderLoading() {
-    return (
-      <div className='container mt-4'>
-        <p className='text-muted'>Loading categories...</p>
-      </div>
-    );
+    return <LoadingMessage message='Loading categories...' />;
   }
 
   /**

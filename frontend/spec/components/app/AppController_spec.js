@@ -2,6 +2,22 @@ import AppController from '../../../assets/js/components/AppController.js';
 
 describe('AppController', function() {
   describe('#getPage', function() {
+    it('returns "categoryItem" for #/categories/:slug/items/:id', function() {
+      const controller = new AppController(null, null, () => '#/categories/project/items/35');
+
+      expect(controller.getPage()).toBe('categoryItem');
+    });
+
+    it('returns "categoryItem" for #/categories/:slug/items/:id with query params', function() {
+      const controller = new AppController(
+        null,
+        null,
+        () => '#/categories/project/items/35?foo=bar'
+      );
+
+      expect(controller.getPage()).toBe('categoryItem');
+    });
+
     it('returns "categoryItems" for #/categories/:slug/items', function() {
       const controller = new AppController(null, null, () => '#/categories/project/items');
 
