@@ -1,6 +1,7 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
+import LoadingMessage from '../../elements/LoadingMessage.jsx';
 
 /**
  * Renders the category item page HTML for different states.
@@ -12,11 +13,7 @@ export default class CategoryItemHelper {
    * @returns {JSX.Element} loading placeholder
    */
   static renderLoading() {
-    return (
-      <div className='container mt-4'>
-        <p className='text-muted'>Loading category item...</p>
-      </div>
-    );
+    return <LoadingMessage message='Loading category item...' />;
   }
 
   /**
