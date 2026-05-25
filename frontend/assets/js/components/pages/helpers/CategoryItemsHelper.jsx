@@ -49,16 +49,7 @@ export default class CategoryItemsHelper {
 
     return (
       <div className='container mt-4'>
-        {logged && (
-          <>
-            <a className='btn btn-primary mb-3 me-2' href={`/#/categories/${slug}/items/new`}>
-              New
-            </a>
-            <a className='btn btn-secondary mb-3' href={`/#/categories/${slug}/edit`}>
-              Edit
-            </a>
-          </>
-        )}
+        {this.#renderActions(logged, slug)}
         <div className='row'>
           {items.map((item) => this.#renderCard(item, slug))}
         </div>
@@ -82,23 +73,56 @@ export default class CategoryItemsHelper {
           <a href={itemPath} className='text-decoration-none text-dark'>
             <div className='card-body'>
               <h5 className='card-title'>{name}</h5>
-              {snapUrl && (
-                <img
-                  src={snapUrl}
-                  alt={name}
-                  className='img-fluid'
-                />
-              )}
+              {this.#renderImage(snapUrl, name)}
             </div>
           </a>
-          {link?.url && (
-            <div className='card-footer bg-white border-0 pt-0'>
-              <a href={link.url} target='_blank' rel='noreferrer' className='card-link'>
-                {link.text || 'External link'}
-              </a>
-            </div>
-          )}
+          {this.#renderExternalLink(link)}
         </div>
+      </div>
+    );
+  }
+
+  static #renderActions(logged, slug) {
+    if (!logged) {
+      return null;
+    }
+
+    return (
+      <>
+        <a className='btn btn-primary mb-3 me-2' href={`/#/categories/${slug}/items/new`}>
+          New
+        </a>
+        <a className='btn btn-secondary mb-3' href={`/#/categories/${slug}/edit`}>
+          Edit
+        </a>
+      </>
+    );
+  }
+
+  static #renderImage(snapUrl, name) {
+    if (!snapUrl) {
+      return null;
+    }
+
+    return (
+      <img
+        src={snapUrl}
+        alt={name}
+        className='img-fluid'
+      />
+    );
+  }
+
+  static #renderExternalLink(link) {
+    if (!link?.url) {
+      return null;
+    }
+
+    return (
+      <div className='card-footer bg-white border-0 pt-0'>
+        <a href={link.url} target='_blank' rel='noreferrer' className='card-link'>
+          {link.text || 'External link'}
+        </a>
       </div>
     );
   }
