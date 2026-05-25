@@ -94,7 +94,7 @@ describe('HeaderController', function() {
     const setError = jasmine.createSpy('setError');
 
     global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/users/logoff') {
+      if (url === '/users/logoff.json') {
         return Promise.resolve({ ok: true });
       }
 
@@ -116,6 +116,37 @@ describe('HeaderController', function() {
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'all', name: 'All Categories' },
     ]);
+    expect(setError).not.toHaveBeenCalled();
+  });
+
+  it('increments refreshKey after logoff when provided', async function() {
+    const setLogged = jasmine.createSpy('setLogged');
+    const setCategories = jasmine.createSpy('setCategories');
+    const setLoading = jasmine.createSpy('setLoading');
+    const setError = jasmine.createSpy('setError');
+    const setRefreshKey = jasmine.createSpy('setRefreshKey');
+
+    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+      if (url === '/users/logoff.json') {
+        return Promise.resolve({ ok: true });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const controller = new HeaderController(
+      setLogged,
+      setCategories,
+      setLoading,
+      setError,
+      setRefreshKey
+    );
+
+    await controller.handleLogoff();
+
+    expect(setLogged).toHaveBeenCalledWith(false);
+    expect(setRefreshKey).toHaveBeenCalled();
+    expect(setCategories).not.toHaveBeenCalled();
     expect(setError).not.toHaveBeenCalled();
   });
 });

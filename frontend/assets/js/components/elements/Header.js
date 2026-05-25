@@ -12,9 +12,11 @@ export default function Header() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const controller = useMemo(
-    () => new HeaderController(setLogged, setCategories, setLoading, setError),
+    () => new HeaderController(setLogged, setCategories, setLoading, setError, setRefreshKey),
     []
   );
 
@@ -22,7 +24,7 @@ export default function Header() {
     const effect = controller.buildEffect();
 
     return effect();
-  }, [controller]);
+  }, [controller, refreshKey]);
 
   if (loading) {
     return HeaderHelper.renderLoading();
@@ -32,5 +34,14 @@ export default function Header() {
     return HeaderHelper.renderError(error);
   }
 
-  return HeaderHelper.render(logged, categories, controller.handleLogoff);
+  return HeaderHelper.render(logged, categories, {
+    onLogoff: controller.handleLogoff,
+    onLoginClick: () => setShowModal(true),
+    onCloseModal: () => setShowModal(false),
+    onAuthSuccess: () => {
+      setRefreshKey((currentKey) => currentKey + 1);
+      setShowModal(false);
+    },
+    showModal,
+  });
 }

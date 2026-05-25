@@ -11,13 +11,22 @@ export default class HeaderController {
    * @param {Function} setCategories state setter for updating the categories list
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
+   * @param {Function|null} [setRefreshKey] state setter used to trigger a header reload after auth changes
    * @param {HeaderClient} [client] HTTP client used for API calls
    */
-  constructor(setLogged, setCategories, setLoading, setError, client = new HeaderClient()) {
+  constructor(
+    setLogged,
+    setCategories,
+    setLoading,
+    setError,
+    setRefreshKey = null,
+    client = new HeaderClient()
+  ) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
     this.setLoading = setLoading;
     this.setError = setError;
+    this.setRefreshKey = setRefreshKey;
     this.client = client;
 
     this.handleLogoff = this.handleLogoff.bind(this);
@@ -92,6 +101,11 @@ export default class HeaderController {
 
   #handleLogoffSuccess() {
     this.setLogged(false);
+
+    if (typeof this.setRefreshKey === 'function') {
+      this.setRefreshKey((currentKey) => currentKey + 1);
+      return Promise.resolve();
+    }
 
     return this.#fetchCategories(this.#unsafeSet.bind(this));
   }

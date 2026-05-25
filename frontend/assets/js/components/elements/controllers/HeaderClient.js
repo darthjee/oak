@@ -30,7 +30,7 @@ export default class HeaderClient {
    * @returns {Promise<Response>} fetch response from the logoff endpoint
    */
   logoff() {
-    return fetch('/users/logoff', {
+    return fetch('/users/logoff.json', {
       method: 'DELETE',
       headers: { Accept: 'application/json' },
     });
