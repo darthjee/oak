@@ -13,7 +13,13 @@ export default class HeaderController {
    * @param {Function} setError state setter for updating the error message
    * @param {HeaderClient} [client] HTTP client used for API calls
    */
-  constructor(setLogged, setCategories, setLoading, setError, client = new HeaderClient()) {
+  constructor(
+    setLogged,
+    setCategories,
+    setLoading,
+    setError,
+    client = new HeaderClient()
+  ) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
     this.setLoading = setLoading;
@@ -21,6 +27,7 @@ export default class HeaderController {
     this.client = client;
 
     this.handleLogoff = this.handleLogoff.bind(this);
+    this.reload = this.reload.bind(this);
   }
 
   /**
@@ -33,7 +40,7 @@ export default class HeaderController {
       let mounted = true;
       const safeSet = this.#buildSafeSetter(() => mounted);
 
-      this.#loadHeaderData(safeSet);
+      this.reload(safeSet);
 
       return () => {
         mounted = false;
@@ -53,8 +60,21 @@ export default class HeaderController {
     }
 
     return this.client.logoff()
-      .then(() => this.#handleLogoffSuccess())
+      .then(() => this.reload())
       .catch((error) => this.#handleError(error, 'Unable to logoff.'));
+  }
+
+  /**
+   * Reloads the header data.
+   *
+   * @param {Function} [safeSet] state setter wrapper, defaults to direct setters
+   * @returns {Promise<void>} resolves when header data loading finishes
+   */
+  reload(safeSet = this.#unsafeSet.bind(this)) {
+    safeSet(this.setLoading, true);
+    safeSet(this.setError, null);
+
+    return this.#loadHeaderData(safeSet);
   }
 
   #checkLogin(safeSet) {
@@ -80,7 +100,7 @@ export default class HeaderController {
   }
 
   #loadHeaderData(safeSet) {
-    Promise.all([
+    return Promise.all([
       this.#checkLogin(safeSet),
       this.#fetchCategories(safeSet),
     ])
@@ -88,12 +108,6 @@ export default class HeaderController {
       .finally(() => {
         safeSet(this.setLoading, false);
       });
-  }
-
-  #handleLogoffSuccess() {
-    this.setLogged(false);
-
-    return this.#fetchCategories(this.#unsafeSet.bind(this));
   }
 
   #parseLoginResponse(response) {

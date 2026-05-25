@@ -50,8 +50,9 @@ describe('HeaderController', function() {
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'miniatures', name: 'Miniatures' },
     ]);
+    expect(setLoading).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenCalledWith(null);
 
     cleanup();
   });
@@ -83,8 +84,9 @@ describe('HeaderController', function() {
     await flushPromises();
 
     expect(setLogged).toHaveBeenCalledWith(false);
+    expect(setLoading).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenCalledWith(null);
   });
 
   it('logs off and reloads categories', async function() {
@@ -94,8 +96,12 @@ describe('HeaderController', function() {
     const setError = jasmine.createSpy('setError');
 
     global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/users/logoff') {
+      if (url === '/users/logoff.json') {
         return Promise.resolve({ ok: true });
+      }
+
+      if (url === '/users/login.json') {
+        return Promise.resolve({ ok: false, status: 404 });
       }
 
       if (url === '/user/categories.json') {
@@ -113,9 +119,50 @@ describe('HeaderController', function() {
     await controller.handleLogoff();
 
     expect(setLogged).toHaveBeenCalledWith(false);
+    expect(setLoading).toHaveBeenCalledWith(true);
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'all', name: 'All Categories' },
     ]);
-    expect(setError).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenCalledWith(null);
+  });
+
+  it('reloads header data on demand', async function() {
+    const setLogged = jasmine.createSpy('setLogged');
+    const setCategories = jasmine.createSpy('setCategories');
+    const setLoading = jasmine.createSpy('setLoading');
+    const setError = jasmine.createSpy('setError');
+
+    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+      if (url === '/users/login.json') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ token: 'abc' }),
+        });
+      }
+
+      if (url === '/user/categories.json') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([{ slug: 'project', name: 'Project' }]),
+        });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const controller = new HeaderController(
+      setLogged,
+      setCategories,
+      setLoading,
+      setError
+    );
+
+    await controller.reload();
+
+    expect(setLoading).toHaveBeenCalledWith(true);
+    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setError).toHaveBeenCalledWith(null);
+    expect(setLogged).toHaveBeenCalledWith(true);
+    expect(setCategories).toHaveBeenCalledWith([{ slug: 'project', name: 'Project' }]);
   });
 });

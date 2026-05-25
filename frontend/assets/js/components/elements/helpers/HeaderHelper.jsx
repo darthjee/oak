@@ -1,4 +1,5 @@
 import React from 'react';
+import LoginModal from '../LoginModal.jsx';
 
 /**
  * Renders the navigation header HTML for different states.
@@ -34,17 +35,18 @@ export default class HeaderHelper {
    *
    * @param {boolean} logged whether the current user is logged in
    * @param {Array<Object>} categories list of category objects to display
-   * @param {Function} onLogoff callback invoked when the user clicks Logoff
+   * @param {{onLogoff: Function, onLoginClick: Function, onCloseModal: Function, onAuthSuccess: Function, showModal: boolean}} handlers callbacks and modal state
    * @returns {JSX.Element} header shell with categories menu and auth controls
    */
-  static render(logged, categories, onLogoff) {
+  static render(logged, categories, handlers) {
     return this.#renderShell(
       this.#renderCategories(logged, categories),
-      this.#renderAuth(logged, onLogoff)
+      this.#renderAuth(logged, handlers),
+      this.#renderLoginModal(handlers)
     );
   }
 
-  static #renderShell(categoriesMenu, authMenu) {
+  static #renderShell(categoriesMenu, authMenu, modal) {
     return (
       <div className='flex-column align-items-center bg-light border-bottom shadow-sm'>
         <nav className='navbar navbar-expand-sm navbar-light bg-light'>
@@ -65,6 +67,7 @@ export default class HeaderHelper {
             {authMenu}
           </div>
         </nav>
+        {modal}
       </div>
     );
   }
@@ -106,12 +109,12 @@ export default class HeaderHelper {
     );
   }
 
-  static #renderAuth(logged, onLogoff) {
+  static #renderAuth(logged, handlers) {
     if (logged) {
       return (
         <ul className='nav navbar-nav'>
           <li>
-            <a className='nav-link' href='' onClick={onLogoff}>
+            <a className='nav-link' href='' onClick={handlers.onLogoff}>
               Logoff
             </a>
           </li>
@@ -122,11 +125,28 @@ export default class HeaderHelper {
     return (
       <ul className='nav navbar-nav'>
         <li>
-          <a className='nav-link' href='' data-bs-toggle='modal' data-bs-target='#login-modal'>
+          <a
+            className='nav-link'
+            href=''
+            onClick={(event) => {
+              event.preventDefault();
+              handlers.onLoginClick();
+            }}
+          >
             Login
           </a>
         </li>
       </ul>
+    );
+  }
+
+  static #renderLoginModal(handlers) {
+    return (
+      <LoginModal
+        show={Boolean(handlers.showModal)}
+        onClose={handlers.onCloseModal}
+        onSuccess={handlers.onAuthSuccess}
+      />
     );
   }
 }

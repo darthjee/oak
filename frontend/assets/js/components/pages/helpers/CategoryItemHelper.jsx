@@ -1,4 +1,5 @@
 import React from 'react';
+import Alert from '../../elements/Alert.jsx';
 import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
 import LabelValueParagraph from '../../elements/LabelValueParagraph.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
@@ -26,7 +27,7 @@ export default class CategoryItemHelper {
   static renderError(error) {
     return (
       <div className='container mt-4'>
-        <div className='alert alert-danger'>{`Error: ${error}`}</div>
+        <Alert message={`Error: ${error}`} />
       </div>
     );
   }

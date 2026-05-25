@@ -12,6 +12,7 @@ export default function Header() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const controller = useMemo(
     () => new HeaderController(setLogged, setCategories, setLoading, setError),
@@ -32,5 +33,14 @@ export default function Header() {
     return HeaderHelper.renderError(error);
   }
 
-  return HeaderHelper.render(logged, categories, controller.handleLogoff);
+  return HeaderHelper.render(logged, categories, {
+    onLogoff: controller.handleLogoff,
+    onLoginClick: () => setShowModal(true),
+    onCloseModal: () => setShowModal(false),
+    onAuthSuccess: () => {
+      controller.reload();
+      setShowModal(false);
+    },
+    showModal,
+  });
 }

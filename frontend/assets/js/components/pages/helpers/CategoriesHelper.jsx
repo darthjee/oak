@@ -1,4 +1,5 @@
 import React from 'react';
+import Alert from '../../elements/Alert.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
 
@@ -24,7 +25,7 @@ export default class CategoriesHelper {
   static renderError(error) {
     return (
       <div className='container mt-4'>
-        <div className='alert alert-danger'>{`Error: ${error}`}</div>
+        <Alert message={`Error: ${error}`} />
       </div>
     );
   }
