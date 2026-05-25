@@ -25,10 +25,11 @@ This plan is split into four files:
 
 This issue depends on the following sub-issues, to be resolved in order:
 
-- [ ] #93
-- [ ] #94
-- [ ] #95
-- [ ] #107
+- [x] #93
+- [x] #94
+- [x] #95
+- [x] #107
+- [ ] #115
 - [ ] #108
 - [ ] #109
 - [ ] #97
