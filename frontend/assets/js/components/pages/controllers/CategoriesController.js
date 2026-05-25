@@ -1,3 +1,5 @@
+import getHashQueryParams from '../../helpers/hashQueryParams.js';
+
 /**
  * Manages categories page state by fetching categories and login status from the API.
  */
@@ -10,13 +12,22 @@ export default class CategoriesController {
    * @param {Function} setLogged state setter for updating the logged-in flag
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
+   * @param {Function} [hashProvider] function returning the current location hash
    */
-  constructor(setCategories, setPagination, setLogged, setLoading, setError) {
+  constructor(
+    setCategories,
+    setPagination,
+    setLogged,
+    setLoading,
+    setError,
+    hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash)
+  ) {
     this.setCategories = setCategories;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
+    this.hashProvider = hashProvider;
   }
 
   /**
@@ -70,11 +81,21 @@ export default class CategoriesController {
   }
 
   #fetchCategories() {
-    return fetch('/categories.json', {
+    return fetch(this.#categoriesPath(), {
       headers: { Accept: 'application/json' },
     })
       .then((response) => this.#handleCategoriesResponse(response))
       .then(({ payload, pagination }) => this.#normalizeCategoriesData(payload, pagination));
+  }
+
+  #categoriesPath() {
+    const queryString = getHashQueryParams(this.hashProvider()).toString();
+
+    if (queryString.length === 0) {
+      return '/categories.json';
+    }
+
+    return `/categories.json?${queryString}`;
   }
 
   #handleCategoriesResponse(response) {
