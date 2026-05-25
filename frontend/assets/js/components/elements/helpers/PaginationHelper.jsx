@@ -1,5 +1,6 @@
 import React from 'react';
 import PaginationController from '../controllers/PaginationController.js';
+import PageLink from '../PageLink.jsx';
 
 export default class PaginationHelper {
   static render(currentPage, totalPages, perPage, basePath) {
@@ -43,42 +44,46 @@ export default class PaginationHelper {
     return Math.max(min, Math.min(max, value));
   }
 
-  static #buildPageLink(basePath, page, perPage) {
-    return `${basePath}?page=${page}&per_page=${perPage}`;
+  static #buildPageLinkTemplate(basePath) {
+    return `${basePath}?page=:page&per_page=:perPage`;
   }
 
-  static #renderPreviousButton(currentPage, perPage, basePath) {
+  static #renderPreviousButton(currentPage, perPage, linkTemplate) {
     if (currentPage <= 1) {
       return this.#renderDisabledNavigationButton('«');
     }
 
     return this.#renderNavigationButton(
-      this.#buildPageLink(basePath, currentPage - 1, perPage),
+      currentPage - 1,
+      perPage,
+      linkTemplate,
       'Previous',
       '«'
     );
   }
 
-  static #renderNextButton(currentPage, totalPages, perPage, basePath) {
+  static #renderNextButton(currentPage, totalPages, perPage, linkTemplate) {
     if (currentPage >= totalPages) {
       return this.#renderDisabledNavigationButton('»');
     }
 
     return this.#renderNavigationButton(
-      this.#buildPageLink(basePath, currentPage + 1, perPage),
+      currentPage + 1,
+      perPage,
+      linkTemplate,
       'Next',
       '»'
     );
   }
 
-  static #renderPageEntry(entry, index, currentPage, perPage, basePath) {
+  static #renderPageEntry(entry, index, currentPage, perPage, linkTemplate) {
     if (entry === null) {
       return this.#renderGapEntry(index);
     }
 
     const activeClass = entry === currentPage ? ' active' : '';
 
-    return this.#renderNumberedEntry(entry, activeClass, this.#buildPageLink(basePath, entry, perPage));
+    return this.#renderNumberedEntry(entry, activeClass, perPage, linkTemplate);
   }
 
   static #renderDisabledNavigationButton(symbol) {
@@ -89,12 +94,17 @@ export default class PaginationHelper {
     );
   }
 
-  static #renderNavigationButton(href, ariaLabel, symbol) {
+  static #renderNavigationButton(page, perPage, linkTemplate, ariaLabel, symbol) {
     return (
       <li className='page-item'>
-        <a className='page-link' href={href} aria-label={ariaLabel}>
+        <PageLink
+          urlTemplate={linkTemplate}
+          page={page}
+          perPage={perPage}
+          ariaLabel={ariaLabel}
+        >
           <span aria-hidden='true'>{symbol}</span>
-        </a>
+        </PageLink>
       </li>
     );
   }
@@ -107,23 +117,23 @@ export default class PaginationHelper {
     );
   }
 
-  static #renderNumberedEntry(entry, activeClass, href) {
+  static #renderNumberedEntry(entry, activeClass, perPage, linkTemplate) {
     return (
       <li key={`page-${entry}`} className={`page-item${activeClass}`}>
-        <a className='page-link' href={href}>
-          {entry}
-        </a>
+        <PageLink urlTemplate={linkTemplate} page={entry} perPage={perPage}>{entry}</PageLink>
       </li>
     );
   }
 
   static #renderPaginationContainer(pageList, page, totalPages, itemsPerPage, basePath) {
+    const linkTemplate = this.#buildPageLinkTemplate(basePath);
+
     return (
       <nav aria-label='Categories pages' className='mt-4'>
         <ul className='pagination justify-content-center'>
-          {this.#renderPreviousButton(page, itemsPerPage, basePath)}
-          {pageList.map((entry, index) => this.#renderPageEntry(entry, index, page, itemsPerPage, basePath))}
-          {this.#renderNextButton(page, totalPages, itemsPerPage, basePath)}
+          {this.#renderPreviousButton(page, itemsPerPage, linkTemplate)}
+          {pageList.map((entry, index) => this.#renderPageEntry(entry, index, page, itemsPerPage, linkTemplate))}
+          {this.#renderNextButton(page, totalPages, itemsPerPage, linkTemplate)}
         </ul>
       </nav>
     );
