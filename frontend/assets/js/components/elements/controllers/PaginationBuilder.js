@@ -1,3 +1,6 @@
+/**
+ * Builds a sparse page list for pagination, inserting `null` entries for gaps.
+ */
 export default class PaginationBuilder {
   constructor(currentPage, totalPages) {
     this.currentPage = currentPage;
@@ -5,24 +8,29 @@ export default class PaginationBuilder {
     this.pages = new Set();
   }
 
+  /** Adds the first pages that should always be visible. */
   addFirstPages() {
     return this.#addRange(1, 3);
   }
 
+  /** Adds the last pages that should always be visible. */
   addLastPages() {
     return this.#addRange(this.totalPages - 2, this.totalPages);
   }
 
+  /** Adds the sliding window around the current page. */
   addCurrentPageWindow() {
     return this.#addRange(this.currentPage - 3, this.currentPage + 3);
   }
 
+  /** Returns a sorted page list with `null` placeholders between non-consecutive pages. */
   build() {
     const sortedPages = [...this.pages].sort((left, right) => left - right);
 
     return this.#withGaps(sortedPages);
   }
 
+  /** Adds an inclusive page range to the internal page set. */
   #addRange(start, finish) {
     for (let page = start; page <= finish; page += 1) {
       this.#addPage(page);
@@ -31,6 +39,7 @@ export default class PaginationBuilder {
     return this;
   }
 
+  /** Adds a page if it is within the valid bounds. */
   #addPage(page) {
     if (page < 1 || page > this.totalPages) {
       return;
@@ -39,6 +48,7 @@ export default class PaginationBuilder {
     this.pages.add(page);
   }
 
+  /** Inserts `null` markers where there are jumps between consecutive pages. */
   #withGaps(sortedPages) {
     if (sortedPages.length === 0) {
       return [];

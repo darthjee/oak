@@ -2,7 +2,11 @@ import React from 'react';
 import PaginationController from '../controllers/PaginationController.js';
 import PageLink from '../PageLink.jsx';
 
+/**
+ * Renders the pagination UI from raw pagination data.
+ */
 export default class PaginationHelper {
+  /** Normalizes pagination values and returns the full pagination component markup. */
   static render(currentPage, totalPages, perPage, basePath) {
     const normalizedPagination = this.#normalizePagination(currentPage, totalPages, perPage);
 
@@ -22,6 +26,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Coerces incoming values to valid pagination values. */
   static #normalizePagination(currentPage, totalPages, perPage) {
     const pages = this.#normalizePositiveInteger(totalPages, 1);
     const page = this.#clamp(this.#normalizePositiveInteger(currentPage, 1), 1, pages);
@@ -30,6 +35,7 @@ export default class PaginationHelper {
     return { page, totalPages: pages, itemsPerPage };
   }
 
+  /** Parses a positive integer value or returns the provided fallback. */
   static #normalizePositiveInteger(value, fallback) {
     const parsed = Number.parseInt(value, 10);
 
@@ -40,14 +46,17 @@ export default class PaginationHelper {
     return parsed;
   }
 
+  /** Clamps a number between `min` and `max`. */
   static #clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
   }
 
+  /** Builds a page URL template consumed by `PageLink`. */
   static #buildPageLinkTemplate(basePath) {
     return `${basePath}?page=:page&per_page=:perPage`;
   }
 
+  /** Renders the previous-page button, disabled on the first page. */
   static #renderPreviousButton(currentPage, perPage, linkTemplate) {
     if (currentPage <= 1) {
       return this.#renderDisabledNavigationButton('«');
@@ -62,6 +71,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders the next-page button, disabled on the last page. */
   static #renderNextButton(currentPage, totalPages, perPage, linkTemplate) {
     if (currentPage >= totalPages) {
       return this.#renderDisabledNavigationButton('»');
@@ -76,6 +86,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders either a page entry or an ellipsis gap entry. */
   static #renderPageEntry(entry, index, currentPage, perPage, linkTemplate) {
     if (entry === null) {
       return this.#renderGapEntry(index);
@@ -86,6 +97,7 @@ export default class PaginationHelper {
     return this.#renderNumberedEntry(entry, activeClass, perPage, linkTemplate);
   }
 
+  /** Renders a disabled navigation button. */
   static #renderDisabledNavigationButton(symbol) {
     return (
       <li className='page-item disabled' aria-disabled='true'>
@@ -94,6 +106,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders a navigation button wrapped by `PageLink`. */
   static #renderNavigationButton(page, perPage, linkTemplate, ariaLabel, symbol) {
     return (
       <li className='page-item'>
@@ -109,6 +122,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders an ellipsis entry between non-consecutive pages. */
   static #renderGapEntry(index) {
     return (
       <li key={`gap-${index}`} className='page-item disabled' aria-disabled='true'>
@@ -117,6 +131,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders a numbered page entry wrapped by `PageLink`. */
   static #renderNumberedEntry(entry, activeClass, perPage, linkTemplate) {
     return (
       <li key={`page-${entry}`} className={`page-item${activeClass}`}>
@@ -125,6 +140,7 @@ export default class PaginationHelper {
     );
   }
 
+  /** Renders the full pagination navigation container. */
   static #renderPaginationContainer(pageList, page, totalPages, itemsPerPage, basePath) {
     const linkTemplate = this.#buildPageLinkTemplate(basePath);
 

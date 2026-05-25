@@ -1,5 +1,8 @@
 import React from 'react';
 
+/**
+ * Generic pagination link renderer based on a URL template.
+ */
 export default function PageLink({
   urlTemplate,
   page,
