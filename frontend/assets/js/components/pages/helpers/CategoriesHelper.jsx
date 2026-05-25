@@ -1,5 +1,6 @@
 import React from 'react';
-import Alert from '../../elements/Alert.jsx';
+import CatalogCard from '../../elements/CatalogCard.jsx';
+import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
 
@@ -23,11 +24,7 @@ export default class CategoriesHelper {
    * @returns {JSX.Element} error alert container
    */
   static renderError(error) {
-    return (
-      <div className='container mt-4'>
-        <Alert message={`Error: ${error}`} />
-      </div>
-    );
+    return <ErrorContainer error={error} />;
   }
 
   /**
@@ -67,22 +64,12 @@ export default class CategoriesHelper {
     const { slug, name, snap_url: snapUrl } = category;
 
     return (
-      <div key={slug} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
-        <div className='card h-100'>
-          <a href={`/#/categories/${slug}/items`} className='text-decoration-none text-dark'>
-            <div className='card-body'>
-              <h5 className='card-title'>{name}</h5>
-              {snapUrl && (
-                <img
-                  src={snapUrl}
-                  alt={name}
-                  className='img-fluid'
-                />
-              )}
-            </div>
-          </a>
-        </div>
-      </div>
+      <CatalogCard
+        key={slug}
+        href={`/#/categories/${slug}/items`}
+        title={name}
+        imageSrc={snapUrl}
+      />
     );
   }
 }
