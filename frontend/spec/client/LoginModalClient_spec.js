@@ -1,4 +1,4 @@
-import LoginModalClient from '../../../../assets/js/components/elements/controllers/LoginModalClient.js';
+import LoginModalClient from '../../assets/js/client/LoginModalClient.js';
 
 describe('LoginModalClient', function() {
   let originalFetch;

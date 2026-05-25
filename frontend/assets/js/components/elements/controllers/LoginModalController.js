@@ -1,4 +1,4 @@
-import LoginModalClient from './LoginModalClient.js';
+import LoginModalClient from '../../../client/LoginModalClient.js';
 
 /**
  * Manages login modal state and login requests.
