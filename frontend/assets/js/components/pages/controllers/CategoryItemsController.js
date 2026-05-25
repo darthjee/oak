@@ -25,7 +25,6 @@ export default class CategoryItemsController {
    * @param {Function} setPagination state setter for updating the pagination info
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
-   * @param {Function} [hashProvider] function returning the current location hash
    * @param {GenericClient|null} [client] optional client instance
    */
   constructor(
@@ -34,7 +33,6 @@ export default class CategoryItemsController {
     setPagination,
     setLoading,
     setError,
-    hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash),
     client = null
   ) {
     this.setItems = setItems;
@@ -42,8 +40,7 @@ export default class CategoryItemsController {
     this.setPagination = setPagination;
     this.setLoading = setLoading;
     this.setError = setError;
-    this.hashProvider = hashProvider;
-    this.client = client ?? new GenericClient(hashProvider);
+    this.client = client ?? new GenericClient();
   }
 
   /**
@@ -55,7 +52,7 @@ export default class CategoryItemsController {
     return () => {
       let mounted = true;
       const safeSet = this.#buildSafeSetter(() => mounted);
-      const slug = getCategorySlugFromHash(this.hashProvider());
+      const slug = getCategorySlugFromHash(this.client.currentHash());
 
       this.#loadData(safeSet, slug);
 

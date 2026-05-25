@@ -17,13 +17,22 @@ export default class GenericClient {
   }
 
   /**
+   * Returns the current hash as provided by the configured hash provider.
+   *
+   * @returns {string} current location hash
+   */
+  currentHash() {
+    return this.#hashProvider();
+  }
+
+  /**
    * Builds the full URL by appending hash query params to the given path.
    *
    * @param {string} path base path
    * @returns {string} path with query params appended
    */
   #buildUrl(path) {
-    const params = getHashQueryParams(this.#hashProvider());
+    const params = getHashQueryParams(this.currentHash());
     const query = params.toString();
     return query ? `${path}?${query}` : path;
   }

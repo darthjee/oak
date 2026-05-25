@@ -11,6 +11,7 @@ describe('CategoryItemsController', function() {
   let mockClient;
 
   const buildMockClient = (overrides = {}) => ({
+    currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items'),
     fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
       Promise.resolve({ data: [], pagination: { page: 1, pages: 1, perPage: 10 } })
     ),
@@ -49,9 +50,9 @@ describe('CategoryItemsController', function() {
     const setPagination = jasmine.createSpy('setPagination');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
-    const hashProvider = () => '#/categories/project/items?page=2&per_page=12';
 
     mockClient = buildMockClient({
+      currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items?page=2&per_page=12'),
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.resolve({
           data: [{ id: 35, name: 'Oak', snap_url: 'http://example.com/oak.png', link: null }],
@@ -62,7 +63,7 @@ describe('CategoryItemsController', function() {
     stubLoginFetch(200);
 
     const controller = new CategoryItemsController(
-      setItems, setLogged, setPagination, setLoading, setError, hashProvider, mockClient
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
     const cleanup = controller.buildEffect()();
 
@@ -86,12 +87,11 @@ describe('CategoryItemsController', function() {
     const setPagination = jasmine.createSpy('setPagination');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
-    const hashProvider = () => '#/categories/project/items';
 
     stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
-      setItems, setLogged, setPagination, setLoading, setError, hashProvider, mockClient
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
     const cleanup = controller.buildEffect()();
 
@@ -111,9 +111,9 @@ describe('CategoryItemsController', function() {
     const setPagination = jasmine.createSpy('setPagination');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
-    const hashProvider = () => '#/categories/project/items';
 
     mockClient = buildMockClient({
+      currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items'),
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.reject(new Error('Request failed for /categories/project/items.json'))
       ),
@@ -121,7 +121,7 @@ describe('CategoryItemsController', function() {
     stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
-      setItems, setLogged, setPagination, setLoading, setError, hashProvider, mockClient
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
     const cleanup = controller.buildEffect()();
 
@@ -139,12 +139,14 @@ describe('CategoryItemsController', function() {
     const setPagination = jasmine.createSpy('setPagination');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
-    const hashProvider = () => '#/categories';
 
+    mockClient = buildMockClient({
+      currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories'),
+    });
     stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
-      setItems, setLogged, setPagination, setLoading, setError, hashProvider, mockClient
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
     const cleanup = controller.buildEffect()();
 
@@ -163,12 +165,11 @@ describe('CategoryItemsController', function() {
     const setPagination = jasmine.createSpy('setPagination');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
-    const hashProvider = () => '#/categories/project/items';
 
     stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
-      setItems, setLogged, setPagination, setLoading, setError, hashProvider, mockClient
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
     const cleanup = controller.buildEffect()();
 
