@@ -60,7 +60,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -95,7 +94,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -121,7 +119,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '#/categories?page=2',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -150,7 +147,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -174,7 +170,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -200,7 +195,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();
@@ -225,7 +219,6 @@ describe('CategoriesController', function() {
 
     const controller = new CategoriesController(
       setCategories, setPagination, setLogged, setLoading, setError,
-      () => '',
       mockClient
     );
     const cleanup = controller.buildEffect()();

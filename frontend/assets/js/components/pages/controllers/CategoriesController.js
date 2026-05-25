@@ -12,7 +12,6 @@ export default class CategoriesController {
    * @param {Function} setLogged state setter for updating the logged-in flag
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
-   * @param {Function} [hashProvider] function returning the current location hash
    * @param {GenericClient|null} [client] optional client instance (defaults to new GenericClient)
    */
   constructor(
@@ -21,7 +20,6 @@ export default class CategoriesController {
     setLogged,
     setLoading,
     setError,
-    hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash),
     client = null
   ) {
     this.setCategories = setCategories;
@@ -29,8 +27,7 @@ export default class CategoriesController {
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
-    this.hashProvider = hashProvider;
-    this.client = client ?? new GenericClient(hashProvider);
+    this.client = client ?? new GenericClient();
   }
 
   /**
