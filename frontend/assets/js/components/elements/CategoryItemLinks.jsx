@@ -1,4 +1,5 @@
 import React from 'react';
+import CategoryItemLink from './CategoryItemLink.jsx';
 
 /**
  * Renders category item links section.
@@ -17,11 +18,7 @@ export default function CategoryItemLinks({ links }) {
       <h5>Links</h5>
       <ul className='list-group'>
         {links.map((link) => (
-          <li key={link.id} className='list-group-item'>
-            <a href={link.url} target='_blank' rel='noreferrer'>
-              {link.text || link.url}
-            </a>
-          </li>
+          <CategoryItemLink key={link.id} link={link} />
         ))}
       </ul>
     </div>
