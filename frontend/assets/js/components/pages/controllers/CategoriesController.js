@@ -1,4 +1,4 @@
-import getHashQueryParams from '../../helpers/hashQueryParams.js';
+import GenericClient from '../../../client/GenericClient.js';
 
 /**
  * Manages categories page state by fetching categories and login status from the API.
@@ -12,7 +12,7 @@ export default class CategoriesController {
    * @param {Function} setLogged state setter for updating the logged-in flag
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
-   * @param {Function} [hashProvider] function returning the current location hash
+   * @param {GenericClient|null} [client] optional client instance (defaults to new GenericClient)
    */
   constructor(
     setCategories,
@@ -20,14 +20,14 @@ export default class CategoriesController {
     setLogged,
     setLoading,
     setError,
-    hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash)
+    client = null
   ) {
     this.setCategories = setCategories;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
-    this.hashProvider = hashProvider;
+    this.client = client ?? new GenericClient();
   }
 
   /**
@@ -81,60 +81,12 @@ export default class CategoriesController {
   }
 
   #fetchCategories() {
-    return fetch(this.#categoriesPath(), {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => this.#handleCategoriesResponse(response))
-      .then(({ payload, pagination }) => this.#normalizeCategoriesData(payload, pagination));
-  }
-
-  #categoriesPath() {
-    const queryString = getHashQueryParams(this.hashProvider()).toString();
-
-    if (queryString.length === 0) {
-      return '/categories.json';
-    }
-
-    return `/categories.json?${queryString}`;
-  }
-
-  #handleCategoriesResponse(response) {
-    if (!response.ok) {
-      throw new Error('Unable to load categories.');
-    }
-
-    const pagination = this.#extractPagination(response);
-
-    return response.json().then((payload) => ({ payload, pagination }));
-  }
-
-  #normalizeCategoriesData(payload, pagination) {
-    return {
-      categories: Array.isArray(payload) ? payload : [],
-      pagination,
-    };
-  }
-
-  #extractPagination(response) {
-    const totalPages = this.#parsePositiveInteger(response.headers.get('pages'), 1);
-    const page = this.#clamp(this.#parsePositiveInteger(response.headers.get('page'), 1), 1, totalPages);
-    const perPage = this.#parsePositiveInteger(response.headers.get('per_page'), 10);
-
-    return { page, pages: totalPages, perPage };
-  }
-
-  #parsePositiveInteger(value, fallback) {
-    const parsed = Number.parseInt(value, 10);
-
-    if (Number.isNaN(parsed) || parsed < 1) {
-      return fallback;
-    }
-
-    return parsed;
-  }
-
-  #clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+    return this.client.fetchIndex('/categories.json')
+      .then(({ data, pagination }) => ({
+        categories: Array.isArray(data) ? data : [],
+        pagination,
+      }))
+      .catch(() => { throw new Error('Unable to load categories.'); });
   }
 
   #checkLogin() {
