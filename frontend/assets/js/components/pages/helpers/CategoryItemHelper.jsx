@@ -1,6 +1,6 @@
 import React from 'react';
-import Alert from '../../elements/Alert.jsx';
 import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
+import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LabelValueParagraph from '../../elements/LabelValueParagraph.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import PhotosCarousel from '../../elements/PhotosCarousel.jsx';
@@ -25,11 +25,7 @@ export default class CategoryItemHelper {
    * @returns {JSX.Element} error alert container
    */
   static renderError(error) {
-    return (
-      <div className='container mt-4'>
-        <Alert message={`Error: ${error}`} />
-      </div>
-    );
+    return <ErrorContainer error={error} />;
   }
 
   /**

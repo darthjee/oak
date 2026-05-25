@@ -1,5 +1,6 @@
 import React from 'react';
-import Alert from '../../elements/Alert.jsx';
+import CatalogCard from '../../elements/CatalogCard.jsx';
+import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
 
@@ -23,11 +24,7 @@ export default class CategoryItemsHelper {
    * @returns {JSX.Element} error alert container
    */
   static renderError(error) {
-    return (
-      <div className='container mt-4'>
-        <Alert message={`Error: ${error}`} />
-      </div>
-    );
+    return <ErrorContainer error={error} />;
   }
 
   /**
@@ -66,17 +63,13 @@ export default class CategoryItemsHelper {
     const itemPath = `/#/categories/${slug}/items/${id}`;
 
     return (
-      <div key={id} className='col-sm-6 col-md-4 col-lg-3 mb-4'>
-        <div className='card h-100'>
-          <a href={itemPath} className='text-decoration-none text-dark'>
-            <div className='card-body'>
-              <h5 className='card-title'>{name}</h5>
-              {this.#renderImage(snapUrl, name)}
-            </div>
-          </a>
-          {this.#renderExternalLink(link)}
-        </div>
-      </div>
+      <CatalogCard
+        key={id}
+        href={itemPath}
+        title={name}
+        imageSrc={snapUrl}
+        footer={this.#renderExternalLink(link)}
+      />
     );
   }
 
@@ -94,20 +87,6 @@ export default class CategoryItemsHelper {
           Edit
         </a>
       </>
-    );
-  }
-
-  static #renderImage(snapUrl, name) {
-    if (!snapUrl) {
-      return null;
-    }
-
-    return (
-      <img
-        src={snapUrl}
-        alt={name}
-        className='img-fluid'
-      />
     );
   }
 
