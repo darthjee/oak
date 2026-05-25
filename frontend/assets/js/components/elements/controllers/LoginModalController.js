@@ -1,3 +1,5 @@
+import LoginModalClient from './LoginModalClient.js';
+
 /**
  * Manages login modal state and login requests.
  */
@@ -10,13 +12,22 @@ export default class LoginModalController {
    * @param {Function} setIncorrect state setter for invalid credential errors
    * @param {Function} setError state setter for unexpected errors
    * @param {Function|null} [onSuccess] callback invoked after a successful login
+   * @param {LoginModalClient} [client] HTTP client used for login requests
    */
-  constructor(setLogin, setPassword, setIncorrect, setError, onSuccess = null) {
+  constructor(
+    setLogin,
+    setPassword,
+    setIncorrect,
+    setError,
+    onSuccess = null,
+    client = new LoginModalClient()
+  ) {
     this.setLogin = setLogin;
     this.setPassword = setPassword;
     this.setIncorrect = setIncorrect;
     this.setError = setError;
     this.onSuccess = onSuccess;
+    this.client = client;
   }
 
   /**
@@ -31,38 +42,11 @@ export default class LoginModalController {
     this.setError(false);
 
     try {
-      const response = await fetch('/users/login.json', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          login: { login, password },
-        }),
-      });
+      const response = await this.client.submit(login, password);
 
-      if (response.ok) {
-        this.handleClear();
-
-        if (typeof this.onSuccess === 'function') {
-          this.onSuccess();
-        }
-
-        return;
-      }
-
-      this.setPassword('');
-
-      if (response.status >= 400 && response.status < 500) {
-        this.setIncorrect(true);
-        return;
-      }
-
-      this.setError(true);
+      this.#handleResponse(response);
     } catch {
-      this.setPassword('');
-      this.setError(true);
+      this.#handleUnexpectedError();
     }
   }
 
@@ -76,5 +60,31 @@ export default class LoginModalController {
     this.setPassword('');
     this.setIncorrect(false);
     this.setError(false);
+  }
+
+  #handleResponse(response) {
+    if (response.ok) {
+      this.handleClear();
+
+      if (typeof this.onSuccess === 'function') {
+        this.onSuccess();
+      }
+
+      return;
+    }
+
+    this.setPassword('');
+
+    if (response.status >= 400 && response.status < 500) {
+      this.setIncorrect(true);
+      return;
+    }
+
+    this.setError(true);
+  }
+
+  #handleUnexpectedError() {
+    this.setPassword('');
+    this.setError(true);
   }
 }

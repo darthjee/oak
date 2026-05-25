@@ -1,5 +1,7 @@
 import LoginModalHelper from '../../../../assets/js/components/elements/helpers/LoginModalHelper.jsx';
 import Modal from 'react-bootstrap/cjs/Modal.js';
+import Alert from '../../../../assets/js/components/elements/Alert.jsx';
+import LabeledInput from '../../../../assets/js/components/elements/LabeledInput.jsx';
 
 const findElement = (node, matcher) => {
   if (!node) {
@@ -29,26 +31,6 @@ const findElement = (node, matcher) => {
   return findElement(node.props?.children, matcher);
 };
 
-const collectText = (node) => {
-  if (!node) {
-    return '';
-  }
-
-  if (Array.isArray(node)) {
-    return node.map((child) => collectText(child)).join(' ');
-  }
-
-  if (typeof node === 'string') {
-    return node;
-  }
-
-  if (typeof node !== 'object') {
-    return '';
-  }
-
-  return collectText(node.props?.children);
-};
-
 describe('LoginModalHelper', function() {
   const buildHandlers = () => ({
     onClose: jasmine.createSpy('onClose'),
@@ -65,26 +47,28 @@ describe('LoginModalHelper', function() {
       incorrect: false,
       error: false,
     }, buildHandlers());
-    const text = collectText(element);
     const loginField = findElement(
       element,
-      (child) => child.type === 'input' && child.props.id === 'login'
+      (child) => child.type === LabeledInput && child.props.id === 'login'
     );
     const passwordField = findElement(
       element,
-      (child) => child.type === 'input' && child.props.id === 'password'
+      (child) => child.type === LabeledInput && child.props.id === 'password'
+    );
+    const cancelButton = findElement(
+      element,
+      (child) => child.type === 'button' && child.props.children === 'Cancel'
     );
 
-    expect(text).toContain('Login');
-    expect(text).toContain('Username');
-    expect(text).toContain('Password');
-    expect(text).toContain('Cancel');
+    expect(loginField.props.label).toBe('Username');
     expect(loginField.props.type).toBe('text');
+    expect(passwordField.props.label).toBe('Password');
     expect(passwordField.props.type).toBe('password');
+    expect(cancelButton).not.toBeNull();
   });
 
   it('renders the expected error messages', function() {
-    const incorrectText = collectText(
+    const incorrectElement = (
       LoginModalHelper.render(true, {
         login: '',
         password: '',
@@ -92,7 +76,7 @@ describe('LoginModalHelper', function() {
         error: false,
       }, buildHandlers())
     );
-    const errorText = collectText(
+    const errorElement = (
       LoginModalHelper.render(true, {
         login: '',
         password: '',
@@ -100,9 +84,17 @@ describe('LoginModalHelper', function() {
         error: true,
       }, buildHandlers())
     );
+    const incorrectAlert = findElement(
+      incorrectElement,
+      (child) => child.type === Alert
+    );
+    const errorAlert = findElement(
+      errorElement,
+      (child) => child.type === Alert
+    );
 
-    expect(incorrectText).toContain('User name or password incorrect.');
-    expect(errorText).toContain('An unexpected error occurred, please try again later.');
+    expect(incorrectAlert.props.message).toBe('User name or password incorrect.');
+    expect(errorAlert.props.message).toBe('An unexpected error occurred, please try again later.');
   });
 
   it('wires modal close, cancel, and submit handlers', function() {

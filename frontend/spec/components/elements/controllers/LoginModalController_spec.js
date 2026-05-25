@@ -1,52 +1,39 @@
 import LoginModalController from '../../../../assets/js/components/elements/controllers/LoginModalController.js';
 
 describe('LoginModalController', function() {
-  let originalFetch;
   let setLogin;
   let setPassword;
   let setIncorrect;
   let setError;
   let onSuccess;
+  let client;
 
   beforeEach(function() {
-    originalFetch = global.fetch;
     setLogin = jasmine.createSpy('setLogin');
     setPassword = jasmine.createSpy('setPassword');
     setIncorrect = jasmine.createSpy('setIncorrect');
     setError = jasmine.createSpy('setError');
     onSuccess = jasmine.createSpy('onSuccess');
-  });
-
-  afterEach(function() {
-    global.fetch = originalFetch;
+    client = {
+      submit: jasmine.createSpy('submit'),
+    };
   });
 
   it('submits login credentials and calls onSuccess on success', async function() {
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(Promise.resolve({ ok: true }));
+    client.submit.and.returnValue(Promise.resolve({ ok: true }));
 
     const controller = new LoginModalController(
       setLogin,
       setPassword,
       setIncorrect,
       setError,
-      onSuccess
+      onSuccess,
+      client
     );
 
     await controller.handleSubmit('oak-user', 'secret');
 
-    expect(global.fetch).toHaveBeenCalledWith('/users/login.json', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        login: {
-          login: 'oak-user',
-          password: 'secret',
-        },
-      }),
-    });
+    expect(client.submit).toHaveBeenCalledWith('oak-user', 'secret');
     expect(setLogin).toHaveBeenCalledWith('');
     expect(setPassword).toHaveBeenCalledWith('');
     expect(setIncorrect).toHaveBeenCalledWith(false);
@@ -55,7 +42,7 @@ describe('LoginModalController', function() {
   });
 
   it('marks incorrect credentials on client errors', async function() {
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(
+    client.submit.and.returnValue(
       Promise.resolve({ ok: false, status: 404 })
     );
 
@@ -64,7 +51,8 @@ describe('LoginModalController', function() {
       setPassword,
       setIncorrect,
       setError,
-      onSuccess
+      onSuccess,
+      client
     );
 
     await controller.handleSubmit('oak-user', 'wrong-secret');
@@ -76,7 +64,7 @@ describe('LoginModalController', function() {
   });
 
   it('marks unexpected errors on server failures', async function() {
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(
+    client.submit.and.returnValue(
       Promise.resolve({ ok: false, status: 500 })
     );
 
@@ -85,7 +73,8 @@ describe('LoginModalController', function() {
       setPassword,
       setIncorrect,
       setError,
-      onSuccess
+      onSuccess,
+      client
     );
 
     await controller.handleSubmit('oak-user', 'secret');
@@ -102,7 +91,8 @@ describe('LoginModalController', function() {
       setPassword,
       setIncorrect,
       setError,
-      onSuccess
+      onSuccess,
+      client
     );
 
     controller.handleClear();
@@ -111,5 +101,24 @@ describe('LoginModalController', function() {
     expect(setPassword).toHaveBeenCalledWith('');
     expect(setIncorrect).toHaveBeenCalledWith(false);
     expect(setError).toHaveBeenCalledWith(false);
+  });
+
+  it('marks unexpected errors when the client rejects', async function() {
+    client.submit.and.returnValue(Promise.reject(new Error('network')));
+
+    const controller = new LoginModalController(
+      setLogin,
+      setPassword,
+      setIncorrect,
+      setError,
+      onSuccess,
+      client
+    );
+
+    await controller.handleSubmit('oak-user', 'secret');
+
+    expect(setPassword).toHaveBeenCalledWith('');
+    expect(setError).toHaveBeenCalledWith(true);
+    expect(setIncorrect).not.toHaveBeenCalledWith(true);
   });
 });

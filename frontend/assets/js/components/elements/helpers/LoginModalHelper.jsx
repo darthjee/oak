@@ -1,5 +1,7 @@
 import React from 'react';
 import Modal from 'react-bootstrap/cjs/Modal.js';
+import Alert from '../Alert.jsx';
+import LabeledInput from '../LabeledInput.jsx';
 
 /**
  * Renders the login modal shell and form elements.
@@ -21,40 +23,22 @@ export default class LoginModalHelper {
             <Modal.Title>Login</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {state.incorrect ? (
-              <div className='alert alert-danger' role='alert'>
-                User name or password incorrect.
-              </div>
-            ) : null}
-            {state.error ? (
-              <div className='alert alert-danger' role='alert'>
-                An unexpected error occurred, please try again later.
-              </div>
-            ) : null}
-            <div className='mb-3'>
-              <label className='form-label' htmlFor='login'>
-                Username
-              </label>
-              <input
-                className='form-control'
-                id='login'
-                type='text'
-                value={state.login}
-                onChange={handlers.onLoginChange}
-              />
-            </div>
-            <div className='mb-3'>
-              <label className='form-label' htmlFor='password'>
-                Password
-              </label>
-              <input
-                className='form-control'
-                id='password'
-                type='password'
-                value={state.password}
-                onChange={handlers.onPasswordChange}
-              />
-            </div>
+            {state.incorrect ? <Alert message='User name or password incorrect.' /> : null}
+            {state.error ? <Alert message='An unexpected error occurred, please try again later.' /> : null}
+            <LabeledInput
+              id='login'
+              label='Username'
+              type='text'
+              value={state.login}
+              onChange={handlers.onLoginChange}
+            />
+            <LabeledInput
+              id='password'
+              label='Password'
+              type='password'
+              value={state.password}
+              onChange={handlers.onPasswordChange}
+            />
           </Modal.Body>
           <Modal.Footer>
             <button className='btn btn-secondary' type='button' onClick={handlers.onCancel}>

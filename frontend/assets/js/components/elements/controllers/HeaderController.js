@@ -11,7 +11,6 @@ export default class HeaderController {
    * @param {Function} setCategories state setter for updating the categories list
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
-   * @param {Function|null} [setRefreshKey] state setter used to trigger a header reload after auth changes
    * @param {HeaderClient} [client] HTTP client used for API calls
    */
   constructor(
@@ -19,17 +18,16 @@ export default class HeaderController {
     setCategories,
     setLoading,
     setError,
-    setRefreshKey = null,
     client = new HeaderClient()
   ) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
     this.setLoading = setLoading;
     this.setError = setError;
-    this.setRefreshKey = setRefreshKey;
     this.client = client;
 
     this.handleLogoff = this.handleLogoff.bind(this);
+    this.reload = this.reload.bind(this);
   }
 
   /**
@@ -42,7 +40,7 @@ export default class HeaderController {
       let mounted = true;
       const safeSet = this.#buildSafeSetter(() => mounted);
 
-      this.#loadHeaderData(safeSet);
+      this.reload(safeSet);
 
       return () => {
         mounted = false;
@@ -62,8 +60,21 @@ export default class HeaderController {
     }
 
     return this.client.logoff()
-      .then(() => this.#handleLogoffSuccess())
+      .then(() => this.reload())
       .catch((error) => this.#handleError(error, 'Unable to logoff.'));
+  }
+
+  /**
+   * Reloads the header data.
+   *
+   * @param {Function} [safeSet] state setter wrapper, defaults to direct setters
+   * @returns {Promise<void>} resolves when header data loading finishes
+   */
+  reload(safeSet = this.#unsafeSet.bind(this)) {
+    safeSet(this.setLoading, true);
+    safeSet(this.setError, null);
+
+    return this.#loadHeaderData(safeSet);
   }
 
   #checkLogin(safeSet) {
@@ -89,7 +100,7 @@ export default class HeaderController {
   }
 
   #loadHeaderData(safeSet) {
-    Promise.all([
+    return Promise.all([
       this.#checkLogin(safeSet),
       this.#fetchCategories(safeSet),
     ])
@@ -97,17 +108,6 @@ export default class HeaderController {
       .finally(() => {
         safeSet(this.setLoading, false);
       });
-  }
-
-  #handleLogoffSuccess() {
-    this.setLogged(false);
-
-    if (typeof this.setRefreshKey === 'function') {
-      this.setRefreshKey((currentKey) => currentKey + 1);
-      return Promise.resolve();
-    }
-
-    return this.#fetchCategories(this.#unsafeSet.bind(this));
   }
 
   #parseLoginResponse(response) {
