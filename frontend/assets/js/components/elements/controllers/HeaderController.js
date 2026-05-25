@@ -1,4 +1,4 @@
-import HeaderClient from './HeaderClient.js';
+import HeaderClient from '../../../client/HeaderClient.js';
 
 /**
  * Manages header state by fetching login status and categories from the API.
