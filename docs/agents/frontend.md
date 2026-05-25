@@ -195,3 +195,45 @@ Controlled by `FRONTEND_DEV_MODE` in `.env`:
 |------|-----------|
 | `FRONTEND_DEV_MODE=true` | Tent proxies all front-end requests to the Vite dev server. HMR works. No caching. |
 | `FRONTEND_DEV_MODE=false` | Tent serves pre-built static files from `docker_volumes/static/`. |
+
+---
+
+## Inline Documentation
+
+All public classes, methods, and exported functions in `frontend/assets/js/` must have JSDoc comments. ESLint enforces this via `eslint-plugin-jsdoc` (rules run as part of `npm run lint`).
+
+### Convention
+
+Every JSDoc block must include:
+
+- A prose **description** as the first line of the block.
+- `@param {type} name description` for each parameter.
+- `@returns {type} description` for every function that returns a value.
+
+### Example
+
+```js
+/**
+ * Controls page routing based on the URL hash.
+ */
+export default class AppController {
+  /**
+   * Returns the page identifier matching the current URL hash.
+   *
+   * @returns {string} page identifier, e.g. `'categories'` or `'home'`
+   */
+  getPage() { ... }
+
+  /**
+   * Renders the component for the given page identifier.
+   *
+   * @param {string} page page identifier to render
+   * @returns {JSX.Element} rendered page element
+   */
+  renderPage(page) { ... }
+}
+```
+
+Private class fields (`#method`) are documented but not enforced by the linter — the rule is configured with `publicOnly: true`.
+
+Re-export proxy files (e.g. `Header.jsx` that simply re-exports from `Header.js`) carry a brief one-line block comment describing the re-export purpose.

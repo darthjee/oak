@@ -10,6 +10,7 @@ import '../css/main.scss';
 
 const queryClient = new QueryClient();
 
+/** Bootstraps the React application and mounts it to the DOM root. */
 (function () {
   createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>

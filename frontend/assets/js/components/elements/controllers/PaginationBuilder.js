@@ -3,6 +3,8 @@
  */
 export default class PaginationBuilder {
   /**
+   * Creates a new PaginationBuilder instance.
+   *
    * @param {number} currentPage current selected page
    * @param {number} totalPages total number of pages available
    */
