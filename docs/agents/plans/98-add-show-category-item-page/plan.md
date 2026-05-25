@@ -55,17 +55,20 @@ function getCategoryItemParamsFromHash() {
 }
 ```
 
-### Step 2 — `CategoryItemController.jsx`
+### Step 2 — `CategoryItemController.js`
 
-Create `frontend/assets/js/components/pages/controllers/CategoryItemController.jsx`.
+Create `frontend/assets/js/components/pages/controllers/CategoryItemController.js` (plain
+`.js`, not `.jsx` — consistent with `CategoriesController.js` and `HeaderController.js`).
 
-Constructor receives `setItem`, `setLogged`, `setLoading`, `setError`.
+Constructor receives `setItem`, `setLogged`, `setLoading`, `setError`,
+`hashProvider = () => window.location.hash`, and `client = new GenericClient(hashProvider)`.
 
 `buildEffect()`:
-1. Extract `{ slug, id }` from hash
-2. Call `client.fetch(`/categories/${slug}/items/${id}.json`)` and
-   `client.fetch('/users/login.json')` in parallel via `Promise.all`
-3. Set state from results
+1. Extract `{ slug, id }` via `getCategoryItemParamsFromHash(this.hashProvider())`
+2. Call `this.client.fetch(`/categories/${slug}/items/${id}.json`)` for the item data
+3. Check login via a direct `fetch('/users/login.json')` (no hash params should be forwarded)
+4. Set state from both results via `Promise.all`
+5. Return a cleanup function (set `mounted = false`) to prevent state updates after unmount
 
 ### Step 3 — `CategoryItemHelper.jsx`
 
@@ -95,6 +98,9 @@ Static class:
 
 Create `frontend/assets/js/components/pages/CategoryItem.jsx`.
 
+Use `useMemo` to create the controller once and `useEffect` to invoke the returned effect
+function — consistent with `Categories.jsx` and `Header.js`.
+
 ```jsx
 function CategoryItem() {
   const [item, setItem]       = useState(null);
@@ -102,9 +108,15 @@ function CategoryItem() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
-  const controller = new CategoryItemController(setItem, setLogged, setLoading, setError);
+  const controller = useMemo(
+    () => new CategoryItemController(setItem, setLogged, setLoading, setError),
+    []
+  );
 
-  useEffect(controller.buildEffect(), []);
+  useEffect(() => {
+    const effect = controller.buildEffect();
+    return effect();
+  }, [controller]);
 
   if (loading) return CategoryItemHelper.renderLoading();
   if (error)   return CategoryItemHelper.renderError(error);
@@ -113,10 +125,34 @@ function CategoryItem() {
 }
 ```
 
-### Step 5 — Register route in `App.jsx`
+### Step 5 — Register route in `AppController.js` and `AppHelper.jsx`
 
-Add a matcher for `/#/categories/:slug/items/:id` (without trailing `/items`) that renders
-`<CategoryItem />`.
+The routing logic lives in two files, not in `App.jsx`:
+
+**`AppController.js`** — update `getPage()` to recognise the show path:
+
+```js
+// e.g. hash = "#/categories/project/items/35"
+if (/^#\/categories\/[^/]+\/items\/[^/]+(\?.*)?$/.test(hash)) {
+  return 'categoryItem';
+}
+```
+
+Add this check **before** the `categoryItems` index pattern so the more specific route is
+matched first (avoids the show path being swallowed by the index pattern).
+
+**`AppHelper.jsx`** — add `CategoryItem` to the `PAGES` map:
+
+```jsx
+import CategoryItem from '../pages/CategoryItem.jsx';
+
+const PAGES = {
+  categories:   <Categories />,
+  categoryItems: <CategoryItems />,
+  categoryItem:  <CategoryItem />,
+  home:          <p>placeholder</p>,
+};
+```
 
 ### Step 6 — Tests
 
@@ -133,19 +169,25 @@ Add a matcher for `/#/categories/:slug/items/:id` (without trailing `/items`) th
 | File | Action |
 |------|--------|
 | `frontend/assets/js/components/pages/CategoryItem.jsx` | Create |
-| `frontend/assets/js/components/pages/controllers/CategoryItemController.jsx` | Create |
+| `frontend/assets/js/components/pages/controllers/CategoryItemController.js` | Create |
 | `frontend/assets/js/components/pages/helpers/CategoryItemHelper.jsx` | Create |
-| `frontend/assets/js/components/App.jsx` | Update — register `/#/categories/:slug/items/:id` route |
+| `frontend/assets/js/components/AppController.js` | Update — add `categoryItem` case to `getPage()` (before `categoryItems` check) |
+| `frontend/assets/js/components/helpers/AppHelper.jsx` | Update — add `CategoryItem` to the `PAGES` map |
 | `spec/components/pages/CategoryItem_spec.js` | Create |
 | `spec/components/pages/controllers/CategoryItemController_spec.js` | Create |
 | `spec/components/pages/helpers/CategoryItemHelper_spec.js` | Create |
+| `spec/components/app/AppController_spec.js` | Update — add spec for `categoryItem` page route |
+| `spec/components/helpers/AppHelper_spec.js` | Update — add spec for `CategoryItem` rendering |
 
 ---
 
 ## Notes
 
-- Route ordering in `App.jsx` matters: `/#/categories/:slug/items/:id` must be matched
-  **before** `/#/categories/:slug/items` to avoid the show route being swallowed by the index.
+- Route ordering in `AppController.js` (`getPage()`) matters: the `categoryItem` regex must
+  be checked **before** the `categoryItems` regex to avoid the show path being swallowed by
+  the index pattern.
+- Controllers are `.js` files; helpers and page components are `.jsx` — follow the naming
+  convention established by `CategoriesController.js` / `CategoriesHelper.jsx`.
 - The `Carousel` component from `react-bootstrap` handles the Bootstrap 5 carousel; no need
   for manual `data-bs-*` attributes.
 - When `item` is `null` (initial state before fetch resolves), `renderLoading()` is returned —

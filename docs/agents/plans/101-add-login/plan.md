@@ -98,45 +98,92 @@ function LoginModal({ show, onClose, onSuccess }) {
 }
 ```
 
-### Step 4 — Update `Header.jsx`
+### Step 4 — Update `Header.js`
 
-Add `showModal` and `refreshKey` to state:
+> **Already implemented:** `Header.js` already passes `controller.handleLogoff` to
+> `HeaderHelper.render` and uses `useMemo` + `useEffect(() => { return effect(); }, [controller])`.
+
+Add `showModal` and `refreshKey` to the existing state block:
 
 ```jsx
-const [showModal, setShowModal] = useState(false);
+const [showModal, setShowModal]   = useState(false);
 const [refreshKey, setRefreshKey] = useState(0);
-
-const controller = new HeaderController(setLogged, setCategories, setLoading, setError, setRefreshKey);
-
-useEffect(controller.buildEffect(), [refreshKey]);
 ```
 
-Pass `showModal`, `setShowModal`, and a `handleAuthChange` callback to the helper.
+Pass `setRefreshKey` to the controller constructor (see Step 5), add `refreshKey` to the
+`useEffect` dependency array so the header re-fetches after login/logoff, and pass
+`showModal` + modal handlers to `HeaderHelper.render`:
 
-### Step 5 — Update `HeaderController.jsx`
+```jsx
+const controller = useMemo(
+  () => new HeaderController(setLogged, setCategories, setLoading, setError, setRefreshKey),
+  []
+);
 
-Add a `handleLogoff()` method:
+useEffect(() => {
+  const effect = controller.buildEffect();
+  return effect();
+}, [controller, refreshKey]);
+
+// ...
+
+return HeaderHelper.render(logged, categories, {
+  onLogoff:     controller.handleLogoff,
+  onLoginClick: () => setShowModal(true),
+  onCloseModal: () => setShowModal(false),
+  onAuthSuccess: () => { setRefreshKey(k => k + 1); setShowModal(false); },
+  showModal,
+});
+```
+
+### Step 5 — Update `HeaderController.js`
+
+> **Already implemented:** `HeaderController.js` already has `handleLogoff()` — it calls
+> `this.client.logoff()` then re-fetches categories via `#fetchCategories` and sets
+> `logged = false`.
+
+Add a `setRefreshKey` constructor parameter and store it. Then update `#handleLogoffSuccess`
+to increment `refreshKey` instead of (or in addition to) re-fetching categories directly,
+so the `useEffect` in `Header.js` re-runs and reloads both login status and categories:
 
 ```js
-handleLogoff() {
-  fetch('/users/logoff.json', { method: 'DELETE' })
-    .finally(() => this.#setRefreshKey(k => k + 1));
+constructor(setLogged, setCategories, setLoading, setError, setRefreshKey = null, client = new HeaderClient()) {
+  // ...
+  this.setRefreshKey = setRefreshKey;
+}
+
+#handleLogoffSuccess() {
+  this.setLogged(false);
+  if (this.setRefreshKey) {
+    this.setRefreshKey(k => k + 1);
+  } else {
+    this.#fetchCategories(this.#unsafeSet.bind(this));
+  }
 }
 ```
 
-The `buildEffect()` signature stays the same — `refreshKey` is in the `useEffect` deps in the
-component, not passed to the controller.
+The `buildEffect()` signature does not change — `refreshKey` lives in the component's
+`useEffect` dep array, not inside the controller.
 
 ### Step 6 — Update `HeaderHelper.jsx`
 
-Update `render(logged, categories, showModal, handlers)`:
+> **Already implemented:** `HeaderHelper.jsx` already renders "Login" and "Logoff" links and
+> passes `onLogoff` to the Logoff anchor. The Login link currently uses Bootstrap's
+> `data-bs-toggle='modal'` attribute to open a server-rendered modal.
 
-- "Login" link: `onClick={handlers.onLoginClick}` (sets `showModal(true)`)
-- "Logoff" link: `onClick={handlers.onLogoff}`
-- Render `<LoginModal show={showModal} onClose={handlers.onCloseModal} onSuccess={handlers.onAuthSuccess} />`
-  below the navbar
+Change `render` to accept a `handlers` object (see Step 4):
 
-`onAuthSuccess` increments `refreshKey` and closes the modal.
+```js
+static render(logged, categories, handlers) { ... }
+```
+
+In `#renderAuth`:
+- Replace the `data-bs-toggle` / `data-bs-target` attributes on the Login anchor with
+  `onClick={handlers.onLoginClick}`.
+- Render `<LoginModal show={handlers.showModal} onClose={handlers.onCloseModal} onSuccess={handlers.onAuthSuccess} />`
+  outside the `<ul>` (or at the bottom of the shell) so the modal can overlay the full page.
+
+The Logoff link already calls `onLogoff` via `onClick` — no change needed there.
 
 ### Step 7 — Tests
 
@@ -156,17 +203,17 @@ Update `render(logged, categories, showModal, handlers)`:
 | File | Action |
 |------|--------|
 | `frontend/assets/js/components/elements/LoginModal.jsx` | Create |
-| `frontend/assets/js/components/elements/controllers/LoginModalController.jsx` | Create |
+| `frontend/assets/js/components/elements/controllers/LoginModalController.js` | Create |
 | `frontend/assets/js/components/elements/helpers/LoginModalHelper.jsx` | Create |
-| `frontend/assets/js/components/elements/Header.jsx` | Update — add `showModal`, `refreshKey` |
-| `frontend/assets/js/components/elements/controllers/HeaderController.jsx` | Update — add `handleLogoff` |
-| `frontend/assets/js/components/elements/helpers/HeaderHelper.jsx` | Update — wire Login/Logoff handlers, render `<LoginModal>` |
+| `frontend/assets/js/components/elements/Header.js` | Update — add `showModal`, `refreshKey`; pass `setRefreshKey` to controller; update `useEffect` deps |
+| `frontend/assets/js/components/elements/controllers/HeaderController.js` | Update — add `setRefreshKey` param; update `#handleLogoffSuccess` to increment key |
+| `frontend/assets/js/components/elements/helpers/HeaderHelper.jsx` | Update — accept `handlers` object; replace `data-bs-toggle` with `onClick`; render `<LoginModal>` |
 | `spec/components/elements/LoginModal_spec.js` | Create |
 | `spec/components/elements/controllers/LoginModalController_spec.js` | Create |
 | `spec/components/elements/helpers/LoginModalHelper_spec.js` | Create |
-| `spec/components/elements/Header_spec.js` | Update |
-| `spec/components/elements/controllers/HeaderController_spec.js` | Update |
-| `spec/components/elements/helpers/HeaderHelper_spec.js` | Update |
+| `spec/components/elements/Header_spec.js` | Update — cover `showModal` state and `refreshKey` in `useEffect` deps |
+| `spec/components/elements/controllers/HeaderController_spec.js` | Update — cover `setRefreshKey` incremented on logoff |
+| `spec/components/elements/helpers/HeaderHelper_spec.js` | Update — Login link calls `onLoginClick`; `<LoginModal>` rendered; no `data-bs-toggle` |
 
 ---
 

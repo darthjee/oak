@@ -52,16 +52,22 @@ function getCategorySlugFromHash() {
 }
 ```
 
-### Step 2 — `CategoryItemsController.jsx`
+### Step 2 — `CategoryItemsController.js`
 
-Create `frontend/assets/js/components/pages/controllers/CategoryItemsController.jsx`.
+Create `frontend/assets/js/components/pages/controllers/CategoryItemsController.js` (plain
+`.js`, not `.jsx` — consistent with `CategoriesController.js` and `HeaderController.js`).
 
-Constructor receives `setItems`, `setLogged`, `setPagination`, `setLoading`, `setError`.
+Constructor receives `setItems`, `setLogged`, `setPagination`, `setLoading`, `setError`,
+`hashProvider = () => window.location.hash`, and `client = new GenericClient(hashProvider)`.
+The last two parameters allow tests to inject a custom hash string and mock client without
+stubbing globals.
 
 `buildEffect()`:
-1. Extract slug via `getCategorySlugFromHash()`
-2. Call `client.fetchIndex(`/categories/${slug}/items.json`)` and `client.fetch('/users/login.json')` in parallel
+1. Extract slug via `getCategorySlugFromHash(this.hashProvider())`
+2. Call `this.client.fetchIndex(`/categories/${slug}/items.json`)` and
+   the login check (direct `fetch('/users/login.json')`, no hash params) in parallel
 3. Set all state from results
+4. Return a cleanup function (set `mounted = false`) to prevent setting state after unmount
 
 ### Step 3 — `CategoryItemsHelper.jsx`
 
@@ -83,6 +89,9 @@ Static class:
 
 Create `frontend/assets/js/components/pages/CategoryItems.jsx`.
 
+Use `useMemo` to create the controller once and `useEffect` to invoke the returned effect
+function — consistent with `Categories.jsx` and `Header.js`.
+
 ```jsx
 function CategoryItems() {
   const [items, setItems]           = useState([]);
@@ -91,10 +100,17 @@ function CategoryItems() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
 
-  const slug = getCategorySlugFromHash();
-  const controller = new CategoryItemsController(setItems, setLogged, setPagination, setLoading, setError);
+  const controller = useMemo(
+    () => new CategoryItemsController(setItems, setLogged, setPagination, setLoading, setError),
+    []
+  );
 
-  useEffect(controller.buildEffect(), []);
+  useEffect(() => {
+    const effect = controller.buildEffect();
+    return effect();
+  }, [controller]);
+
+  const slug = getCategorySlugFromHash();
 
   if (loading) return CategoryItemsHelper.renderLoading();
   if (error)   return CategoryItemsHelper.renderError(error);
@@ -103,9 +119,32 @@ function CategoryItems() {
 }
 ```
 
-### Step 5 — Register route in `App.jsx`
+### Step 5 — Register route in `AppController.js` and `AppHelper.jsx`
 
-Add a route matcher for `/#/categories/:slug/items` that renders `<CategoryItems />`.
+The routing logic lives in two files, not in `App.jsx`:
+
+**`AppController.js`** — update `getPage()` to recognise the new path:
+
+```js
+// e.g. hash = "#/categories/project/items"
+if (/^#\/categories\/[^/]+\/items(\?.*)?$/.test(hash)) {
+  return 'categoryItems';
+}
+```
+
+Add this check **before** the plain `#/categories` check so it is not shadowed.
+
+**`AppHelper.jsx`** — add `CategoryItems` to the `PAGES` map:
+
+```jsx
+import CategoryItems from '../pages/CategoryItems.jsx';
+
+const PAGES = {
+  categories:    <Categories />,
+  categoryItems: <CategoryItems />,
+  home:          <p>placeholder</p>,
+};
+```
 
 ### Step 6 — Tests
 
@@ -122,12 +161,15 @@ Add a route matcher for `/#/categories/:slug/items` that renders `<CategoryItems
 | File | Action |
 |------|--------|
 | `frontend/assets/js/components/pages/CategoryItems.jsx` | Create |
-| `frontend/assets/js/components/pages/controllers/CategoryItemsController.jsx` | Create |
+| `frontend/assets/js/components/pages/controllers/CategoryItemsController.js` | Create |
 | `frontend/assets/js/components/pages/helpers/CategoryItemsHelper.jsx` | Create |
-| `frontend/assets/js/components/App.jsx` | Update — register `/#/categories/:slug/items` route |
+| `frontend/assets/js/components/AppController.js` | Update — add `categoryItems` case to `getPage()` |
+| `frontend/assets/js/components/helpers/AppHelper.jsx` | Update — add `CategoryItems` to the `PAGES` map |
 | `spec/components/pages/CategoryItems_spec.js` | Create |
 | `spec/components/pages/controllers/CategoryItemsController_spec.js` | Create |
 | `spec/components/pages/helpers/CategoryItemsHelper_spec.js` | Create |
+| `spec/components/app/AppController_spec.js` | Update — add spec for `categoryItems` page route |
+| `spec/components/helpers/AppHelper_spec.js` | Update — add spec for `CategoryItems` rendering |
 
 ---
 
@@ -137,6 +179,9 @@ Add a route matcher for `/#/categories/:slug/items` that renders `<CategoryItems
   the destination page is built in a future issue.
 - `getCategorySlugFromHash` assumes a fixed path structure — if React Router is introduced
   before this issue, use `useParams()` instead.
+- Controllers are `.js` files (not `.jsx`); helpers and page components are `.jsx` — follow
+  the naming convention already established by `CategoriesController.js` and
+  `CategoriesHelper.jsx`.
 - The `Pagination` `basePath` must include the slug so page links stay scoped to the correct
   category.
 

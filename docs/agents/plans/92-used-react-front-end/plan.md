@@ -29,8 +29,8 @@ This issue depends on the following sub-issues, to be resolved in order:
 - [x] #94
 - [x] #95
 - [x] #107
-- [ ] #115
-- [ ] #108
+- [x] #115
+- [x] #108
 - [ ] #109
 - [ ] #97
 - [ ] #98
