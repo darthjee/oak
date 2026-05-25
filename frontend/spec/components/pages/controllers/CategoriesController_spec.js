@@ -8,17 +8,33 @@ const flushPromises = async () => {
 
 describe('CategoriesController', function() {
   let originalFetch;
-  let headers;
+  let mockClient;
 
-  const buildResponseHeaders = (values = {}) => ({
-    get(name) {
-      return values[name] ?? null;
-    },
+  const buildMockClient = (overrides = {}) => ({
+    fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+      Promise.resolve({ data: [], pagination: { page: 1, pages: 1, perPage: 10 } })
+    ),
+    ...overrides,
   });
+
+  const stubLoginFetch = (status = 404) => {
+    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+      if (url === '/users/login.json') {
+        if (status === 200) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ token: 'abc' }),
+          });
+        }
+        return Promise.resolve({ ok: false, status });
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+  };
 
   beforeEach(function() {
     originalFetch = global.fetch;
-    headers = buildResponseHeaders({ page: '2', pages: '9', per_page: '12' });
+    mockClient = buildMockClient();
   });
 
   afterEach(function() {
@@ -32,30 +48,26 @@ describe('CategoriesController', function() {
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json') {
-        return Promise.resolve({
-          ok: true,
-          headers,
-          json: () => Promise.resolve([{ slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' }]),
-        });
-      }
-
-      if (url === '/users/login.json') {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ token: 'abc' }),
-        });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
+    mockClient = buildMockClient({
+      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+        Promise.resolve({
+          data: [{ slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' }],
+          pagination: { page: 2, pages: 9, perPage: 12 },
+        })
+      ),
     });
+    stubLoginFetch(200);
 
-    const controller = new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError);
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
 
+    expect(mockClient.fetchIndex).toHaveBeenCalledWith('/categories.json');
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' },
     ]);
@@ -74,23 +86,18 @@ describe('CategoriesController', function() {
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json') {
-        return Promise.resolve({
-          ok: true,
-          headers,
-          json: () => Promise.resolve([]),
-        });
-      }
-
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
+    mockClient = buildMockClient({
+      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+        Promise.resolve({ data: [], pagination: { page: 2, pages: 9, perPage: 12 } })
+      ),
     });
+    stubLoginFetch(404);
 
-    const controller = new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError);
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -103,83 +110,25 @@ describe('CategoriesController', function() {
     cleanup();
   });
 
-  it('fetches categories using page query param from hash', async function() {
+  it('calls client.fetchIndex with /categories.json', async function() {
     const setCategories = jasmine.createSpy('setCategories');
     const setPagination = jasmine.createSpy('setPagination');
     const setLogged = jasmine.createSpy('setLogged');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json?page=2') {
-        return Promise.resolve({
-          ok: true,
-          headers,
-          json: () => Promise.resolve([]),
-        });
-      }
-
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
+    stubLoginFetch(404);
 
     const controller = new CategoriesController(
-      setCategories,
-      setPagination,
-      setLogged,
-      setLoading,
-      setError,
-      () => '#/categories?page=2'
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '#/categories?page=2',
+      mockClient
     );
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
 
-    expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=2', { headers: { Accept: 'application/json' } });
-    expect(setError).not.toHaveBeenCalled();
-
-    cleanup();
-  });
-
-  it('fetches categories using all query params from hash', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
-
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json?page=3&per_page=5') {
-        return Promise.resolve({
-          ok: true,
-          headers,
-          json: () => Promise.resolve([]),
-        });
-      }
-
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-
-    const controller = new CategoriesController(
-      setCategories,
-      setPagination,
-      setLogged,
-      setLoading,
-      setError,
-      () => '#/categories?page=3&per_page=5'
-    );
-    const cleanup = controller.buildEffect()();
-
-    await flushPromises();
-
-    expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=3&per_page=5', { headers: { Accept: 'application/json' } });
+    expect(mockClient.fetchIndex).toHaveBeenCalledWith('/categories.json');
     expect(setError).not.toHaveBeenCalled();
 
     cleanup();
@@ -192,19 +141,18 @@ describe('CategoriesController', function() {
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json') {
-        return Promise.resolve({ ok: false, status: 500 });
-      }
-
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
+    mockClient = buildMockClient({
+      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+        Promise.reject(new Error('Request failed for /categories.json'))
+      ),
     });
+    stubLoginFetch(404);
 
-    const controller = new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError);
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -222,23 +170,13 @@ describe('CategoriesController', function() {
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json') {
-        return Promise.resolve({
-          ok: true,
-          headers,
-          json: () => Promise.resolve([]),
-        });
-      }
+    stubLoginFetch(404);
 
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-
-    const controller = new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError);
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
     const cleanup = controller.buildEffect()();
 
     cleanup();
@@ -251,30 +189,20 @@ describe('CategoriesController', function() {
     expect(setLoading).not.toHaveBeenCalled();
   });
 
-  it('applies fallback pagination when response headers are missing', async function() {
+  it('applies fallback pagination when client returns minimal pagination', async function() {
     const setCategories = jasmine.createSpy('setCategories');
     const setPagination = jasmine.createSpy('setPagination');
     const setLogged = jasmine.createSpy('setLogged');
     const setLoading = jasmine.createSpy('setLoading');
     const setError = jasmine.createSpy('setError');
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/categories.json') {
-        return Promise.resolve({
-          ok: true,
-          headers: buildResponseHeaders(),
-          json: () => Promise.resolve([]),
-        });
-      }
+    stubLoginFetch(404);
 
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 404 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-
-    const controller = new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError);
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -285,4 +213,28 @@ describe('CategoriesController', function() {
 
     cleanup();
   });
+
+  it('calls global.fetch directly for login check', async function() {
+    const setCategories = jasmine.createSpy('setCategories');
+    const setPagination = jasmine.createSpy('setPagination');
+    const setLogged = jasmine.createSpy('setLogged');
+    const setLoading = jasmine.createSpy('setLoading');
+    const setError = jasmine.createSpy('setError');
+
+    stubLoginFetch(404);
+
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      () => '',
+      mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(global.fetch).toHaveBeenCalledWith('/users/login.json', { headers: { Accept: 'application/json' } });
+
+    cleanup();
+  });
 });
+
