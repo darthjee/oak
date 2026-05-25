@@ -1,5 +1,6 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
+import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
 
 /**
  * Renders the category item page HTML for different states.
@@ -46,7 +47,7 @@ export default class CategoryItemHelper {
       <div className='container mt-4'>
         {this.#renderActions(slug, item.id, logged)}
         {this.#renderInfo(item)}
-        {this.#renderLinks(item.links)}
+        <CategoryItemLinks links={item.links} />
         {this.#renderCarousel(item.photos, item.name)}
       </div>
     );
@@ -88,27 +89,6 @@ export default class CategoryItemHelper {
           </p>
           <p className='mb-0'>{item.description}</p>
         </div>
-      </div>
-    );
-  }
-
-  static #renderLinks(links) {
-    if (!Array.isArray(links) || links.length === 0) {
-      return null;
-    }
-
-    return (
-      <div className='mb-4'>
-        <h5>Links</h5>
-        <ul className='list-group'>
-          {links.map((link) => (
-            <li key={link.id} className='list-group-item'>
-              <a href={link.url} target='_blank' rel='noreferrer'>
-                {link.text || link.url}
-              </a>
-            </li>
-          ))}
-        </ul>
       </div>
     );
   }
