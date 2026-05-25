@@ -1,7 +1,8 @@
 import React from 'react';
-import Carousel from 'react-bootstrap/Carousel';
 import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
+import LabelValueParagraph from '../../elements/LabelValueParagraph.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
+import PhotosCarousel from '../../elements/PhotosCarousel.jsx';
 
 /**
  * Renders the category item page HTML for different states.
@@ -45,7 +46,7 @@ export default class CategoryItemHelper {
         {this.#renderActions(slug, item.id, logged)}
         {this.#renderInfo(item)}
         <CategoryItemLinks links={item.links} />
-        {this.#renderCarousel(item.photos, item.name)}
+        <PhotosCarousel photos={item.photos} name={item.name} />
       </div>
     );
   }
@@ -74,46 +75,11 @@ export default class CategoryItemHelper {
       <div className='card shadow-sm mb-4'>
         <div className='card-header'>{item.name}</div>
         <div className='card-body'>
-          <p className='mb-2'>
-            <strong>Category:</strong>
-            {' '}
-            {item.category?.name}
-          </p>
-          <p className='mb-2'>
-            <strong>Kind:</strong>
-            {' '}
-            {item.kind?.name}
-          </p>
+          <LabelValueParagraph label='Category' value={item.category?.name} />
+          <LabelValueParagraph label='Kind' value={item.kind?.name} />
           <p className='mb-0'>{item.description}</p>
         </div>
       </div>
-    );
-  }
-
-  static #renderCarousel(photos, name) {
-    if (!Array.isArray(photos) || photos.length === 0) {
-      return null;
-    }
-
-    return (
-      <div className='mb-4'>
-        <h5>Photos</h5>
-        <Carousel>
-          {photos.map((photo) => this.#renderPhotoItem(photo, name))}
-        </Carousel>
-      </div>
-    );
-  }
-
-  static #renderPhotoItem(photo, name) {
-    return (
-      <Carousel.Item key={photo.photo_url}>
-        <img
-          className='d-block w-100'
-          src={photo.photo_url}
-          alt={name}
-        />
-      </Carousel.Item>
     );
   }
 }
