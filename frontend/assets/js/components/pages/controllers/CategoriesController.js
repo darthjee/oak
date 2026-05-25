@@ -1,6 +1,7 @@
 export default class CategoriesController {
-  constructor(setCategories, setLogged, setLoading, setError) {
+  constructor(setCategories, setPagination, setLogged, setLoading, setError) {
     this.setCategories = setCategories;
+    this.setPagination = setPagination;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
@@ -34,15 +35,16 @@ export default class CategoriesController {
       this.#fetchCategories(),
       this.#checkLogin(),
     ])
-      .then(([categories, logged]) => this.#applyData(safeSet, categories, logged))
+      .then(([categoriesData, logged]) => this.#applyData(safeSet, categoriesData, logged))
       .catch((error) => this.#handleError(safeSet, error))
       .finally(() => {
         safeSet(this.setLoading, false);
       });
   }
 
-  #applyData(safeSet, categories, logged) {
-    safeSet(this.setCategories, categories);
+  #applyData(safeSet, categoriesData, logged) {
+    safeSet(this.setCategories, categoriesData.categories);
+    safeSet(this.setPagination, categoriesData.pagination);
     safeSet(this.setLogged, logged);
   }
 
@@ -55,7 +57,7 @@ export default class CategoriesController {
       headers: { Accept: 'application/json' },
     })
       .then((response) => this.#handleCategoriesResponse(response))
-      .then((payload) => this.#normalizePayload(payload));
+      .then(({ payload, pagination }) => this.#normalizeCategoriesData(payload, pagination));
   }
 
   #handleCategoriesResponse(response) {
@@ -63,11 +65,38 @@ export default class CategoriesController {
       throw new Error('Unable to load categories.');
     }
 
-    return response.json();
+    const pagination = this.#extractPagination(response);
+
+    return response.json().then((payload) => ({ payload, pagination }));
   }
 
-  #normalizePayload(payload) {
-    return Array.isArray(payload) ? payload : [];
+  #normalizeCategoriesData(payload, pagination) {
+    return {
+      categories: Array.isArray(payload) ? payload : [],
+      pagination,
+    };
+  }
+
+  #extractPagination(response) {
+    const totalPages = this.#parsePositiveInteger(response.headers.get('pages'), 1);
+    const page = this.#clamp(this.#parsePositiveInteger(response.headers.get('page'), 1), 1, totalPages);
+    const perPage = this.#parsePositiveInteger(response.headers.get('per_page'), 10);
+
+    return { page, pages: totalPages, perPage };
+  }
+
+  #parsePositiveInteger(value, fallback) {
+    const parsed = Number.parseInt(value, 10);
+
+    if (Number.isNaN(parsed) || parsed < 1) {
+      return fallback;
+    }
+
+    return parsed;
+  }
+
+  #clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
   }
 
   #checkLogin() {

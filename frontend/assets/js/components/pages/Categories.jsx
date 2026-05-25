@@ -4,12 +4,13 @@ import CategoriesHelper from './helpers/CategoriesHelper.jsx';
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, perPage: 10 });
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const controller = useMemo(
-    () => new CategoriesController(setCategories, setLogged, setLoading, setError),
+    () => new CategoriesController(setCategories, setPagination, setLogged, setLoading, setError),
     []
   );
 
@@ -27,5 +28,5 @@ export default function Categories() {
     return CategoriesHelper.renderError(error);
   }
 
-  return CategoriesHelper.render(categories, logged);
+  return CategoriesHelper.render(categories, logged, pagination);
 }
