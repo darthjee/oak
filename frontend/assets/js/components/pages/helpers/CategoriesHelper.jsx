@@ -1,7 +1,15 @@
 import React from 'react';
 import Pagination from '../../elements/Pagination.jsx';
 
+/**
+ * Renders the categories page HTML for different states.
+ */
 export default class CategoriesHelper {
+  /**
+   * Renders the categories page in a loading state.
+   *
+   * @returns {JSX.Element} loading placeholder
+   */
   static renderLoading() {
     return (
       <div className='container mt-4'>
@@ -10,6 +18,12 @@ export default class CategoriesHelper {
     );
   }
 
+  /**
+   * Renders the categories page in an error state.
+   *
+   * @param {string} error error message to display
+   * @returns {JSX.Element} error alert container
+   */
   static renderError(error) {
     return (
       <div className='container mt-4'>
@@ -18,6 +32,14 @@ export default class CategoriesHelper {
     );
   }
 
+  /**
+   * Renders the fully populated categories page.
+   *
+   * @param {Array<Object>} categories list of category objects to display
+   * @param {boolean} logged whether the current user is logged in
+   * @param {Object} pagination pagination metadata for the current page
+   * @returns {JSX.Element} categories grid with pagination controls
+   */
   static render(categories, logged, pagination) {
     const page = pagination?.page ?? 1;
     const pages = pagination?.pages ?? 1;

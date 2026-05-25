@@ -3,6 +3,7 @@ import complexity from 'eslint-plugin-complexity';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jasmine from 'eslint-plugin-jasmine';
+import jsdoc from 'eslint-plugin-jsdoc';
 import globals from 'globals';
 
 export default [
@@ -12,7 +13,7 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx,mjs}'],
-    plugins: { complexity, react, 'react-hooks': reactHooks },
+    plugins: { complexity, react, 'react-hooks': reactHooks, jsdoc },
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -38,16 +39,35 @@ export default [
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn'
+      'react-hooks/exhaustive-deps': 'warn',
+      'jsdoc/require-jsdoc': ['error', {
+        require: {
+          ClassDeclaration: true,
+          MethodDefinition: true,
+          FunctionDeclaration: true,
+        },
+        publicOnly: true,
+      }],
+      'jsdoc/require-param': 'error',
+      'jsdoc/require-param-description': 'error',
+      'jsdoc/require-returns': 'error',
+      'jsdoc/require-returns-description': 'error',
+      'jsdoc/require-description': 'error',
     },
   },
   {
-    files: ['spec/**/*_spec.js', 'spec/**/*[sS]pec.js'],
+    files: ['spec/**/*.{js,jsx,mjs}'],
     plugins: { jasmine },
     languageOptions: { globals: { ...globals.jasmine } },
     rules: {
       'jasmine/no-focused-tests': 'error',
       'jasmine/no-disabled-tests': 'warn',
+      'jsdoc/require-jsdoc': 'off',
+      'jsdoc/require-param': 'off',
+      'jsdoc/require-param-description': 'off',
+      'jsdoc/require-returns': 'off',
+      'jsdoc/require-returns-description': 'off',
+      'jsdoc/require-description': 'off',
     },
   },
 ];

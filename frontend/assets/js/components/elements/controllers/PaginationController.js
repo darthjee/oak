@@ -5,6 +5,8 @@ import PaginationBuilder from './PaginationBuilder.js';
  */
 export default class PaginationController {
   /**
+   * Creates a new PaginationController instance.
+   *
    * @param {number} currentPage current selected page
    * @param {number} totalPages total number of pages available
    */

@@ -1,6 +1,14 @@
 import React from 'react';
 
+/**
+ * Renders the navigation header HTML for different states.
+ */
 export default class HeaderHelper {
+  /**
+   * Renders the header in a loading state.
+   *
+   * @returns {JSX.Element} header shell with a loading placeholder
+   */
   static renderLoading() {
     return this.#renderShell(
       this.#renderCategories(false, []),
@@ -8,6 +16,12 @@ export default class HeaderHelper {
     );
   }
 
+  /**
+   * Renders the header in an error state.
+   *
+   * @param {string} error error message to display
+   * @returns {JSX.Element} header shell with an error message
+   */
   static renderError(error) {
     return this.#renderShell(
       this.#renderCategories(false, []),
@@ -15,6 +29,14 @@ export default class HeaderHelper {
     );
   }
 
+  /**
+   * Renders the fully populated header.
+   *
+   * @param {boolean} logged whether the current user is logged in
+   * @param {Array<Object>} categories list of category objects to display
+   * @param {Function} onLogoff callback invoked when the user clicks Logoff
+   * @returns {JSX.Element} header shell with categories menu and auth controls
+   */
   static render(logged, categories, onLogoff) {
     return this.#renderShell(
       this.#renderCategories(logged, categories),

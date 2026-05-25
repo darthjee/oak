@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import HeaderController from './controllers/HeaderController.js';
 import HeaderHelper from './helpers/HeaderHelper.js';
 
+/**
+ * Navigation header component that fetches login state and categories.
+ *
+ * @returns {JSX.Element} rendered header with navigation links and auth actions
+ */
 export default function Header() {
   const [logged, setLogged] = useState(false);
   const [categories, setCategories] = useState([]);

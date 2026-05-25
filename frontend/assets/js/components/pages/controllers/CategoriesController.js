@@ -1,4 +1,16 @@
+/**
+ * Manages categories page state by fetching categories and login status from the API.
+ */
 export default class CategoriesController {
+  /**
+   * Creates a new CategoriesController instance.
+   *
+   * @param {Function} setCategories state setter for updating the categories list
+   * @param {Function} setPagination state setter for updating the pagination info
+   * @param {Function} setLogged state setter for updating the logged-in flag
+   * @param {Function} setLoading state setter for updating the loading flag
+   * @param {Function} setError state setter for updating the error message
+   */
   constructor(setCategories, setPagination, setLogged, setLoading, setError) {
     this.setCategories = setCategories;
     this.setPagination = setPagination;
@@ -7,6 +19,11 @@ export default class CategoriesController {
     this.setError = setError;
   }
 
+  /**
+   * Builds the React effect that loads categories and login data on mount.
+   *
+   * @returns {Function} effect function that starts data loading and returns a cleanup function
+   */
   buildEffect() {
     return () => {
       let mounted = true;

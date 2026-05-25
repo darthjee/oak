@@ -1,6 +1,18 @@
 import HeaderClient from './HeaderClient.js';
 
+/**
+ * Manages header state by fetching login status and categories from the API.
+ */
 export default class HeaderController {
+  /**
+   * Creates a new HeaderController instance.
+   *
+   * @param {Function} setLogged state setter for updating the logged-in flag
+   * @param {Function} setCategories state setter for updating the categories list
+   * @param {Function} setLoading state setter for updating the loading flag
+   * @param {Function} setError state setter for updating the error message
+   * @param {HeaderClient} [client] HTTP client used for API calls
+   */
   constructor(setLogged, setCategories, setLoading, setError, client = new HeaderClient()) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
@@ -11,6 +23,11 @@ export default class HeaderController {
     this.handleLogoff = this.handleLogoff.bind(this);
   }
 
+  /**
+   * Builds the React effect that loads header data on mount.
+   *
+   * @returns {Function} effect function that starts data loading and returns a cleanup function
+   */
   buildEffect() {
     return () => {
       let mounted = true;
@@ -24,6 +41,12 @@ export default class HeaderController {
     };
   }
 
+  /**
+   * Handles a logoff action triggered by the user.
+   *
+   * @param {Event} [event] optional DOM event; `preventDefault` is called when present
+   * @returns {Promise<void>} resolves when logoff is complete
+   */
   handleLogoff(event) {
     if (event && typeof event.preventDefault === 'function') {
       event.preventDefault();
