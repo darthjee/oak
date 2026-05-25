@@ -1,5 +1,6 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
+import PhotoCarouselItem from './PhotoCarouselItem.jsx';
 
 /**
  * Renders category item photos in a carousel.
@@ -19,13 +20,7 @@ export default function PhotosCarousel({ photos, name }) {
       <h5>Photos</h5>
       <Carousel>
         {photos.map((photo) => (
-          <Carousel.Item key={photo.photo_url}>
-            <img
-              className='d-block w-100'
-              src={photo.photo_url}
-              alt={name}
-            />
-          </Carousel.Item>
+          <PhotoCarouselItem key={photo.photo_url} photo={photo} name={name} />
         ))}
       </Carousel>
     </div>
