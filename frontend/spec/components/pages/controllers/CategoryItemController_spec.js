@@ -1,4 +1,5 @@
 import CategoryItemController, { getCategoryItemParamsFromHash } from '../../../../assets/js/components/pages/controllers/CategoryItemController.js';
+import GenericClient from '../../../../assets/js/client/GenericClient.js';
 import {
   buildSpies,
   flushPromises,
@@ -203,5 +204,29 @@ describe('CategoryItemController', function() {
     expect(setLogged).not.toHaveBeenCalled();
     expect(setLoading).not.toHaveBeenCalled();
     expect(setError).not.toHaveBeenCalled();
+  });
+
+  it('defaults client to a new GenericClient when none is provided', function() {
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError);
+
+    expect(controller.client).toBeInstanceOf(GenericClient);
+  });
+
+  it('calls setError with fallback message when error has no message', async function() {
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
+
+    stubFetch(() => Promise.reject(null));
+
+    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setError).toHaveBeenCalledWith('Unable to load category item.');
+    expect(setLoading).toHaveBeenCalledWith(false);
+
+    cleanup();
   });
 });

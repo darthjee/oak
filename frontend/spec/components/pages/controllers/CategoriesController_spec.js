@@ -1,5 +1,5 @@
 import CategoriesController from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
-import GenericClient from '../../../../assets/js/components/client/GenericClient.js';
+import GenericClient from '../../../../assets/js/client/GenericClient.js';
 import {
   buildSpies,
   flushPromises,
