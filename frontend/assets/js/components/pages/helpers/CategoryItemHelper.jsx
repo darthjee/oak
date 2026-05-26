@@ -36,8 +36,6 @@ export default class CategoryItemHelper {
    * @returns {JSX.Element} category item content
    */
   static render(item, logged) {
-    const slug = item.category?.slug || '';
-
     return (
       <div className='container mt-4'>
         {this.#renderActions(item, item.id, logged)}
