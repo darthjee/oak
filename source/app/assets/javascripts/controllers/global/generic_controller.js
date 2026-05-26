@@ -1,11 +1,10 @@
-(function(_, angular) {
+(function(_, angular, noop) {
   var app = angular.module("global/generic_controller", [
     "cyberhawk/builder"
   ]);
 
   var options = {
-    callback: function(){
-    }
+    callback: noop
   };
 
   app.controller('Global.GenericController', [
@@ -13,4 +12,4 @@
       builder.buildAndRequest(this, options);
     }
   ]);
-}(window._, window.angular));  
+}(window._, window.angular, window.noop));
