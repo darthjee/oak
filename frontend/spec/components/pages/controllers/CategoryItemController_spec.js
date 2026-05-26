@@ -3,6 +3,7 @@ import {
   buildSpies,
   flushPromises,
   preserveGlobals,
+  stubFetch,
   stubLoginFetch,
 } from '../../../support/factories.js';
 
@@ -39,6 +40,18 @@ describe('CategoryItemController', function() {
       const params = getCategoryItemParamsFromHash('#/categories/project/items/35?page=2');
 
       expect(params).toEqual({ slug: 'project', id: '35' });
+    });
+
+    it('extracts slug and id from a route with a trailing slash', function() {
+      const params = getCategoryItemParamsFromHash('#/categories/project/items/35/?page=2');
+
+      expect(params).toEqual({ slug: 'project', id: '35' });
+    });
+
+    it('returns empty params when the hash does not match the item route', function() {
+      const params = getCategoryItemParamsFromHash('#/categories/project/items');
+
+      expect(params).toEqual({ slug: '', id: '' });
     });
   });
 
@@ -91,6 +104,23 @@ describe('CategoryItemController', function() {
     cleanup();
   });
 
+  it('sets logged to false when login returns 401', async function() {
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
+
+    stubLoginFetch(401);
+
+    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setLogged).toHaveBeenCalledWith(false);
+    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
   it('calls setError when category item fetch fails', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
 
@@ -108,6 +138,30 @@ describe('CategoryItemController', function() {
     await flushPromises();
 
     expect(setError).toHaveBeenCalledWith('Unable to load category item.');
+    expect(setLoading).toHaveBeenCalledWith(false);
+
+    cleanup();
+  });
+
+  it('calls setError when login check returns an unexpected status', async function() {
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
+
+    stubFetch((url) => {
+      if (url === '/users/login.json') {
+        return Promise.resolve({ ok: false, status: 500 });
+      }
+
+      throw new Error(`Unexpected URL: ${url}`);
+    });
+
+    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setItem).not.toHaveBeenCalled();
+    expect(setLogged).not.toHaveBeenCalled();
+    expect(setError).toHaveBeenCalledWith('Unable to check login status.');
     expect(setLoading).toHaveBeenCalledWith(false);
 
     cleanup();
