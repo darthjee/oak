@@ -1,12 +1,11 @@
-(function(_, angular) {
+(function(_, angular, noop) {
   var app = angular.module("home/controller", [
     "cyberhawk/builder"
   ]);
 
   var options = {
     path: '/categories',
-    callback: function(){
-    }
+    callback: noop
   };
 
   app.controller("Home.Controller", [
@@ -14,4 +13,4 @@
       builder.buildAndRequest(this, options);
     }
   ]);
-}(window._, window.angular));
+}(window._, window.angular, window.noop));
