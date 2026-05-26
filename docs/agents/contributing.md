@@ -113,6 +113,7 @@ Both jobs must pass before merging any changes to `source/`.
 Every class must have one clear responsibility. If a class is hard to name or describe without using "and", it is doing too much.
 
 Prefer extracting logic into:
+
 - **Builders** (`app/builders/`) — complex object construction.
 - **Decorators** (`app/decorators/`) — presentation/serialization logic.
 - **Service objects / utils** (`app/utils/`) — standalone business operations.

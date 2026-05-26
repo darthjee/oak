@@ -39,6 +39,7 @@ end
 ```
 
 This generates the following behavior:
+
 - `GET /publishers` → calls `index`, returns all publishers
 - `POST /publishers` → calls `create`, creates a new publisher
 
@@ -229,6 +230,7 @@ end
 ```
 
 In this example:
+
 - `GET /authors/:author_id/posts.json` returns all posts belonging to the author.
 - `author` is resolved automatically via `Author.find(params[:author_id])`.
 - No `/authors` CRUD endpoints are generated.

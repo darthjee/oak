@@ -219,6 +219,7 @@ end
 ```
 
 Available base classes:
+
 - `Magicka::Element` – bare element; no built-in locals
 - `Magicka::Input` – adds `field`, `label`, `ng_model`, `placeholder`, `ng_errors`
 - `Magicka::Select` – adds `field`, `label`, `ng_model`, `options`, `ng_errors`
