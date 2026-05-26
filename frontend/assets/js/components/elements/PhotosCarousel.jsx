@@ -1,5 +1,5 @@
 import React from 'react';
-import Carousel from 'react-bootstrap/Carousel';
+import Carousel from 'react-bootstrap/cjs/Carousel.js';
 import PhotoCarouselItem from './PhotoCarouselItem.jsx';
 
 /**
