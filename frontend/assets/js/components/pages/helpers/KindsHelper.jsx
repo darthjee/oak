@@ -3,7 +3,7 @@ import CatalogCard from '../../elements/CatalogCard.jsx';
 import CatalogList from '../../elements/CatalogList.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
-import Pagination from '../../elements/Pagination.jsx';
+import PaginationHelper from './PaginationHelper.jsx';
 
 /**
  * Renders the kinds page HTML for different states.
@@ -41,19 +41,8 @@ export default class KindsHelper {
         <CatalogList>
           {kinds.map((kind) => this.#renderCard(kind))}
         </CatalogList>
-        {this.#renderPagination(pagination)}
+        {PaginationHelper.render(pagination, '/#/kinds')}
       </>
-    );
-  }
-
-  static #renderPagination(pagination) {
-    return (
-      <Pagination
-        currentPage={pagination?.page ?? 1}
-        totalPages={pagination?.pages ?? 1}
-        perPage={pagination?.perPage ?? 10}
-        basePath='/#/kinds'
-      />
     );
   }
 

@@ -1,9 +1,10 @@
 import GenericClient from '../../../client/GenericClient.js';
+import BasePageController from './BasePageController.js';
 
 /**
  * Manages categories page state by fetching categories and login status from the API.
  */
-export default class CategoriesController {
+export default class CategoriesController extends BasePageController {
   /**
    * Creates a new CategoriesController instance.
    *
@@ -22,6 +23,7 @@ export default class CategoriesController {
     setError,
     client = null
   ) {
+    super();
     this.setCategories = setCategories;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
@@ -61,7 +63,7 @@ export default class CategoriesController {
   #loadData(safeSet) {
     Promise.all([
       this.#fetchCategories(),
-      this.#checkLogin(),
+      this.checkLogin(),
     ])
       .then(([categoriesData, logged]) => this.#applyData(safeSet, categoriesData, logged))
       .catch((error) => this.#handleError(safeSet, error))
@@ -87,24 +89,5 @@ export default class CategoriesController {
         pagination,
       }))
       .catch(() => { throw new Error('Unable to load categories.'); });
-  }
-
-  #checkLogin() {
-    return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => this.#handleLoginResponse(response));
-  }
-
-  #handleLoginResponse(response) {
-    if (response.ok) {
-      return response.json().then(Boolean);
-    }
-
-    if ([401, 403, 404].includes(response.status)) {
-      return false;
-    }
-
-    throw new Error('Unable to check login status.');
   }
 }

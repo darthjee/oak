@@ -1,9 +1,10 @@
 import GenericClient from '../../../client/GenericClient.js';
+import BasePageController from './BasePageController.js';
 
 /**
  * Manages kinds page state by fetching kinds and login status from the API.
  */
-export default class KindsController {
+export default class KindsController extends BasePageController {
   /**
    * Creates a new KindsController instance.
    *
@@ -22,6 +23,7 @@ export default class KindsController {
     setError,
     client = null
   ) {
+    super();
     this.setKinds = setKinds;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
@@ -61,7 +63,7 @@ export default class KindsController {
   #loadData(safeSet) {
     Promise.all([
       this.#fetchKinds(),
-      this.#checkLogin(),
+      this.checkLogin(),
     ])
       .then(([kindsData, logged]) => this.#applyData(safeSet, kindsData, logged))
       .catch((error) => this.#handleError(safeSet, error))
@@ -82,29 +84,14 @@ export default class KindsController {
 
   #fetchKinds() {
     return this.client.fetchIndex('/kinds.json')
-      .then(({ data, pagination }) => ({
-        kinds: Array.isArray(data) ? data : [],
-        pagination,
-      }))
+      .then(({ data, pagination }) => this.#buildKindsData(data, pagination))
       .catch(() => { throw new Error('Unable to load kinds.'); });
   }
 
-  #checkLogin() {
-    return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => this.#handleLoginResponse(response));
-  }
-
-  #handleLoginResponse(response) {
-    if (response.ok) {
-      return response.json().then(Boolean);
-    }
-
-    if ([401, 403, 404].includes(response.status)) {
-      return false;
-    }
-
-    throw new Error('Unable to check login status.');
+  #buildKindsData(data, pagination) {
+    return {
+      kinds: Array.isArray(data) ? data : [],
+      pagination,
+    };
   }
 }

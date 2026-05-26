@@ -3,7 +3,7 @@ import CatalogCard from '../../elements/CatalogCard.jsx';
 import CatalogList from '../../elements/CatalogList.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
-import Pagination from '../../elements/Pagination.jsx';
+import PaginationHelper from './PaginationHelper.jsx';
 
 /**
  * Renders the categories page HTML for different states.
@@ -43,7 +43,7 @@ export default class CategoriesHelper {
         <CatalogList>
           {categories.map((category) => this.#renderCard(category))}
         </CatalogList>
-        {this.#renderPagination(pagination)}
+        {PaginationHelper.render(pagination, '/#/categories')}
       </>
     );
   }
@@ -62,23 +62,6 @@ export default class CategoriesHelper {
       <a className='btn btn-primary mb-3' href='/#/categories/new'>
         New
       </a>
-    );
-  }
-
-  /**
-   * Renders the pagination controls for the categories page.
-   *
-   * @param pagination pagination metadata for the current page
-   * @returns {JSX.Element} the rendered pagination controls for the categories page
-   */
-  static #renderPagination(pagination) {
-    return (
-      <Pagination
-        currentPage={pagination?.page ?? 1}
-        totalPages={pagination?.pages ?? 1}
-        perPage={pagination?.perPage ?? 10}
-        basePath='/#/categories'
-      />
     );
   }
 
