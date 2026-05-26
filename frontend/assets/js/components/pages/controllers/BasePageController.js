@@ -2,6 +2,11 @@
  * Shared behavior for page controllers.
  */
 export default class BasePageController {
+  /**
+   * Fetches login status for the current user.
+   *
+   * @returns {Promise<boolean>} whether the user is logged in
+   */
   checkLogin() {
     return fetch('/users/login.json', {
       headers: { Accept: 'application/json' },
@@ -9,6 +14,12 @@ export default class BasePageController {
       .then((response) => this.handleLoginResponse(response));
   }
 
+  /**
+   * Parses login response into a boolean login state.
+   *
+   * @param {Response} response fetch response
+   * @returns {Promise<boolean>|boolean} login state when response can be handled
+   */
   handleLoginResponse(response) {
     if (response.ok) {
       return response.json().then(Boolean);
