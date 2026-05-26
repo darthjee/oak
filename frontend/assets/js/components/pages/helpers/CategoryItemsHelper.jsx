@@ -1,5 +1,6 @@
 import React from 'react';
-import CatalogCard from '../../elements/CatalogCard.jsx';
+import CatalogList from '../../elements/CatalogList.jsx';
+import CategoryItemCard from '../../elements/CategoryItemCard.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
@@ -37,38 +38,30 @@ export default class CategoryItemsHelper {
    * @returns {JSX.Element} category items grid with pagination controls
    */
   static render(items, logged, pagination, slug) {
-    const page = pagination?.page ?? 1;
-    const pages = pagination?.pages ?? 1;
-    const perPage = pagination?.perPage ?? 10;
     const basePath = `/#/categories/${slug}/items`;
 
     return (
-      <div className='container mt-4'>
+      <>
         {this.#renderActions(logged, slug)}
-        <div className='row'>
+        <CatalogList>
           {items.map((item) => this.#renderCard(item, slug))}
-        </div>
-        <Pagination
-          currentPage={page}
-          totalPages={pages}
-          perPage={perPage}
-          basePath={basePath}
-        />
-      </div>
+        </CatalogList>
+        {this.#renderPagination(pagination, basePath)}
+      </>
     );
   }
 
   static #renderCard(item, slug) {
-    const { id, name, snap_url: snapUrl, link } = item;
+    const { id, name, snap_url: snapUrl, links = [], link } = item;
     const itemPath = `/#/categories/${slug}/items/${id}`;
 
     return (
-      <CatalogCard
+      <CategoryItemCard
         key={id}
         href={itemPath}
         title={name}
         imageSrc={snapUrl}
-        footer={this.#renderExternalLink(link)}
+        links={links.length > 0 ? links : link ? [link] : []}
       />
     );
   }
@@ -90,17 +83,14 @@ export default class CategoryItemsHelper {
     );
   }
 
-  static #renderExternalLink(link) {
-    if (!link?.url) {
-      return null;
-    }
-
+  static #renderPagination(pagination, basePath) {
     return (
-      <div className='card-footer bg-white border-0 pt-0'>
-        <a href={link.url} target='_blank' rel='noreferrer' className='card-link'>
-          {link.text || 'External link'}
-        </a>
-      </div>
+      <Pagination
+        currentPage={pagination?.page ?? 1}
+        totalPages={pagination?.pages ?? 1}
+        perPage={pagination?.perPage ?? 10}
+        basePath={basePath}
+      />
     );
   }
 }
