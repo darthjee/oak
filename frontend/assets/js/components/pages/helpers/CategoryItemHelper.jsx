@@ -36,19 +36,19 @@ export default class CategoryItemHelper {
    * @returns {JSX.Element} category item content
    */
   static render(item, logged) {
-    const slug = item.category?.slug || '';
-
     return (
       <div className='container mt-4'>
-        {this.#renderActions(slug, item.id, logged)}
+        {this.#renderActions(item, item.id, logged)}
         {this.#renderInfo(item)}
-        <CategoryItemLinks links={item.links} />
-        <PhotosCarousel photos={item.photos} name={item.name} />
+        {this.#renderLinks(item)}
+        {this.#renderPhotosCarousel(item)}
       </div>
     );
   }
 
-  static #renderActions(slug, id, logged) {
+  static #renderActions(item, id, logged) {
+    const slug = item.category?.slug || '';
+
     return (
       <div className='mb-3'>
         <a className='btn btn-outline-secondary me-2' href={`/#/categories/${slug}/items`}>
@@ -78,5 +78,22 @@ export default class CategoryItemHelper {
         </div>
       </div>
     );
+  }
+
+
+  static #renderLinks(item) {
+    if (!item.links || item.links.length === 0) {
+      return null;
+    }
+
+    return <CategoryItemLinks links={item.links} />;
+  }
+
+  static #renderPhotosCarousel(item) {
+    if (!item.photos || item.photos.length === 0) {
+      return null;
+    }
+
+    return <PhotosCarousel photos={item.photos} name={item.name} />;
   }
 }
