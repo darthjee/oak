@@ -40,23 +40,13 @@ export default class KindsController extends BasePageController {
   buildEffect() {
     return () => {
       let mounted = true;
-      const safeSet = this.#buildSafeSetter(() => mounted);
+      const safeSet = this.buildSafeSetter(() => mounted);
 
       this.#loadData(safeSet);
 
       return () => {
         mounted = false;
       };
-    };
-  }
-
-  #buildSafeSetter(isMounted) {
-    return (setter, value) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      setter(value);
     };
   }
 

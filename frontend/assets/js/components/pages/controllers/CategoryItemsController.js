@@ -53,7 +53,7 @@ export default class CategoryItemsController extends BasePageController {
   buildEffect() {
     return () => {
       let mounted = true;
-      const safeSet = this.#buildSafeSetter(() => mounted);
+      const safeSet = this.buildSafeSetter(() => mounted);
       const slug = getCategorySlugFromHash(this.client.currentHash());
 
       this.#loadData(safeSet, slug);
@@ -61,16 +61,6 @@ export default class CategoryItemsController extends BasePageController {
       return () => {
         mounted = false;
       };
-    };
-  }
-
-  #buildSafeSetter(isMounted) {
-    return (setter, value) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      setter(value);
     };
   }
 
