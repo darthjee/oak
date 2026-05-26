@@ -1,29 +1,33 @@
 import HeaderController from '../../../../assets/js/components/elements/controllers/HeaderController.js';
-
-const flushPromises = async () => {
-  await new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
-};
+import {
+  buildSpies,
+  flushPromises,
+  preserveGlobals,
+  stubFetch,
+} from '../../../support/factories.js';
 
 describe('HeaderController', function() {
-  let originalFetch;
+  let restoreGlobals;
+
+  const buildSetters = () => buildSpies(
+    'setLogged',
+    'setCategories',
+    'setLoading',
+    'setError'
+  );
 
   beforeEach(function() {
-    originalFetch = global.fetch;
+    restoreGlobals = preserveGlobals('fetch');
   });
 
   afterEach(function() {
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   it('loads login state and categories in buildEffect', async function() {
-    const setLogged = jasmine.createSpy('setLogged');
-    const setCategories = jasmine.createSpy('setCategories');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+    stubFetch((url) => {
       if (url === '/users/login.json') {
         return Promise.resolve({
           ok: true,
@@ -58,12 +62,9 @@ describe('HeaderController', function() {
   });
 
   it('handles non-logged users when login check returns 404', async function() {
-    const setLogged = jasmine.createSpy('setLogged');
-    const setCategories = jasmine.createSpy('setCategories');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+    stubFetch((url) => {
       if (url === '/users/login.json') {
         return Promise.resolve({ ok: false, status: 404 });
       }
@@ -90,12 +91,9 @@ describe('HeaderController', function() {
   });
 
   it('logs off and reloads categories', async function() {
-    const setLogged = jasmine.createSpy('setLogged');
-    const setCategories = jasmine.createSpy('setCategories');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+    stubFetch((url) => {
       if (url === '/users/logoff.json') {
         return Promise.resolve({ ok: true });
       }
@@ -127,12 +125,9 @@ describe('HeaderController', function() {
   });
 
   it('reloads header data on demand', async function() {
-    const setLogged = jasmine.createSpy('setLogged');
-    const setCategories = jasmine.createSpy('setCategories');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+    stubFetch((url) => {
       if (url === '/users/login.json') {
         return Promise.resolve({
           ok: true,

@@ -1,21 +1,20 @@
 import HeaderClient from '../../assets/js/client/HeaderClient.js';
+import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
 
 describe('HeaderClient', function() {
-  let originalFetch;
+  let restoreGlobals;
 
   beforeEach(function() {
-    originalFetch = global.fetch;
+    restoreGlobals = preserveGlobals('fetch');
   });
 
   afterEach(function() {
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   describe('#checkLogin', function() {
     it('sends a GET request to the login status endpoint', async function() {
-      global.fetch = jasmine.createSpy('fetch').and.returnValue(
-        Promise.resolve({ ok: true })
-      );
+      stubFetchResponse({ ok: true });
 
       const client = new HeaderClient();
 
@@ -29,9 +28,7 @@ describe('HeaderClient', function() {
 
   describe('#fetchCategories', function() {
     it('sends a GET request to the user categories endpoint', async function() {
-      global.fetch = jasmine.createSpy('fetch').and.returnValue(
-        Promise.resolve({ ok: true, json: () => Promise.resolve([]) })
-      );
+      stubFetchResponse({ ok: true, json: () => Promise.resolve([]) });
 
       const client = new HeaderClient();
 
@@ -45,9 +42,7 @@ describe('HeaderClient', function() {
 
   describe('#logoff', function() {
     it('sends a DELETE request to the logoff endpoint', async function() {
-      global.fetch = jasmine.createSpy('fetch').and.returnValue(
-        Promise.resolve({ ok: true })
-      );
+      stubFetchResponse({ ok: true });
 
       const client = new HeaderClient();
 

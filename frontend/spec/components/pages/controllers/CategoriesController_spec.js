@@ -1,8 +1,13 @@
 import CategoriesController from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
-import { flushPromises, stubLoginFetch } from '../../../support/factories.js';
+import {
+  buildSpies,
+  flushPromises,
+  preserveGlobals,
+  stubLoginFetch,
+} from '../../../support/factories.js';
 
 describe('CategoriesController', function() {
-  let originalFetch;
+  let restoreGlobals;
   let mockClient;
 
   const buildMockClient = (overrides = {}) => ({
@@ -12,21 +17,25 @@ describe('CategoriesController', function() {
     ...overrides,
   });
 
+  const buildSetters = () => buildSpies(
+    'setCategories',
+    'setPagination',
+    'setLogged',
+    'setLoading',
+    'setError'
+  );
+
   beforeEach(function() {
-    originalFetch = global.fetch;
+    restoreGlobals = preserveGlobals('fetch');
     mockClient = buildMockClient();
   });
 
   afterEach(function() {
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   it('fetches categories and login state in buildEffect', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
@@ -59,11 +68,7 @@ describe('CategoriesController', function() {
   });
 
   it('sets logged to false when login returns 404', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
@@ -89,11 +94,7 @@ describe('CategoriesController', function() {
   });
 
   it('calls client.fetchIndex with /categories.json', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
@@ -112,11 +113,7 @@ describe('CategoriesController', function() {
   });
 
   it('calls setError when categories fetch fails', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
@@ -140,11 +137,7 @@ describe('CategoriesController', function() {
   });
 
   it('does not call setters after unmount', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
@@ -165,11 +158,7 @@ describe('CategoriesController', function() {
   });
 
   it('applies fallback pagination when client returns minimal pagination', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
@@ -189,11 +178,7 @@ describe('CategoriesController', function() {
   });
 
   it('calls global.fetch directly for login check', async function() {
-    const setCategories = jasmine.createSpy('setCategories');
-    const setPagination = jasmine.createSpy('setPagination');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
@@ -210,4 +195,3 @@ describe('CategoriesController', function() {
     cleanup();
   });
 });
-

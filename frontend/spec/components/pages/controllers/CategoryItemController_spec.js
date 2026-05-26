@@ -1,8 +1,13 @@
 import CategoryItemController, { getCategoryItemParamsFromHash } from '../../../../assets/js/components/pages/controllers/CategoryItemController.js';
-import { flushPromises, stubLoginFetch } from '../../../support/factories.js';
+import {
+  buildSpies,
+  flushPromises,
+  preserveGlobals,
+  stubLoginFetch,
+} from '../../../support/factories.js';
 
 describe('CategoryItemController', function() {
-  let originalFetch;
+  let restoreGlobals;
   let mockClient;
 
   const buildMockClient = (overrides = {}) => ({
@@ -13,13 +18,20 @@ describe('CategoryItemController', function() {
     ...overrides,
   });
 
+  const buildSetters = () => buildSpies(
+    'setItem',
+    'setLogged',
+    'setLoading',
+    'setError'
+  );
+
   beforeEach(function() {
-    originalFetch = global.fetch;
+    restoreGlobals = preserveGlobals('fetch');
     mockClient = buildMockClient();
   });
 
   afterEach(function() {
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   describe('getCategoryItemParamsFromHash', function() {
@@ -31,10 +43,7 @@ describe('CategoryItemController', function() {
   });
 
   it('fetches category item and login state in buildEffect', async function() {
-    const setItem = jasmine.createSpy('setItem');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
     const item = {
       id: 35,
       name: 'Oak',
@@ -66,10 +75,7 @@ describe('CategoryItemController', function() {
   });
 
   it('sets logged to false when login returns 404', async function() {
-    const setItem = jasmine.createSpy('setItem');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
@@ -86,10 +92,7 @@ describe('CategoryItemController', function() {
   });
 
   it('calls setError when category item fetch fails', async function() {
-    const setItem = jasmine.createSpy('setItem');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items/35'),
@@ -111,10 +114,7 @@ describe('CategoryItemController', function() {
   });
 
   it('calls setError when params cannot be extracted from hash', async function() {
-    const setItem = jasmine.createSpy('setItem');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items'),
@@ -134,10 +134,7 @@ describe('CategoryItemController', function() {
   });
 
   it('does not call setters after unmount', async function() {
-    const setItem = jasmine.createSpy('setItem');
-    const setLogged = jasmine.createSpy('setLogged');
-    const setLoading = jasmine.createSpy('setLoading');
-    const setError = jasmine.createSpy('setError');
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
 
     stubLoginFetch(404);
 
