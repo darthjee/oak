@@ -38,9 +38,6 @@ export default class CategoryItemsHelper {
    * @returns {JSX.Element} category items grid with pagination controls
    */
   static render(items, logged, pagination, slug) {
-    const page = pagination?.page ?? 1;
-    const pages = pagination?.pages ?? 1;
-    const perPage = pagination?.perPage ?? 10;
     const basePath = `/#/categories/${slug}/items`;
 
     return (
@@ -49,12 +46,7 @@ export default class CategoryItemsHelper {
         <CatalogList>
           {items.map((item) => this.#renderCard(item, slug))}
         </CatalogList>
-        <Pagination
-          currentPage={page}
-          totalPages={pages}
-          perPage={perPage}
-          basePath={basePath}
-        />
+        {this.#renderPagination(pagination, basePath)}
       </>
     );
   }
@@ -88,6 +80,17 @@ export default class CategoryItemsHelper {
           Edit
         </a>
       </>
+    );
+  }
+
+  static #renderPagination(pagination, basePath) {
+    return (
+      <Pagination
+        currentPage={pagination?.page ?? 1}
+        totalPages={pagination?.pages ?? 1}
+        perPage={pagination?.perPage ?? 10}
+        basePath={basePath}
+      />
     );
   }
 }
