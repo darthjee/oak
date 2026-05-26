@@ -1,5 +1,6 @@
 import React from 'react';
-import CatalogCard from '../../elements/CatalogCard.jsx';
+import CatalogList from '../../elements/CatalogList.jsx';
+import CategoryItemCard from '../../elements/CategoryItemCard.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
@@ -43,32 +44,32 @@ export default class CategoryItemsHelper {
     const basePath = `/#/categories/${slug}/items`;
 
     return (
-      <div className='container mt-4'>
+      <>
         {this.#renderActions(logged, slug)}
-        <div className='row'>
+        <CatalogList>
           {items.map((item) => this.#renderCard(item, slug))}
-        </div>
+        </CatalogList>
         <Pagination
           currentPage={page}
           totalPages={pages}
           perPage={perPage}
           basePath={basePath}
         />
-      </div>
+      </>
     );
   }
 
   static #renderCard(item, slug) {
-    const { id, name, snap_url: snapUrl, link } = item;
+    const { id, name, snap_url: snapUrl, links = [], link } = item;
     const itemPath = `/#/categories/${slug}/items/${id}`;
 
     return (
-      <CatalogCard
+      <CategoryItemCard
         key={id}
         href={itemPath}
         title={name}
         imageSrc={snapUrl}
-        footer={this.#renderExternalLink(link)}
+        links={links.length > 0 ? links : link ? [link] : []}
       />
     );
   }
@@ -87,20 +88,6 @@ export default class CategoryItemsHelper {
           Edit
         </a>
       </>
-    );
-  }
-
-  static #renderExternalLink(link) {
-    if (!link?.url) {
-      return null;
-    }
-
-    return (
-      <div className='card-footer bg-white border-0 pt-0'>
-        <a href={link.url} target='_blank' rel='noreferrer' className='card-link'>
-          {link.text || 'External link'}
-        </a>
-      </div>
     );
   }
 }

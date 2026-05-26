@@ -1,5 +1,6 @@
 import React from 'react';
 import CatalogCard from '../../elements/CatalogCard.jsx';
+import CatalogList from '../../elements/CatalogList.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import Pagination from '../../elements/Pagination.jsx';
@@ -37,13 +38,13 @@ export default class CategoriesHelper {
    */
   static render(categories, logged, pagination) {
     return (
-      <div className='container mt-4'>
+      <>
         {this.#renderNewButton(logged)}
-        <div className='row'>
+        <CatalogList>
           {categories.map((category) => this.#renderCard(category))}
-        </div>
+        </CatalogList>
         {this.#renderPagination(pagination)}
-      </div>
+      </>
     );
   }
 

@@ -14,6 +14,7 @@ RSpec.describe Oak::Item::IndexDecorator do
   let(:snap_url) do
     [Settings.photos_server_url, 'category.png'].join('/')
   end
+  let(:links) { [] }
   let(:main_link) { nil }
 
   describe '#as_json' do
@@ -25,6 +26,7 @@ RSpec.describe Oak::Item::IndexDecorator do
         category_slug:,
         kind_slug:,
         snap_url:,
+        links:,
         link: main_link
       }.stringify_keys
     end
@@ -55,7 +57,14 @@ RSpec.describe Oak::Item::IndexDecorator do
     end
 
     context 'when the item has links' do
+      let!(:first_link) { create(:oak_link, item:, order: 2, url: 'https://example.com/2') }
       let!(:second_link) { create(:oak_link, item:, order: 1, url: 'https://example.com/1') }
+      let(:links) do
+        [
+          Oak::Link::Decorator.new(second_link).as_json,
+          Oak::Link::Decorator.new(first_link).as_json
+        ]
+      end
       let(:main_link) { Oak::Link::Decorator.new(second_link).as_json }
 
       let(:expected) do
@@ -66,11 +75,10 @@ RSpec.describe Oak::Item::IndexDecorator do
           category_slug:,
           kind_slug:,
           snap_url:,
+          links:,
           link: main_link
         }.deep_stringify_keys
       end
-
-      before { create(:oak_link, item:, order: 2, url: 'https://example.com/2') }
 
       it 'includes the main link' do
         expect(decorator.as_json).to eq(expected)
@@ -89,6 +97,7 @@ RSpec.describe Oak::Item::IndexDecorator do
           kind_slug:,
           snap_url:,
           errors:,
+          links:,
           link: main_link
         }.deep_stringify_keys
       end
