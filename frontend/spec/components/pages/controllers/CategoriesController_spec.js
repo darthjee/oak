@@ -1,8 +1,10 @@
 import CategoriesController from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
+import GenericClient from '../../../../assets/js/client/GenericClient.js';
 import {
   buildSpies,
   flushPromises,
   preserveGlobals,
+  stubFetch,
   stubLoginFetch,
 } from '../../../support/factories.js';
 
@@ -191,6 +193,79 @@ describe('CategoriesController', function() {
     await flushPromises();
 
     expect(global.fetch).toHaveBeenCalledWith('/users/login.json', { headers: { Accept: 'application/json' } });
+
+    cleanup();
+  });
+
+  it('defaults client to a new GenericClient when none is provided', function() {
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError
+    );
+
+    expect(controller.client).toBeInstanceOf(GenericClient);
+  });
+
+  it('falls back to empty array when fetchIndex returns non-array data', async function() {
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
+
+    mockClient = buildMockClient({
+      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+        Promise.resolve({ data: null, pagination: { page: 1, pages: 1, perPage: 10 } })
+      ),
+    });
+    stubLoginFetch(404);
+
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setCategories).toHaveBeenCalledWith([]);
+    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
+  it('calls setError with fallback message when error has no message', async function() {
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
+
+    stubFetch(() => Promise.reject(null));
+
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setError).toHaveBeenCalledWith('Unexpected error while loading categories.');
+    expect(setLoading).toHaveBeenCalledWith(false);
+
+    cleanup();
+  });
+
+  it('calls setError when login returns an unexpected status', async function() {
+    const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
+
+    stubLoginFetch(500);
+
+    const controller = new CategoriesController(
+      setCategories, setPagination, setLogged, setLoading, setError,
+      mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+
+    expect(setError).toHaveBeenCalledWith('Unable to check login status.');
+    expect(setLoading).toHaveBeenCalledWith(false);
 
     cleanup();
   });
