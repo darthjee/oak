@@ -1,4 +1,5 @@
 import getHashQueryParams from '../components/helpers/hashQueryParams.js';
+import HashRouteResolver from '../components/helpers/HashRouteResolver.js';
 
 /**
  * A generic HTTP client that handles query param forwarding and pagination header reading.
@@ -6,6 +7,8 @@ import getHashQueryParams from '../components/helpers/hashQueryParams.js';
 export default class GenericClient {
   /** @type {Function} */
   #hashProvider;
+  /** @type {HashRouteResolver} */
+  #routeResolver;
 
   /**
    * Creates a new GenericClient instance.
@@ -14,6 +17,7 @@ export default class GenericClient {
    */
   constructor(hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash)) {
     this.#hashProvider = hashProvider;
+    this.#routeResolver = new HashRouteResolver(hashProvider);
   }
 
   /**
@@ -29,10 +33,10 @@ export default class GenericClient {
    * Builds the full URL by appending hash query params to the given path.
    *
    * @param {string} path base path
+   * @param {URLSearchParams} [params] query params to append
    * @returns {string} path with query params appended
    */
-  #buildUrl(path) {
-    const params = getHashQueryParams(this.currentHash());
+  #buildUrl(path, params = new URLSearchParams()) {
     const query = params.toString();
     return query ? `${path}?${query}` : path;
   }
@@ -45,7 +49,7 @@ export default class GenericClient {
    * @throws {Error} if the response is not ok
    */
   async fetch(path) {
-    const response = await fetch(this.#buildUrl(path), {
+    const response = await fetch(this.#buildUrl(path, getHashQueryParams(this.currentHash())), {
       headers: { Accept: 'application/json' },
     });
 
@@ -65,7 +69,7 @@ export default class GenericClient {
    * @throws {Error} if the response is not ok
    */
   async fetchIndex(path) {
-    const response = await fetch(this.#buildUrl(path), {
+    const response = await fetch(this.#buildUrl(path, this.#routeResolver.getPaginationParams()), {
       headers: { Accept: 'application/json' },
     });
 

@@ -1,4 +1,5 @@
 import AppHelper from './helpers/AppHelper.jsx';
+import HashRouteResolver from './helpers/HashRouteResolver.js';
 
 /**
  * Controls page routing based on the URL hash.
@@ -14,7 +15,7 @@ export default class AppController {
   constructor(setPage, eventTarget = window, locationProvider = () => window.location.hash) {
     this.setPage = setPage;
     this.eventTarget = eventTarget;
-    this.locationProvider = locationProvider;
+    this.routeResolver = new HashRouteResolver(locationProvider);
   }
 
   /**
@@ -23,25 +24,7 @@ export default class AppController {
    * @returns {string} page identifier, e.g. `'categories'` or `'home'`
    */
   getPage() {
-    const hash = this.locationProvider();
-
-    if (/^#\/categories\/[^/]+\/items\/[^/]+\/?(\?.*)?$/.test(hash)) {
-      return 'categoryItem';
-    }
-
-    if (/^#\/categories\/[^/]+\/items\/?(\?.*)?$/.test(hash)) {
-      return 'categoryItems';
-    }
-
-    if (hash === '#/categories' || hash === '#/categories/') {
-      return 'categories';
-    }
-
-    if (hash === '#/kinds' || hash === '#/kinds/') {
-      return 'kinds';
-    }
-
-    return 'home';
+    return this.routeResolver.getPage();
   }
 
   /**
