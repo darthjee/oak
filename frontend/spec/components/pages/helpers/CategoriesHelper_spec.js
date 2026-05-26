@@ -39,6 +39,7 @@ describe('CategoriesHelper', function() {
   it('renders empty grid when no categories', function() {
     const html = renderToStaticMarkup(CategoriesHelper.render([], false, { page: 1, pages: 1, perPage: 10 }));
 
+    expect(html).toContain('container mt-4');
     expect(html).toContain('row');
     expect(html).not.toContain('card');
   });
