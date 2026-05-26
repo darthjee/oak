@@ -4,8 +4,40 @@ export const flushPromises = async () => {
   });
 };
 
+export const buildSpies = (...names) => {
+  const spies = {};
+
+  for (const name of names) {
+    spies[name] = jasmine.createSpy(name);
+  }
+
+  return spies;
+};
+
+export const preserveGlobals = (...names) => {
+  const originals = Object.fromEntries(
+    names.map((name) => [name, global[name]])
+  );
+
+  return () => {
+    names.forEach((name) => {
+      global[name] = originals[name];
+    });
+  };
+};
+
+export const stubFetch = (implementation) => {
+  global.fetch = jasmine.createSpy('fetch').and.callFake(implementation);
+
+  return global.fetch;
+};
+
+export const stubFetchResponse = (response) => stubFetch(
+  () => Promise.resolve(response)
+);
+
 export const stubLoginFetch = (status = 404) => {
-  global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
+  stubFetch((url) => {
     if (url === '/users/login.json') {
       if (status === 200) {
         return Promise.resolve({

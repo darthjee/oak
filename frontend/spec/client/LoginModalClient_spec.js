@@ -1,18 +1,19 @@
 import LoginModalClient from '../../assets/js/client/LoginModalClient.js';
+import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
 
 describe('LoginModalClient', function() {
-  let originalFetch;
+  let restoreGlobals;
 
   beforeEach(function() {
-    originalFetch = global.fetch;
+    restoreGlobals = preserveGlobals('fetch');
   });
 
   afterEach(function() {
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   it('submits the login payload to the json endpoint', async function() {
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(Promise.resolve({ ok: true }));
+    stubFetchResponse({ ok: true });
 
     const client = new LoginModalClient();
 
