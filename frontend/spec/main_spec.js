@@ -1,30 +1,23 @@
 import { mount } from '../assets/js/main.jsx';
+import { preserveGlobals, stubFetchResponse } from './support/factories.js';
 
 describe('main', function() {
-  let originalDocument;
-  let originalWindow;
-  let originalFetch;
+  let restoreGlobals;
+
+  const buildWindow = () => ({
+    location: { hash: '' },
+    addEventListener: jasmine.createSpy('addEventListener'),
+    removeEventListener: jasmine.createSpy('removeEventListener'),
+  });
 
   beforeEach(function() {
-    originalDocument = global.document;
-    originalWindow = global.window;
-    originalFetch = global.fetch;
-
-    global.window = {
-      location: { hash: '' },
-      addEventListener: jasmine.createSpy('addEventListener'),
-      removeEventListener: jasmine.createSpy('removeEventListener'),
-    };
-
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(
-      Promise.resolve({ ok: false, status: 404 })
-    );
+    restoreGlobals = preserveGlobals('document', 'window', 'fetch');
+    global.window = buildWindow();
+    stubFetchResponse({ ok: false, status: 404 });
   });
 
   afterEach(function() {
-    global.document = originalDocument;
-    global.window = originalWindow;
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   describe('#mount', function() {

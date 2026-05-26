@@ -1,29 +1,25 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import React from 'react';
 import App from '../../assets/js/components/App.jsx';
+import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
 
 describe('App', function() {
-  let originalWindow;
-  let originalFetch;
+  let restoreGlobals;
+
+  const buildWindow = () => ({
+    location: { hash: '' },
+    addEventListener: jasmine.createSpy('addEventListener'),
+    removeEventListener: jasmine.createSpy('removeEventListener'),
+  });
 
   beforeEach(function() {
-    originalWindow = global.window;
-    originalFetch = global.fetch;
-
-    global.window = {
-      location: { hash: '' },
-      addEventListener: jasmine.createSpy('addEventListener'),
-      removeEventListener: jasmine.createSpy('removeEventListener'),
-    };
-
-    global.fetch = jasmine.createSpy('fetch').and.returnValue(
-      Promise.resolve({ ok: false, status: 404 })
-    );
+    restoreGlobals = preserveGlobals('window', 'fetch');
+    global.window = buildWindow();
+    stubFetchResponse({ ok: false, status: 404 });
   });
 
   afterEach(function() {
-    global.window = originalWindow;
-    global.fetch = originalFetch;
+    restoreGlobals();
   });
 
   it('renders the navigation header', function() {
