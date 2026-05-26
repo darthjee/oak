@@ -15,6 +15,11 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - coverage-final:
+          requires: [test, jasmine]
+          filters:
+            tags:
+              only: /.*/
       - frontend-checks:
           filters:
             tags:
@@ -86,8 +91,16 @@ jobs:
           name: Change coverage file
           command: sed -e s/SF:\./SF:source/g -i source/coverage/lcov/source.lcov
       - run:
-          name: Upload coverage to Codacy
-          command: cd source && bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov/source.lcov
+          name: Upload coverage to Codacy (partial)
+          command: cd source && bash <(curl -Ls https://coverage.codacy.com/get.sh) report --partial -r coverage/lcov/source.lcov
+
+  coverage-final:
+    docker:
+      - image: darthjee/circleci_node:0.2.1
+    steps:
+      - run:
+          name: Finalize coverage on Codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 
   checks:
     docker:
@@ -130,7 +143,10 @@ jobs:
           command: yarn install
       - run:
           name: Tests
-          command: npm test
+          command: npm run coverage
+      - run:
+          name: Upload coverage to Codacy (partial)
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report --partial -r coverage/lcov.info
   frontend-checks:
     docker:
       - image: darthjee/circleci_node:0.2.1
