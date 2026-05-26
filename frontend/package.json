@@ -9,8 +9,8 @@
     "server": "vite dev --host 0.0.0.0 --port 8080",
     "test": "NODE_OPTIONS='--loader ./spec/support/jsx-loader.mjs' nyc npx jasmine spec/**/*.js",
     "coverage": "NODE_OPTIONS='--loader ./spec/support/jsx-loader.mjs' npx c8 --reporter=lcov jasmine spec/**/*.js",
-    "lint": "eslint .",
-    "lint_fix": "eslint . --fix"
+    "lint": "eslint assets spec",
+    "lint_fix": "eslint assets spec --fix"
   },
   "author": "darthjee",
   "license": "MIT",
