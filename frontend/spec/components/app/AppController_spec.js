@@ -46,6 +46,18 @@ describe('AppController', function() {
       expect(controller.getPage()).toBe('categories');
     });
 
+    it('returns "kinds" for #/kinds', function() {
+      const controller = new AppController(null, null, () => '#/kinds');
+
+      expect(controller.getPage()).toBe('kinds');
+    });
+
+    it('returns "kinds" for #/kinds/', function() {
+      const controller = new AppController(null, null, () => '#/kinds/');
+
+      expect(controller.getPage()).toBe('kinds');
+    });
+
     it('returns "home" for empty hash', function() {
       const controller = new AppController(null, null, () => '');
 

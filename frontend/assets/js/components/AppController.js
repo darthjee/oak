@@ -37,6 +37,10 @@ export default class AppController {
       return 'categories';
     }
 
+    if (hash === '#/kinds' || hash === '#/kinds/') {
+      return 'kinds';
+    }
+
     return 'home';
   }
 
