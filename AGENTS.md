@@ -25,7 +25,6 @@ See [routes.md](docs/agents/routes.md) for the full list of resource and utility
 
 See [contributing.md](docs/agents/contributing.md) for the full details on language standards, best practices, and code guidelines.
 
-
 ## Sinclair Usage
 
 Oak uses the **sinclair** gem extensively. Refer to [sinclair-usage.md](docs/agents/sinclair-usage.md) for the full usage guide.
