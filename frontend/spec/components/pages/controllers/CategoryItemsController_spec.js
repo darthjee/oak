@@ -1,10 +1,5 @@
 import CategoryItemsController from '../../../../assets/js/components/pages/controllers/CategoryItemsController.js';
-
-const flushPromises = async () => {
-  await new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
-};
+import { flushPromises, stubLoginFetch } from '../../../support/factories.js';
 
 describe('CategoryItemsController', function() {
   let originalFetch;
@@ -17,23 +12,6 @@ describe('CategoryItemsController', function() {
     ),
     ...overrides,
   });
-
-  const stubLoginFetch = (status = 404) => {
-    global.fetch = jasmine.createSpy('fetch').and.callFake((url) => {
-      if (url === '/users/login.json') {
-        if (status === 200) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ token: 'abc' }),
-          });
-        }
-
-        return Promise.resolve({ ok: false, status });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-  };
 
   beforeEach(function() {
     originalFetch = global.fetch;
