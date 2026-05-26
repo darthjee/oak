@@ -78,6 +78,7 @@ Every non-trivial component is split into three layers. The pattern is borrowed 
 ### Component (`.jsx`)
 
 The React component itself. Responsible for:
+
 - Declaring state with `useState`
 - Wiring effects with `useEffect`, delegating to the controller
 - Delegating all rendering to the helper
@@ -105,6 +106,7 @@ function Categories() {
 ### Controller (`.jsx` in `controllers/`)
 
 A plain JS class. Responsible for:
+
 - Data fetching (calling the API client)
 - Event handlers (form submit, navigation, filter changes)
 - Building `useEffect` callbacks
@@ -131,6 +133,7 @@ class CategoriesController {
 ### Helper (`.jsx` in `helpers/`)
 
 A static class. Responsible for:
+
 - Returning JSX for every visual state (loading, error, success, empty)
 - Composing sub-elements into the final rendered output
 
@@ -181,6 +184,7 @@ Two images are used (see `dockerfiles/`):
 | `vite_oak` | Local dev image. Pre-warms yarn cache at build time so `docker-compose up` starts fast. |
 
 The `oak_fe` container mounts:
+
 - `./frontend` → source code (watched by Vite for HMR)
 - `./docker_volumes/node_modules` → persisted node_modules cache
 - `./docker_volumes/static` → Vite build output, shared with `oak_proxy`
