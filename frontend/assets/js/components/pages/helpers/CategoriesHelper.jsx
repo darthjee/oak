@@ -36,22 +36,25 @@ export default class CategoriesHelper {
    * @returns {JSX.Element} categories grid with pagination controls
    */
   static render(categories, logged, pagination) {
-    const page = pagination?.page ?? 1;
-    const pages = pagination?.pages ?? 1;
-    const perPage = pagination?.perPage ?? 10;
-
     return (
       <div className='container mt-4'>
-        {this.renderNewButton(logged)}
+        {this.#renderNewButton(logged)}
         <div className='row'>
           {categories.map((category) => this.#renderCard(category))}
         </div>
-        {this.renderPagination(pagination)}
+        {this.#renderPagination(pagination)}
       </div>
     );
   }
 
-  static renderNewButton(logged) {
+  /**
+   * Renders the "New" button for creating a new category if the user is logged in.
+   *
+   * @param logged logged whether the current user is logged in
+   * @param {boolean} logged whether the current user is logged in
+   * @returns {JSX.Element|null} the rendered "New" button or null if not logged in
+   */
+  static #renderNewButton(logged) {
     if (!logged) return null;
     
     return (
@@ -61,7 +64,13 @@ export default class CategoriesHelper {
     );
   }
 
-  static renderPagination(pagination) {
+  /**
+   * Renders the pagination controls for the categories page.
+   *
+   * @param pagination pagination metadata for the current page
+   * @returns {JSX.Element} the rendered pagination controls for the categories page
+   */
+  static #renderPagination(pagination) {
     const page = pagination?.page ?? 1;
     const pages = pagination?.pages ?? 1;
     const perPage = pagination?.perPage ?? 10;
