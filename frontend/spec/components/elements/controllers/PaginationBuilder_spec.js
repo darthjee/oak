@@ -57,7 +57,15 @@ describe('PaginationBuilder', function() {
 
       builder.addCurrentPageWindow();
 
-      expect(builder.build()).not.toContain(0);
+      expect(builder.build()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('filters out pages above the total near the end', function() {
+      const builder = new PaginationBuilder(19, 20);
+
+      builder.addCurrentPageWindow();
+
+      expect(builder.build()).toEqual([16, 17, 18, 19, 20]);
     });
   });
 
@@ -94,6 +102,16 @@ describe('PaginationBuilder', function() {
       builder.addCurrentPageWindow();
 
       expect(builder.build()).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('returns sorted pages regardless of insertion order', function() {
+      const builder = new PaginationBuilder(10, 20);
+
+      builder.addLastPages();
+      builder.addCurrentPageWindow();
+      builder.addFirstPages();
+
+      expect(builder.build()).toEqual([1, 2, 3, null, 7, 8, 9, 10, 11, 12, 13, null, 18, 19, 20]);
     });
   });
 });
