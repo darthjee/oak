@@ -104,18 +104,34 @@ services:
     container_name: oak_root
     command: /bin/bash
     depends_on: [base_build]
+
+  oak_fe:
+    container_name: oak_fe
+    build:
+      context: .
+      dockerfile: dockerfiles/vite_oak/Dockerfile
+    volumes:
+      - ./frontend:/home/node/app
+      - ./docker_volumes/node_modules:/home/node/app/node_modules
+      - ./docker_volumes/static:/home/node/app/dist
+    ports:
+      - 0.0.0.0:3020:8080
+    env_file: .env
   
   oak_proxy:
     image: darthjee/tent:0.5.0
     container_name: oak_proxy
     env_file: .env
     volumes:
+      - ./proxy/static/:/var/www/html/static/
       - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
       - ./docker_volumes/proxy_cache:/var/www/html/cache/
     links:
       - oak_app:backend
+      - oak_fe:frontend
     depends_on:
       - oak_app
+      - oak_fe
     ports:
       - 0.0.0.0:3000:80
   

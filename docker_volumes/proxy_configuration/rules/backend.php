@@ -12,7 +12,11 @@ Configuration::buildRule([
         'host' => 'http://backend:3000'
     ],
     'matchers' => [
-        ['method' => 'GET', 'uri' => '/', 'type' => 'begins_with']
+        ['method' => 'GET', 'uri' => '.json', 'type' => 'ends_with'],
+        ['method' => 'POST', 'uri' => '.json', 'type' => 'ends_with'],
+        ['method' => 'PUT', 'uri' => '.json', 'type' => 'ends_with'],
+        ['method' => 'PATCH', 'uri' => '.json', 'type' => 'ends_with'],
+        ['method' => 'DELETE', 'uri' => '.json', 'type' => 'ends_with']
     ],
     "middlewares" => [
         [
