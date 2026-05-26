@@ -71,15 +71,11 @@ export default class CategoriesHelper {
    * @returns {JSX.Element} the rendered pagination controls for the categories page
    */
   static #renderPagination(pagination) {
-    const page = pagination?.page ?? 1;
-    const pages = pagination?.pages ?? 1;
-    const perPage = pagination?.perPage ?? 10;
-
     return (
       <Pagination
-        currentPage={page}
-        totalPages={pages}
-        perPage={perPage}
+        currentPage={pagination?.page ?? 1}
+        totalPages={pagination?.pages ?? 1}
+        perPage={pagination?.perPage ?? 10}
         basePath='/#/categories'
       />
     );
