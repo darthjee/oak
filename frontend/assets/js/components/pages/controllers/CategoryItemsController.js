@@ -1,4 +1,5 @@
 import GenericClient from '../../../client/GenericClient.js';
+import BasePageController from './BasePageController.js';
 
 /**
  * Extracts the category slug from a category items hash route.
@@ -16,7 +17,7 @@ export function getCategorySlugFromHash(hash = '') {
 /**
  * Manages category items page state by fetching category items and login status from the API.
  */
-export default class CategoryItemsController {
+export default class CategoryItemsController extends BasePageController {
   /**
    * Creates a new CategoryItemsController instance.
    *
@@ -35,6 +36,7 @@ export default class CategoryItemsController {
     setError,
     client = null
   ) {
+    super();
     this.setItems = setItems;
     this.setLogged = setLogged;
     this.setPagination = setPagination;
@@ -51,7 +53,7 @@ export default class CategoryItemsController {
   buildEffect() {
     return () => {
       let mounted = true;
-      const safeSet = this.#buildSafeSetter(() => mounted);
+      const safeSet = this.buildSafeSetter(() => mounted);
       const slug = getCategorySlugFromHash(this.client.currentHash());
 
       this.#loadData(safeSet, slug);
@@ -62,20 +64,10 @@ export default class CategoryItemsController {
     };
   }
 
-  #buildSafeSetter(isMounted) {
-    return (setter, value) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      setter(value);
-    };
-  }
-
   #loadData(safeSet, slug) {
     Promise.all([
       this.#fetchItems(slug),
-      this.#checkLogin(),
+      this.checkLogin(),
     ])
       .then(([itemsData, logged]) => this.#applyData(safeSet, itemsData, logged))
       .catch((error) => this.#handleError(safeSet, error))
@@ -105,24 +97,5 @@ export default class CategoryItemsController {
         pagination,
       }))
       .catch(() => { throw new Error('Unable to load category items.'); });
-  }
-
-  #checkLogin() {
-    return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => this.#handleLoginResponse(response));
-  }
-
-  #handleLoginResponse(response) {
-    if (response.ok) {
-      return response.json().then(Boolean);
-    }
-
-    if ([401, 403, 404].includes(response.status)) {
-      return false;
-    }
-
-    throw new Error('Unable to check login status.');
   }
 }

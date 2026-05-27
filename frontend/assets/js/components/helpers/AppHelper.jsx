@@ -3,12 +3,14 @@ import Header from '../elements/Header.jsx';
 import Categories from '../pages/Categories.jsx';
 import CategoryItem from '../pages/CategoryItem.jsx';
 import CategoryItems from '../pages/CategoryItems.jsx';
+import Kinds from '../pages/Kinds.jsx';
 
 const PAGES = {
   categories: <Categories />,
   categoryItem: <CategoryItem />,
   categoryItems: <CategoryItems />,
   home: <p>placeholder</p>,
+  kinds: <Kinds />,
 };
 
 /**
