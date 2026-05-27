@@ -28,11 +28,11 @@ describe('App', function() {
     expect(html).toContain('Oak');
   });
 
-  it('renders the home placeholder when the hash is empty', function() {
+  it('renders the categories page when the hash is empty', function() {
     global.window.location.hash = '';
 
     const html = renderToStaticMarkup(React.createElement(App));
 
-    expect(html).toContain('placeholder');
+    expect(html).toContain('Loading categories...');
   });
 });
