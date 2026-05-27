@@ -1,15 +1,15 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryItemsHelper from '../../../../assets/js/components/pages/helpers/CategoryItemsHelper.jsx';
+import { renderStatic } from '../../../support/factories.js';
 
 describe('CategoryItemsHelper', function() {
   it('renders loading state', function() {
-    const html = renderToStaticMarkup(CategoryItemsHelper.renderLoading());
+    const html = renderStatic(CategoryItemsHelper.renderLoading());
 
     expect(html).toContain('Loading category items...');
   });
 
   it('renders error state', function() {
-    const html = renderToStaticMarkup(CategoryItemsHelper.renderError('network failure'));
+    const html = renderStatic(CategoryItemsHelper.renderError('network failure'));
 
     expect(html).toContain('Error: network failure');
   });
@@ -26,7 +26,7 @@ describe('CategoryItemsHelper', function() {
         ],
       },
     ];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, false, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -43,7 +43,7 @@ describe('CategoryItemsHelper', function() {
 
   it('does not render links when item has no links', function() {
     const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, false, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -53,7 +53,7 @@ describe('CategoryItemsHelper', function() {
 
   it('renders New and Edit buttons when logged in', function() {
     const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, true, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -64,7 +64,7 @@ describe('CategoryItemsHelper', function() {
   });
 
   it('renders pagination below the category items list with slug-aware base path', function() {
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render([], false, { page: 2, pages: 4, perPage: 8 }, 'project')
     );
 

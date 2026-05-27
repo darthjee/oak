@@ -1,6 +1,7 @@
 import CategoriesController from '../../../../assets/js/components/pages/controllers/CategoriesController.js';
 import GenericClient from '../../../../assets/js/client/GenericClient.js';
 import {
+  buildPaginatedMockClient,
   buildSpies,
   flushPromises,
   preserveGlobals,
@@ -12,13 +13,6 @@ describe('CategoriesController', function() {
   let restoreGlobals;
   let mockClient;
 
-  const buildMockClient = (overrides = {}) => ({
-    fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
-      Promise.resolve({ data: [], pagination: { page: 1, pages: 1, perPage: 10 } })
-    ),
-    ...overrides,
-  });
-
   const buildSetters = () => buildSpies(
     'setCategories',
     'setPagination',
@@ -29,7 +23,7 @@ describe('CategoriesController', function() {
 
   beforeEach(function() {
     restoreGlobals = preserveGlobals('fetch');
-    mockClient = buildMockClient();
+    mockClient = buildPaginatedMockClient();
   });
 
   afterEach(function() {
@@ -39,7 +33,7 @@ describe('CategoriesController', function() {
   it('fetches categories and login state in buildEffect', async function() {
     const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
-    mockClient = buildMockClient({
+    mockClient = buildPaginatedMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.resolve({
           data: [{ slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' }],
@@ -72,7 +66,7 @@ describe('CategoriesController', function() {
   it('sets logged to false when login returns 404', async function() {
     const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
-    mockClient = buildMockClient({
+    mockClient = buildPaginatedMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.resolve({ data: [], pagination: { page: 2, pages: 9, perPage: 12 } })
       ),
@@ -117,7 +111,7 @@ describe('CategoriesController', function() {
   it('calls setError when categories fetch fails', async function() {
     const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
-    mockClient = buildMockClient({
+    mockClient = buildPaginatedMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.reject(new Error('Request failed for /categories.json'))
       ),
@@ -210,7 +204,7 @@ describe('CategoriesController', function() {
   it('falls back to empty array when fetchIndex returns non-array data', async function() {
     const { setCategories, setPagination, setLogged, setLoading, setError } = buildSetters();
 
-    mockClient = buildMockClient({
+    mockClient = buildPaginatedMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.resolve({ data: null, pagination: { page: 1, pages: 1, perPage: 10 } })
       ),

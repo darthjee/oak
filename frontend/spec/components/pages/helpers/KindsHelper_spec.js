@@ -1,15 +1,15 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import KindsHelper from '../../../../assets/js/components/pages/helpers/KindsHelper.jsx';
+import { renderStatic } from '../../../support/factories.js';
 
 describe('KindsHelper', function() {
   it('renders loading state', function() {
-    const html = renderToStaticMarkup(KindsHelper.renderLoading());
+    const html = renderStatic(KindsHelper.renderLoading());
 
     expect(html).toContain('Loading kinds...');
   });
 
   it('renders error state', function() {
-    const html = renderToStaticMarkup(KindsHelper.renderError('network failure'));
+    const html = renderStatic(KindsHelper.renderError('network failure'));
 
     expect(html).toContain('Error: network failure');
   });
@@ -18,7 +18,7 @@ describe('KindsHelper', function() {
     const kinds = [
       { slug: 'book', name: 'Book', snap_url: 'http://example.com/book.png' },
     ];
-    const html = renderToStaticMarkup(KindsHelper.render(kinds, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(KindsHelper.render(kinds, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('Book');
     expect(html).toContain('/#/kinds/book');
@@ -27,7 +27,7 @@ describe('KindsHelper', function() {
   });
 
   it('renders empty grid when no kinds', function() {
-    const html = renderToStaticMarkup(KindsHelper.render([], { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(KindsHelper.render([], { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('container mt-4');
     expect(html).toContain('row');
@@ -39,7 +39,7 @@ describe('KindsHelper', function() {
       { slug: 'book', name: 'Book', snap_url: null },
       { slug: 'game', name: 'Game', snap_url: 'http://example.com/game.png' },
     ];
-    const html = renderToStaticMarkup(KindsHelper.render(kinds, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(KindsHelper.render(kinds, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('Book');
     expect(html).toContain('Game');
@@ -49,7 +49,7 @@ describe('KindsHelper', function() {
   });
 
   it('renders pagination below the kinds list', function() {
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       KindsHelper.render([], { page: 2, pages: 4, perPage: 8 })
     );
 

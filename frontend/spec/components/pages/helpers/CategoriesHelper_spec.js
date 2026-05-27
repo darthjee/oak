@@ -1,15 +1,15 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import CategoriesHelper from '../../../../assets/js/components/pages/helpers/CategoriesHelper.jsx';
+import { renderStatic } from '../../../support/factories.js';
 
 describe('CategoriesHelper', function() {
   it('renders loading state', function() {
-    const html = renderToStaticMarkup(CategoriesHelper.renderLoading());
+    const html = renderStatic(CategoriesHelper.renderLoading());
 
     expect(html).toContain('Loading categories...');
   });
 
   it('renders error state', function() {
-    const html = renderToStaticMarkup(CategoriesHelper.renderError('network failure'));
+    const html = renderStatic(CategoriesHelper.renderError('network failure'));
 
     expect(html).toContain('Error: network failure');
   });
@@ -18,7 +18,7 @@ describe('CategoriesHelper', function() {
     const categories = [
       { slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' },
     ];
-    const html = renderToStaticMarkup(CategoriesHelper.render(categories, false, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(CategoriesHelper.render(categories, false, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('Project');
     expect(html).toContain('/#/categories/project/items');
@@ -30,14 +30,14 @@ describe('CategoriesHelper', function() {
     const categories = [
       { slug: 'project', name: 'Project', snap_url: 'http://example.com/snap.png' },
     ];
-    const html = renderToStaticMarkup(CategoriesHelper.render(categories, true, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(CategoriesHelper.render(categories, true, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('/#/categories/new');
     expect(html).toContain('New');
   });
 
   it('renders empty grid when no categories', function() {
-    const html = renderToStaticMarkup(CategoriesHelper.render([], false, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(CategoriesHelper.render([], false, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('container mt-4');
     expect(html).toContain('row');
@@ -49,7 +49,7 @@ describe('CategoriesHelper', function() {
       { slug: 'project', name: 'Project', snap_url: null },
       { slug: 'miniatures', name: 'Miniatures', snap_url: 'http://example.com/mini.png' },
     ];
-    const html = renderToStaticMarkup(CategoriesHelper.render(categories, false, { page: 1, pages: 1, perPage: 10 }));
+    const html = renderStatic(CategoriesHelper.render(categories, false, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('Project');
     expect(html).toContain('Miniatures');
@@ -59,7 +59,7 @@ describe('CategoriesHelper', function() {
   });
 
   it('renders pagination below the categories list', function() {
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoriesHelper.render([], false, { page: 2, pages: 4, perPage: 8 })
     );
 
