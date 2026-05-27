@@ -123,7 +123,7 @@ services:
     container_name: oak_proxy
     env_file: .env
     volumes:
-      - ./proxy/static/:/var/www/html/static/
+      - ./docker_volumes/static/:/var/www/html/static/
       - ./docker_volumes/proxy_configuration:/var/www/html/configuration/
       - ./docker_volumes/proxy_cache:/var/www/html/cache/
     links:
