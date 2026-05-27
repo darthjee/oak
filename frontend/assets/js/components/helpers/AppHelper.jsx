@@ -9,7 +9,7 @@ const PAGES = {
   categories: <Categories />,
   categoryItem: <CategoryItem />,
   categoryItems: <CategoryItems />,
-  home: <p>placeholder</p>,
+  home: <Categories />,
   kinds: <Kinds />,
 };
 

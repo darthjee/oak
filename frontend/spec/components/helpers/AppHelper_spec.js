@@ -11,16 +11,16 @@ describe('AppHelper', function() {
       expect(html).toContain('Oak');
     });
 
-    it('renders the home placeholder for "home" page', function() {
+    it('renders the Categories component for "home" page', function() {
       const html = renderPage('home');
 
-      expect(html).toContain('placeholder');
+      expect(html).toContain('Loading categories...');
     });
 
-    it('does not render Categories for "home" page', function() {
+    it('does not render the home placeholder for "home" page', function() {
       const html = renderPage('home');
 
-      expect(html).not.toContain('Loading categories...');
+      expect(html).not.toContain('placeholder');
     });
 
     it('does not render CategoryItems for "home" page', function() {
