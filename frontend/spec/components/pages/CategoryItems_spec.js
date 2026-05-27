@@ -1,10 +1,6 @@
 import CategoryItems from '../../../assets/js/components/pages/CategoryItems.jsx';
-import { renderComponent } from '../../support/factories.js';
+import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
 
 describe('CategoryItems', function() {
-  it('renders loading state on first render', function() {
-    const html = renderComponent(CategoryItems);
-
-    expect(html).toContain('Loading category items...');
-  });
+  itRendersPageLoadingState(CategoryItems, 'Loading category items...');
 });
