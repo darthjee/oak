@@ -1,5 +1,5 @@
-import getHashQueryParams from '../components/helpers/hashQueryParams.js';
-import HashRouteResolver from '../components/helpers/HashRouteResolver.js';
+import getHashQueryParams from '../utils/hashQueryParams.js';
+import HashRouteResolver from '../utils/HashRouteResolver.js';
 
 /**
  * A generic HTTP client that handles query param forwarding and pagination header reading.
