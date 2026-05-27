@@ -1,18 +1,16 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryItemsHelper from '../../../../assets/js/components/pages/helpers/CategoryItemsHelper.jsx';
+import { renderStatic } from '../../../support/factories.js';
+import {
+  itRendersLoadingAndErrorStates,
+  itRendersPagination,
+} from '../../../support/shared_examples/pageHelperExamples.js';
 
 describe('CategoryItemsHelper', function() {
-  it('renders loading state', function() {
-    const html = renderToStaticMarkup(CategoryItemsHelper.renderLoading());
-
-    expect(html).toContain('Loading category items...');
-  });
-
-  it('renders error state', function() {
-    const html = renderToStaticMarkup(CategoryItemsHelper.renderError('network failure'));
-
-    expect(html).toContain('Error: network failure');
-  });
+  itRendersLoadingAndErrorStates(CategoryItemsHelper, 'Loading category items...');
+  itRendersPagination(
+    (p) => CategoryItemsHelper.render([], false, p, 'project'),
+    '/#/categories/project/items'
+  );
 
   it('renders category item cards when logged out', function() {
     const items = [
@@ -26,7 +24,7 @@ describe('CategoryItemsHelper', function() {
         ],
       },
     ];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, false, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -43,7 +41,7 @@ describe('CategoryItemsHelper', function() {
 
   it('does not render links when item has no links', function() {
     const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, false, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -53,7 +51,7 @@ describe('CategoryItemsHelper', function() {
 
   it('renders New and Edit buttons when logged in', function() {
     const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
-    const html = renderToStaticMarkup(
+    const html = renderStatic(
       CategoryItemsHelper.render(items, true, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
 
@@ -61,15 +59,5 @@ describe('CategoryItemsHelper', function() {
     expect(html).toContain('/#/categories/project/edit');
     expect(html).toContain('New');
     expect(html).toContain('Edit');
-  });
-
-  it('renders pagination below the category items list with slug-aware base path', function() {
-    const html = renderToStaticMarkup(
-      CategoryItemsHelper.render([], false, { page: 2, pages: 4, perPage: 8 }, 'project')
-    );
-
-    expect(html).toContain('/#/categories/project/items?page=1&amp;per_page=8');
-    expect(html).toContain('/#/categories/project/items?page=2&amp;per_page=8');
-    expect(html).toContain('/#/categories/project/items?page=3&amp;per_page=8');
   });
 });
