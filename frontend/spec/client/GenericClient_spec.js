@@ -89,6 +89,17 @@ describe('GenericClient', function() {
       expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=2', { headers: { Accept: 'application/json' } });
     });
 
+    it('appends only pagination query params to index URLs', async function() {
+      const headers = buildResponseHeaders({ page: '1', pages: '1', per_page: '10' });
+
+      stubJsonResponse([], { headers });
+
+      const client = new GenericClient(() => '#/categories?page=2&foo=bar&per_page=12');
+      await client.fetchIndex('/categories.json');
+
+      expect(global.fetch).toHaveBeenCalledWith('/categories.json?page=2&per_page=12', { headers: { Accept: 'application/json' } });
+    });
+
     it('does not append query string when hash has no params', async function() {
       const headers = buildResponseHeaders({ page: '1', pages: '1', per_page: '10' });
 

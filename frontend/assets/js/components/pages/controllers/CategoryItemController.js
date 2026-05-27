@@ -1,4 +1,5 @@
 import GenericClient from '../../../client/GenericClient.js';
+import BasePageController from './BasePageController.js';
 
 /**
  * Extracts category slug and item id from a category item hash route.
@@ -19,7 +20,7 @@ export function getCategoryItemParamsFromHash(hash = '') {
 /**
  * Manages category item page state by fetching item and login status from the API.
  */
-export default class CategoryItemController {
+export default class CategoryItemController extends BasePageController {
   /**
    * Creates a new CategoryItemController instance.
    *
@@ -30,6 +31,7 @@ export default class CategoryItemController {
    * @param {GenericClient|null} [client] optional client instance
    */
   constructor(setItem, setLogged, setLoading, setError, client = null) {
+    super();
     this.setItem = setItem;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
@@ -45,7 +47,7 @@ export default class CategoryItemController {
   buildEffect() {
     return () => {
       let mounted = true;
-      const safeSet = this.#buildSafeSetter(() => mounted);
+      const safeSet = this.buildSafeSetter(() => mounted);
       const { slug, id } = getCategoryItemParamsFromHash(this.client.currentHash());
 
       this.#loadData(safeSet, slug, id);
@@ -56,20 +58,10 @@ export default class CategoryItemController {
     };
   }
 
-  #buildSafeSetter(isMounted) {
-    return (setter, value) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      setter(value);
-    };
-  }
-
   #loadData(safeSet, slug, id) {
     Promise.all([
       this.#fetchItem(slug, id),
-      this.#checkLogin(),
+      this.checkLogin(),
     ])
       .then(([item, logged]) => this.#applyData(safeSet, item, logged))
       .catch((error) => this.#handleError(safeSet, error))
@@ -94,24 +86,5 @@ export default class CategoryItemController {
 
     return this.client.fetch(`/categories/${slug}/items/${id}.json`)
       .catch(() => { throw new Error('Unable to load category item.'); });
-  }
-
-  #checkLogin() {
-    return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
-    })
-      .then((response) => this.#handleLoginResponse(response));
-  }
-
-  #handleLoginResponse(response) {
-    if (response.ok) {
-      return response.json().then(Boolean);
-    }
-
-    if ([401, 403, 404].includes(response.status)) {
-      return false;
-    }
-
-    throw new Error('Unable to check login status.');
   }
 }

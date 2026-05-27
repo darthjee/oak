@@ -3,7 +3,7 @@ import CatalogList from '../../elements/CatalogList.jsx';
 import CategoryItemCard from '../../elements/CategoryItemCard.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
-import Pagination from '../../elements/Pagination.jsx';
+import PaginationHelper from './PaginationHelper.jsx';
 
 /**
  * Renders the category items page HTML for different states.
@@ -46,7 +46,7 @@ export default class CategoryItemsHelper {
         <CatalogList>
           {items.map((item) => this.#renderCard(item, slug))}
         </CatalogList>
-        {this.#renderPagination(pagination, basePath)}
+        {PaginationHelper.render(pagination, basePath)}
       </>
     );
   }
@@ -83,14 +83,4 @@ export default class CategoryItemsHelper {
     );
   }
 
-  static #renderPagination(pagination, basePath) {
-    return (
-      <Pagination
-        currentPage={pagination?.page ?? 1}
-        totalPages={pagination?.pages ?? 1}
-        perPage={pagination?.perPage ?? 10}
-        basePath={basePath}
-      />
-    );
-  }
 }

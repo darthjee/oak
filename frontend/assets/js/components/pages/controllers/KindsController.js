@@ -2,13 +2,13 @@ import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
 
 /**
- * Manages categories page state by fetching categories and login status from the API.
+ * Manages kinds page state by fetching kinds and login status from the API.
  */
-export default class CategoriesController extends BasePageController {
+export default class KindsController extends BasePageController {
   /**
-   * Creates a new CategoriesController instance.
+   * Creates a new KindsController instance.
    *
-   * @param {Function} setCategories state setter for updating the categories list
+   * @param {Function} setKinds state setter for updating the kinds list
    * @param {Function} setPagination state setter for updating the pagination info
    * @param {Function} setLogged state setter for updating the logged-in flag
    * @param {Function} setLoading state setter for updating the loading flag
@@ -16,7 +16,7 @@ export default class CategoriesController extends BasePageController {
    * @param {GenericClient|null} [client] optional client instance (defaults to new GenericClient)
    */
   constructor(
-    setCategories,
+    setKinds,
     setPagination,
     setLogged,
     setLoading,
@@ -24,7 +24,7 @@ export default class CategoriesController extends BasePageController {
     client = null
   ) {
     super();
-    this.setCategories = setCategories;
+    this.setKinds = setKinds;
     this.setPagination = setPagination;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
@@ -33,7 +33,7 @@ export default class CategoriesController extends BasePageController {
   }
 
   /**
-   * Builds the React effect that loads categories and login data on mount.
+   * Builds the React effect that loads kinds and login data on mount.
    *
    * @returns {Function} effect function that starts data loading and returns a cleanup function
    */
@@ -52,32 +52,36 @@ export default class CategoriesController extends BasePageController {
 
   #loadData(safeSet) {
     Promise.all([
-      this.#fetchCategories(),
+      this.#fetchKinds(),
       this.checkLogin(),
     ])
-      .then(([categoriesData, logged]) => this.#applyData(safeSet, categoriesData, logged))
+      .then(([kindsData, logged]) => this.#applyData(safeSet, kindsData, logged))
       .catch((error) => this.#handleError(safeSet, error))
       .finally(() => {
         safeSet(this.setLoading, false);
       });
   }
 
-  #applyData(safeSet, categoriesData, logged) {
-    safeSet(this.setCategories, categoriesData.categories);
-    safeSet(this.setPagination, categoriesData.pagination);
+  #applyData(safeSet, kindsData, logged) {
+    safeSet(this.setKinds, kindsData.kinds);
+    safeSet(this.setPagination, kindsData.pagination);
     safeSet(this.setLogged, logged);
   }
 
   #handleError(safeSet, error) {
-    safeSet(this.setError, error?.message || 'Unexpected error while loading categories.');
+    safeSet(this.setError, error?.message || 'Unexpected error while loading kinds.');
   }
 
-  #fetchCategories() {
-    return this.client.fetchIndex('/categories.json')
-      .then(({ data, pagination }) => ({
-        categories: Array.isArray(data) ? data : [],
-        pagination,
-      }))
-      .catch(() => { throw new Error('Unable to load categories.'); });
+  #fetchKinds() {
+    return this.client.fetchIndex('/kinds.json')
+      .then(({ data, pagination }) => this.#buildKindsData(data, pagination))
+      .catch(() => { throw new Error('Unable to load kinds.'); });
+  }
+
+  #buildKindsData(data, pagination) {
+    return {
+      kinds: Array.isArray(data) ? data : [],
+      pagination,
+    };
   }
 }
