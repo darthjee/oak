@@ -1,18 +1,15 @@
 import KindsHelper from '../../../../assets/js/components/pages/helpers/KindsHelper.jsx';
 import { renderStatic } from '../../../support/factories.js';
+import {
+  itRendersEmptyGrid,
+  itRendersLoadingAndErrorStates,
+  itRendersPagination,
+} from '../../../support/shared_examples/pageHelperExamples.js';
 
 describe('KindsHelper', function() {
-  it('renders loading state', function() {
-    const html = renderStatic(KindsHelper.renderLoading());
-
-    expect(html).toContain('Loading kinds...');
-  });
-
-  it('renders error state', function() {
-    const html = renderStatic(KindsHelper.renderError('network failure'));
-
-    expect(html).toContain('Error: network failure');
-  });
+  itRendersLoadingAndErrorStates(KindsHelper, 'Loading kinds...');
+  itRendersEmptyGrid(() => KindsHelper.render([], { page: 1, pages: 1, perPage: 10 }));
+  itRendersPagination((p) => KindsHelper.render([], p), '/#/kinds');
 
   it('renders kind cards without links section', function() {
     const kinds = [
@@ -24,14 +21,6 @@ describe('KindsHelper', function() {
     expect(html).toContain('/#/kinds/book');
     expect(html).toContain('http://example.com/book.png');
     expect(html).not.toContain('card-footer');
-  });
-
-  it('renders empty grid when no kinds', function() {
-    const html = renderStatic(KindsHelper.render([], { page: 1, pages: 1, perPage: 10 }));
-
-    expect(html).toContain('container mt-4');
-    expect(html).toContain('row');
-    expect(html).not.toContain('card');
   });
 
   it('renders multiple kind cards', function() {
@@ -46,15 +35,5 @@ describe('KindsHelper', function() {
     expect(html).toContain('/#/kinds/book');
     expect(html).toContain('/#/kinds/game');
     expect(html).toContain('http://example.com/game.png');
-  });
-
-  it('renders pagination below the kinds list', function() {
-    const html = renderStatic(
-      KindsHelper.render([], { page: 2, pages: 4, perPage: 8 })
-    );
-
-    expect(html).toContain('/#/kinds?page=1&amp;per_page=8');
-    expect(html).toContain('/#/kinds?page=2&amp;per_page=8');
-    expect(html).toContain('/#/kinds?page=3&amp;per_page=8');
   });
 });

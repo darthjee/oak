@@ -1,5 +1,6 @@
 import CategoryItemHelper from '../../../../assets/js/components/pages/helpers/CategoryItemHelper.jsx';
 import { renderStatic } from '../../../support/factories.js';
+import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
 
 describe('CategoryItemHelper', function() {
   const item = {
@@ -12,17 +13,7 @@ describe('CategoryItemHelper', function() {
     photos: [{ photo_url: 'http://example.com/oak-1.png', snap_url: 'http://example.com/oak-1-small.png' }],
   };
 
-  it('renders loading state', function() {
-    const html = renderStatic(CategoryItemHelper.renderLoading());
-
-    expect(html).toContain('Loading category item...');
-  });
-
-  it('renders error state', function() {
-    const html = renderStatic(CategoryItemHelper.renderError('network failure'));
-
-    expect(html).toContain('Error: network failure');
-  });
+  itRendersLoadingAndErrorStates(CategoryItemHelper, 'Loading category item...');
 
   it('renders back and edit links when logged in', function() {
     const html = renderStatic(CategoryItemHelper.render(item, true));
