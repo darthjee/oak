@@ -20,10 +20,7 @@ describe('CategoryItemsHelper', function() {
         id: 35,
         name: 'Oak',
         snap_url: 'http://example.com/oak.png',
-        links: [
-          { id: 35, text: 'Github', url: 'https://github.com/darthjee/oak' },
-          { id: 36, text: 'Docs', url: 'https://example.com/docs' },
-        ],
+        link: { id: 35, text: 'Github', url: 'https://github.com/darthjee/oak' },
       },
     ];
     const html = renderToStaticMarkup(
@@ -35,14 +32,12 @@ describe('CategoryItemsHelper', function() {
     expect(html).toContain('http://example.com/oak.png');
     expect(html).toContain('https://github.com/darthjee/oak');
     expect(html).toContain('Github');
-    expect(html).toContain('https://example.com/docs');
-    expect(html).toContain('Docs');
     expect(html).not.toContain('/#/categories/project/items/new');
     expect(html).not.toContain('/#/categories/project/edit');
   });
 
-  it('does not render links when item has no links', function() {
-    const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
+  it('does not render links when item has no link', function() {
+    const items = [{ id: 35, name: 'Oak', snap_url: null }];
     const html = renderToStaticMarkup(
       CategoryItemsHelper.render(items, false, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
@@ -52,7 +47,7 @@ describe('CategoryItemsHelper', function() {
   });
 
   it('renders New and Edit buttons when logged in', function() {
-    const items = [{ id: 35, name: 'Oak', snap_url: null, links: [] }];
+    const items = [{ id: 35, name: 'Oak', snap_url: null }];
     const html = renderToStaticMarkup(
       CategoryItemsHelper.render(items, true, { page: 1, pages: 1, perPage: 10 }, 'project')
     );
