@@ -52,7 +52,7 @@ export default class CategoryItemsHelper {
   }
 
   static #renderCard(item, slug) {
-    const { id, name, snap_url: snapUrl, links = [], link } = item;
+    const { id, name, snap_url: snapUrl, link } = item;
     const itemPath = `/#/categories/${slug}/items/${id}`;
 
     return (
@@ -61,7 +61,7 @@ export default class CategoryItemsHelper {
         href={itemPath}
         title={name}
         imageSrc={snapUrl}
-        links={links.length > 0 ? links : link ? [link] : []}
+        links={link ? [link] : []}
       />
     );
   }
