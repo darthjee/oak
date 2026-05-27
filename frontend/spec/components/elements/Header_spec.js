@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import Header from '../../../assets/js/components/elements/Header.js';
+import Header from '../../../assets/js/components/elements/Header.jsx';
 
 describe('Header', function() {
   it('renders loading state on first render', function() {

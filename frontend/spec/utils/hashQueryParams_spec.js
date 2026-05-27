@@ -1,4 +1,4 @@
-import getHashQueryParams from '../../../assets/js/components/helpers/hashQueryParams.js';
+import getHashQueryParams from '../../assets/js/utils/hashQueryParams.js';
 
 describe('getHashQueryParams', function() {
   it('returns empty params when hash has no query params', function() {

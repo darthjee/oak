@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import HeaderHelper from '../../../../assets/js/components/elements/helpers/HeaderHelper.js';
+import HeaderHelper from '../../../../assets/js/components/elements/helpers/HeaderHelper.jsx';
 import LoginModal from '../../../../assets/js/components/elements/LoginModal.jsx';
 
 const findElement = (node, matcher) => {
