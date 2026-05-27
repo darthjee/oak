@@ -1,8 +1,8 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import AppHelper from '../../../assets/js/components/helpers/AppHelper.jsx';
+import { renderStatic } from '../../support/factories.js';
 
 describe('AppHelper', function() {
-  const renderPage = (page) => renderToStaticMarkup(AppHelper.render(page));
+  const renderPage = (page) => renderStatic(AppHelper.render(page));
 
   describe('.render', function() {
     it('renders the header', function() {

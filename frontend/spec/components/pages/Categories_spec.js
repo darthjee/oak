@@ -1,11 +1,6 @@
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import Categories from '../../../assets/js/components/pages/Categories.jsx';
+import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
 
 describe('Categories', function() {
-  it('renders loading state on first render', function() {
-    const html = renderToStaticMarkup(React.createElement(Categories));
-
-    expect(html).toContain('Loading categories...');
-  });
+  itRendersPageLoadingState(Categories, 'Loading categories...');
 });

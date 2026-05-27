@@ -1,5 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryItemHelper from '../../../../assets/js/components/pages/helpers/CategoryItemHelper.jsx';
+import { renderStatic } from '../../../support/factories.js';
+import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
 
 describe('CategoryItemHelper', function() {
   const item = {
@@ -12,20 +13,10 @@ describe('CategoryItemHelper', function() {
     photos: [{ photo_url: 'http://example.com/oak-1.png', snap_url: 'http://example.com/oak-1-small.png' }],
   };
 
-  it('renders loading state', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.renderLoading());
-
-    expect(html).toContain('Loading category item...');
-  });
-
-  it('renders error state', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.renderError('network failure'));
-
-    expect(html).toContain('Error: network failure');
-  });
+  itRendersLoadingAndErrorStates(CategoryItemHelper, 'Loading category item...');
 
   it('renders back and edit links when logged in', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render(item, true));
+    const html = renderStatic(CategoryItemHelper.render(item, true));
 
     expect(html).toContain('/#/categories/project/items');
     expect(html).toContain('/#/categories/project/items/35/edit');
@@ -34,14 +25,14 @@ describe('CategoryItemHelper', function() {
   });
 
   it('hides edit link when not logged in', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render(item, false));
+    const html = renderStatic(CategoryItemHelper.render(item, false));
 
     expect(html).toContain('/#/categories/project/items');
     expect(html).not.toContain('/#/categories/project/items/35/edit');
   });
 
   it('renders info card fields', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render(item, false));
+    const html = renderStatic(CategoryItemHelper.render(item, false));
 
     expect(html).toContain('Oak');
     expect(html).toContain('Category:');
@@ -52,7 +43,7 @@ describe('CategoryItemHelper', function() {
   });
 
   it('renders links section when links are present', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render(item, false));
+    const html = renderStatic(CategoryItemHelper.render(item, false));
 
     expect(html).toContain('Links');
     expect(html).toContain('https://github.com/darthjee/oak');
@@ -61,14 +52,14 @@ describe('CategoryItemHelper', function() {
   });
 
   it('does not render links section when links are empty', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render({ ...item, links: [] }, false));
+    const html = renderStatic(CategoryItemHelper.render({ ...item, links: [] }, false));
 
     expect(html).not.toContain('Links');
     expect(html).not.toContain('target="_blank"');
   });
 
   it('renders carousel when photos are present', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render(item, false));
+    const html = renderStatic(CategoryItemHelper.render(item, false));
 
     expect(html).toContain('Photos');
     expect(html).toContain('http://example.com/oak-1.png');
@@ -76,7 +67,7 @@ describe('CategoryItemHelper', function() {
   });
 
   it('does not render carousel when photos are empty', function() {
-    const html = renderToStaticMarkup(CategoryItemHelper.render({ ...item, photos: [] }, false));
+    const html = renderStatic(CategoryItemHelper.render({ ...item, photos: [] }, false));
 
     expect(html).not.toContain('Photos');
     expect(html).not.toContain('carousel');

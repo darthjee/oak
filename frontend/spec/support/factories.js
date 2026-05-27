@@ -1,3 +1,18 @@
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+export const renderStatic = (jsx) => renderToStaticMarkup(jsx);
+
+export const renderComponent = (Component, props = {}) =>
+  renderToStaticMarkup(React.createElement(Component, props));
+
+export const buildPaginatedMockClient = (overrides = {}) => ({
+  fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
+    Promise.resolve({ data: [], pagination: { page: 1, pages: 1, perPage: 10 } })
+  ),
+  ...overrides,
+});
+
 export const flushPromises = async () => {
   await new Promise((resolve) => {
     setTimeout(resolve, 0);
