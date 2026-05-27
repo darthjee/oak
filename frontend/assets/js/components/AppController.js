@@ -1,5 +1,5 @@
 import AppHelper from './helpers/AppHelper.jsx';
-import HashRouteResolver from './helpers/HashRouteResolver.js';
+import HashRouteResolver from '../utils/HashRouteResolver.js';
 
 /**
  * Controls page routing based on the URL hash.

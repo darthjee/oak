@@ -54,13 +54,18 @@ frontend/
       styles.css        # custom CSS
       main.scss         # custom SCSS
     js/
+      client/           # HTTP API clients
       components/
+        App.jsx           # app shell (exception: lives at components root)
+        AppController.js  # app shell controller (exception: lives at components root)
         elements/       # reusable UI building blocks
-          controllers/  # logic for elements
-          helpers/      # JSX factories for elements
+          controllers/  # logic for elements (.js)
+          helpers/      # JSX factories for elements (.jsx)
+        helpers/        # JSX helpers shared by pages and elements (.jsx)
         pages/          # top-level route components
-          controllers/  # logic for pages
-          helpers/      # JSX factories for pages
+          controllers/  # logic for pages (.js)
+          helpers/      # JSX factories for pages (.jsx)
+      utils/            # non-JSX utility classes and functions (.js)
       main.jsx          # entry point
   spec/                 # Jasmine tests (mirror src structure)
   index.html
@@ -103,7 +108,7 @@ function Categories() {
 }
 ```
 
-### Controller (`.jsx` in `controllers/`)
+### Controller (`.js` in `controllers/`)
 
 A plain JS class. Responsible for:
 
@@ -114,8 +119,8 @@ A plain JS class. Responsible for:
 
 No JSX. Receives state setters in the constructor.
 
-```jsx
-// pages/controllers/CategoriesController.jsx
+```js
+// pages/controllers/CategoriesController.js
 class CategoriesController {
   constructor(setCategories, setError, setLoading) { ... }
 
@@ -162,14 +167,14 @@ class CategoriesHelper {
 ## Adding a New Page
 
 1. Create `components/pages/MyPage.jsx` — state + wiring only.
-2. Create `components/pages/controllers/MyPageController.jsx` — all logic.
+2. Create `components/pages/controllers/MyPageController.js` — all logic.
 3. Create `components/pages/helpers/MyPageHelper.jsx` — all JSX factories.
 4. Register the route in `App.jsx`.
 
 ## Adding a New Element
 
 1. Create `components/elements/MyElement.jsx`.
-2. If it has logic: add `components/elements/controllers/MyElementController.jsx`.
+2. If it has logic: add `components/elements/controllers/MyElementController.js`.
 3. If it has complex rendering: add `components/elements/helpers/MyElementHelper.jsx`.
 
 ---

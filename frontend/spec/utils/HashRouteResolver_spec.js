@@ -1,4 +1,4 @@
-import HashRouteResolver from '../../../assets/js/components/helpers/HashRouteResolver.js';
+import HashRouteResolver from '../../assets/js/utils/HashRouteResolver.js';
 
 describe('HashRouteResolver', function() {
   describe('#getPage', function() {
