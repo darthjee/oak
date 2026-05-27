@@ -16,6 +16,7 @@ if (getenv('FRONTEND_DEV_MODE') === 'true') {
             ['method' => 'GET', 'uri' => '/', 'type' => 'exact'],
             ['method' => 'GET', 'uri' => '/assets/js/', 'type' => 'begins_with'],
             ['method' => 'GET', 'uri' => '/assets/css/', 'type' => 'begins_with'],
+            ['method' => 'GET', 'uri' => '/assets/images/', 'type' => 'begins_with'],
             ['method' => 'GET', 'uri' => '/@vite/', 'type' => 'begins_with'],
             ['method' => 'GET', 'uri' => '/node_modules/', 'type' => 'begins_with'],
             ['method' => 'GET', 'uri' => '/@react-refresh', 'type' => 'exact'],
