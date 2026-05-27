@@ -122,7 +122,7 @@ describe('AppController', function() {
       const setPage = jasmine.createSpy('setPage');
       const setHash = jasmine.createSpy('setHash');
       let capturedHandler;
-      let currentHash = '#/categories?page=2&per_page=10';
+      const currentHash = '#/categories?page=2&per_page=10';
       const mockTarget = {
         addEventListener: (event, handler) => { capturedHandler = handler; },
         removeEventListener: jasmine.createSpy('removeEventListener'),
