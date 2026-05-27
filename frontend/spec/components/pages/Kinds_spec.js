@@ -1,11 +1,6 @@
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import Kinds from '../../../assets/js/components/pages/Kinds.jsx';
+import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
 
 describe('Kinds', function() {
-  it('renders loading state on first render', function() {
-    const html = renderToStaticMarkup(React.createElement(Kinds));
-
-    expect(html).toContain('Loading kinds...');
-  });
+  itRendersPageLoadingState(Kinds, 'Loading kinds...');
 });
