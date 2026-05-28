@@ -78,15 +78,9 @@ export default class CategoryItemNewController extends BasePageController {
     this.setError(null);
 
     return this.client.post(`/categories/${slug}/items.json`, this.#buildPayload(item))
-      .then(() => {
-        this.locationTarget.hash = `#/categories/${slug}/items`;
-      })
-      .catch(() => {
-        this.setError('Unable to save category item.');
-      })
-      .finally(() => {
-        this.setSaving(false);
-      });
+      .then(() => this.#onSaveSuccess(slug))
+      .catch(() => this.#onSaveError())
+      .finally(() => this.#finalizeSave());
   }
 
   /**
@@ -154,12 +148,8 @@ export default class CategoryItemNewController extends BasePageController {
       this.#fetchKinds(slug),
     ])
       .then(([item, kinds]) => this.#applyLoadedData(safeSet, item, kinds))
-      .catch((error) => {
-        safeSet(this.setError, error?.message || 'Unable to load category item new form.');
-      })
-      .finally(() => {
-        safeSet(this.setLoading, false);
-      });
+      .catch((error) => this.#onLoadError(safeSet, error))
+      .finally(() => this.#finalizeLoad(safeSet));
   }
 
   #normalizeItem(item) {
@@ -185,6 +175,26 @@ export default class CategoryItemNewController extends BasePageController {
   #applyLoadedData(safeSet, item, kinds) {
     safeSet(this.setItem, this.#normalizeItem(item));
     safeSet(this.setKinds, kinds);
+  }
+
+  #onSaveSuccess(slug) {
+    this.locationTarget.hash = `#/categories/${slug}/items`;
+  }
+
+  #onSaveError() {
+    this.setError('Unable to save category item.');
+  }
+
+  #finalizeSave() {
+    this.setSaving(false);
+  }
+
+  #onLoadError(safeSet, error) {
+    safeSet(this.setError, error?.message || 'Unable to load category item new form.');
+  }
+
+  #finalizeLoad(safeSet) {
+    safeSet(this.setLoading, false);
   }
 
   #buildLinkPayload(links) {
