@@ -1,9 +1,28 @@
+import Router from './Router.js';
+
 /**
  * Resolves routing information from the current hash URL.
  */
 export default class HashRouteResolver {
   /** @type {Function} */
   #hashProvider;
+
+  /** @type {Router} */
+  #router;
+
+  /**
+   * Builds the Router instance with all known application routes registered.
+   *
+   * @returns {Router} configured router
+   */
+  static #buildRouter() {
+    const router = new Router();
+    router.register('/categories/:slug/items/:id', 'categoryItem');
+    router.register('/categories/:slug/items', 'categoryItems');
+    router.register('/categories', 'categories');
+    router.register('/kinds', 'kinds');
+    return router;
+  }
 
   /**
    * Creates a new resolver instance.
@@ -12,6 +31,7 @@ export default class HashRouteResolver {
    */
   constructor(hashProvider = () => (typeof window === 'undefined' ? '' : window.location.hash)) {
     this.#hashProvider = hashProvider;
+    this.#router = HashRouteResolver.#buildRouter();
   }
 
   /**
@@ -26,28 +46,16 @@ export default class HashRouteResolver {
   /**
    * Resolves the current page identifier from the hash route.
    *
+   * Query parameters are stripped before matching so that hashes like
+   * `#/categories?page=2` correctly resolve to `'categories'`.
+   *
    * @returns {string} page identifier
    */
   getPage() {
     const hash = this.currentHash();
-
-    if (/^#\/categories\/[^/]+\/items\/[^/]+\/?(\?.*)?$/.test(hash)) {
-      return 'categoryItem';
-    }
-
-    if (/^#\/categories\/[^/]+\/items\/?(\?.*)?$/.test(hash)) {
-      return 'categoryItems';
-    }
-
-    if (/^#\/categories\/?(\?.*)?$/.test(hash)) {
-      return 'categories';
-    }
-
-    if (/^#\/kinds\/?(\?.*)?$/.test(hash)) {
-      return 'kinds';
-    }
-
-    return 'home';
+    const withoutHash = hash.startsWith('#') ? hash.slice(1) : hash;
+    const route = withoutHash.split('?')[0];
+    return this.#router.resolve(route);
   }
 
   /**
