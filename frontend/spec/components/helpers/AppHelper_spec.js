@@ -59,6 +59,12 @@ describe('AppHelper', function() {
       expect(html).toContain('Loading category item edit...');
     });
 
+    it('renders the CategoryItemNew component for "categoryItemNew" page', function() {
+      const html = renderPage('categoryItemNew');
+
+      expect(html).toContain('Loading category item edit...');
+    });
+
     it('renders the Kinds component for "kinds" page', function() {
       const html = renderPage('kinds');
 

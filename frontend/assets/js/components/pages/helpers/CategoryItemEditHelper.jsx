@@ -40,6 +40,8 @@ export default class CategoryItemEditHelper {
    * @param {Function} onRemoveLink callback(index)
    * @param {Function} onAddLink callback()
    * @param {Function} onSave callback()
+   * @param {string|null} [cancelHref] optional href for the cancel/back button;
+   *   defaults to the item show page URL derived from item data
    * @returns {JSX.Element} category item edit content
    */
   static render(
@@ -50,11 +52,12 @@ export default class CategoryItemEditHelper {
     onLinkChange,
     onRemoveLink,
     onAddLink,
-    onSave
+    onSave,
+    cancelHref = null
   ) {
     return (
       <div className='container mt-4'>
-        {this.#renderActions(item, saving, onSave)}
+        {this.#renderActions(item, saving, onSave, cancelHref)}
         {this.#renderInfoCard(item, kinds, onFieldChange)}
 
         <CategoryItemLinksEditor
@@ -67,12 +70,13 @@ export default class CategoryItemEditHelper {
     );
   }
 
-  static #renderActions(item, saving, onSave) {
+  static #renderActions(item, saving, onSave, cancelHref = null) {
     const slug = item.category?.slug || '';
+    const href = cancelHref ?? `/#/categories/${slug}/items/${item.id}`;
 
     return (
       <div className='mb-3'>
-        <a className='btn btn-outline-secondary me-2' href={`/#/categories/${slug}/items/${item.id}`}>
+        <a className='btn btn-outline-secondary me-2' href={href}>
           Back
         </a>
         <button className='btn btn-success' disabled={saving} onClick={onSave} type='button'>

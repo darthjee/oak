@@ -131,6 +131,36 @@ describe('GenericClient', function() {
     });
   });
 
+  describe('#post', function() {
+    it('sends post request with json payload and returns parsed json', async function() {
+      stubJsonResponse({ id: 36, name: 'New Item' });
+
+      const client = new GenericClient(() => '');
+      const payload = { item: { name: 'New Item' } };
+      const result = await client.post('/categories/project/items.json', payload);
+
+      expect(result).toEqual({ id: 36, name: 'New Item' });
+      expect(global.fetch).toHaveBeenCalledWith('/categories/project/items.json', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    });
+
+    it('throws on non-ok response', async function() {
+      stubFetchResponse({ ok: false, status: 422 });
+
+      const client = new GenericClient(() => '');
+
+      await expectAsync(
+        client.post('/categories/project/items.json', { item: { name: '' } })
+      ).toBeRejectedWithError('Request failed for /categories/project/items.json');
+    });
+  });
+
   describe('#patch', function() {
     it('sends patch request with json payload and returns parsed json', async function() {
       stubJsonResponse({ id: 35, name: 'Oak Updated' });
