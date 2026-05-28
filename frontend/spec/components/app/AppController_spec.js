@@ -79,6 +79,13 @@ describe('AppController', function() {
       expect(element).not.toBeNull();
       expect(typeof element).toBe('object');
     });
+
+    it('forwards the current hash to AppHelper', function() {
+      const controller = new AppController(null, null, () => '');
+      const element = controller.renderPage('home', '#/categories?page=2&per_page=10');
+
+      expect(element.props.children[1].key).toBe('#/categories?page=2&per_page=10');
+    });
   });
 
   describe('#buildEffect', function() {
@@ -109,6 +116,23 @@ describe('AppController', function() {
       capturedHandler();
 
       expect(setPage).toHaveBeenCalledWith('categories');
+    });
+
+    it('calls setHash with the current hash when hash changes', function() {
+      const setPage = jasmine.createSpy('setPage');
+      const setHash = jasmine.createSpy('setHash');
+      let capturedHandler;
+      const currentHash = '#/categories?page=2&per_page=10';
+      const mockTarget = {
+        addEventListener: (event, handler) => { capturedHandler = handler; },
+        removeEventListener: jasmine.createSpy('removeEventListener'),
+      };
+      const controller = new AppController(setPage, mockTarget, () => currentHash, setHash);
+
+      controller.buildEffect()();
+      capturedHandler();
+
+      expect(setHash).toHaveBeenCalledWith('#/categories?page=2&per_page=10');
     });
   });
 });

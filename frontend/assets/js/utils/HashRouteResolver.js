@@ -39,11 +39,11 @@ export default class HashRouteResolver {
       return 'categoryItems';
     }
 
-    if (hash === '#/categories' || hash === '#/categories/') {
+    if (/^#\/categories\/?(\?.*)?$/.test(hash)) {
       return 'categories';
     }
 
-    if (hash === '#/kinds' || hash === '#/kinds/') {
+    if (/^#\/kinds\/?(\?.*)?$/.test(hash)) {
       return 'kinds';
     }
 

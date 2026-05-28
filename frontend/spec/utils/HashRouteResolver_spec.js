@@ -20,8 +20,20 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).toBe('categories');
     });
 
+    it('returns "categories" for categories routes with query params', function() {
+      const resolver = new HashRouteResolver(() => '#/categories?page=2&per_page=10');
+
+      expect(resolver.getPage()).toBe('categories');
+    });
+
     it('returns "kinds" for kinds routes', function() {
       const resolver = new HashRouteResolver(() => '#/kinds/');
+
+      expect(resolver.getPage()).toBe('kinds');
+    });
+
+    it('returns "kinds" for kinds routes with query params', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds?page=2&per_page=10');
 
       expect(resolver.getPage()).toBe('kinds');
     });

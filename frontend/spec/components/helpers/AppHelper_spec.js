@@ -2,7 +2,7 @@ import AppHelper from '../../../assets/js/components/helpers/AppHelper.jsx';
 import { renderStatic } from '../../support/factories.js';
 
 describe('AppHelper', function() {
-  const renderPage = (page) => renderStatic(AppHelper.render(page));
+  const renderPage = (page, hash) => renderStatic(AppHelper.render(page, hash));
 
   describe('.render', function() {
     it('renders the header', function() {
@@ -57,6 +57,12 @@ describe('AppHelper', function() {
       const html = renderPage('kinds');
 
       expect(html).toContain('Loading kinds...');
+    });
+
+    it('uses the provided hash as the page fragment key', function() {
+      const element = AppHelper.render('home', '#/categories?page=2&per_page=10');
+
+      expect(element.props.children[1].key).toBe('#/categories?page=2&per_page=10');
     });
   });
 });

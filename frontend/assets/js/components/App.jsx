@@ -8,8 +8,12 @@ import AppController from './AppController.js';
  */
 export default function App() {
   const [page, setPage] = useState(() => new AppController(null).getPage());
+  const [hash, setHash] = useState(() => (typeof window === 'undefined' ? '' : window.location.hash));
 
-  const controller = useMemo(() => new AppController(setPage), []);
+  const controller = useMemo(
+    () => new AppController(setPage, window, () => window.location.hash, setHash),
+    []
+  );
 
   useEffect(() => {
     const effect = controller.buildEffect();
@@ -17,5 +21,5 @@ export default function App() {
     return effect();
   }, [controller]);
 
-  return controller.renderPage(page);
+  return controller.renderPage(page, hash);
 }

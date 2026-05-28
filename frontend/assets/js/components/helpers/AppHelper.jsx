@@ -21,13 +21,16 @@ export default class AppHelper {
    * Renders the full page layout, including the header and the requested page content.
    *
    * @param {string} page page identifier, e.g. `'categories'` or `'home'`
+   * @param {string} [hash=''] current location hash
    * @returns {JSX.Element} application layout with header and page content
    */
-  static render(page) {
+  static render(page, hash = '') {
     return (
       <>
         <Header />
-        {PAGES[page]}
+        <React.Fragment key={hash}>
+          {PAGES[page]}
+        </React.Fragment>
       </>
     );
   }
