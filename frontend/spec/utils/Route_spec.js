@@ -46,4 +46,18 @@ describe('Route', function() {
       expect(route.page).toBe('categories');
     });
   });
+
+  describe('#params', function() {
+    it('extracts params from a matching route', function() {
+      const route = new Route('/categories/:slug/items/:id', 'categoryItem');
+
+      expect(route.params('/categories/project/items/42')).toEqual({ slug: 'project', id: '42' });
+    });
+
+    it('returns empty object when route does not match', function() {
+      const route = new Route('/categories/:slug/items/:id', 'categoryItem');
+
+      expect(route.params('/categories/project/items')).toEqual({});
+    });
+  });
 });

@@ -47,6 +47,18 @@ export default class Router {
   }
 
   /**
+   * Extracts route params for a path pattern.
+   *
+   * @param {string} path route path pattern (e.g. '/categories/:slug/items/:id')
+   * @param {string} route route path or hash to parse
+   * @returns {Object<string, string>} extracted route params or empty object when unmatched
+   */
+  static extractParams(path, route = '') {
+    const normalizedRoute = Router.#normalizeRoute(route);
+    return new Route(path, 'tmp').params(normalizedRoute);
+  }
+
+  /**
    * Resets the class-level registry. Useful for testing.
    */
   static reset() {
@@ -73,5 +85,15 @@ export default class Router {
     const match = this.#routes.find((r) => r.matches(route));
     return match ? match.page : 'home';
   }
-}
 
+  /**
+   * Normalizes a hash/route string by dropping query params and optional hash prefix.
+   *
+   * @param {string} route route string
+   * @returns {string} normalized route path
+   */
+  static #normalizeRoute(route = '') {
+    const path = String(route).split('?')[0];
+    return path.startsWith('#') ? path.slice(1) : path;
+  }
+}

@@ -130,4 +130,34 @@ describe('GenericClient', function() {
       await expectAsync(client.fetchIndex('/categories.json')).toBeRejectedWithError('Request failed for /categories.json');
     });
   });
+
+  describe('#patch', function() {
+    it('sends patch request with json payload and returns parsed json', async function() {
+      stubJsonResponse({ id: 35, name: 'Oak Updated' });
+
+      const client = new GenericClient(() => '');
+      const payload = { item: { name: 'Oak Updated' } };
+      const result = await client.patch('/categories/project/items/35.json', payload);
+
+      expect(result).toEqual({ id: 35, name: 'Oak Updated' });
+      expect(global.fetch).toHaveBeenCalledWith('/categories/project/items/35.json', {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    });
+
+    it('throws on non-ok response', async function() {
+      stubFetchResponse({ ok: false, status: 422 });
+
+      const client = new GenericClient(() => '');
+
+      await expectAsync(
+        client.patch('/categories/project/items/35.json', { item: { name: '' } })
+      ).toBeRejectedWithError('Request failed for /categories/project/items/35.json');
+    });
+  });
 });

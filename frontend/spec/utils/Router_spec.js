@@ -93,5 +93,18 @@ describe('Router', function() {
         expect(Router.resolve('/kinds')).toBe('kinds');
       });
     });
+
+    describe('.extractParams', function() {
+      it('extracts params from a hash route', function() {
+        expect(Router.extractParams('/categories/:slug/items/:id', '#/categories/project/items/42?page=2')).toEqual({
+          slug: 'project',
+          id: '42',
+        });
+      });
+
+      it('returns empty object when route does not match', function() {
+        expect(Router.extractParams('/categories/:slug/items/:id', '#/categories/project/items')).toEqual({});
+      });
+    });
   });
 });

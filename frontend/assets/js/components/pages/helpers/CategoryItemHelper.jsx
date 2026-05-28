@@ -1,4 +1,5 @@
 import React from 'react';
+import CategoryItemInfoCard from '../../elements/CategoryItemInfoCard.jsx';
 import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LabelValueParagraph from '../../elements/LabelValueParagraph.jsx';
@@ -69,14 +70,11 @@ export default class CategoryItemHelper {
 
   static #renderInfo(item) {
     return (
-      <div className='card shadow-sm mb-4'>
-        <div className='card-header'>{item.name}</div>
-        <div className='card-body'>
-          <LabelValueParagraph label='Category' value={item.category?.name} />
-          <LabelValueParagraph label='Kind' value={item.kind?.name} />
-          <p className='mb-0'>{item.description}</p>
-        </div>
-      </div>
+      <CategoryItemInfoCard name={item.name}>
+        <LabelValueParagraph label='Category' value={item.category?.name} />
+        <LabelValueParagraph label='Kind' value={item.kind?.name} />
+        <p className='mb-0'>{item.description}</p>
+      </CategoryItemInfoCard>
     );
   }
 
