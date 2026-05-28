@@ -1,5 +1,6 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
+import Router from '../../../utils/Router.js';
 
 /**
  * Extracts the category slug from a category items hash route.
@@ -8,10 +9,7 @@ import BasePageController from './BasePageController.js';
  * @returns {string} category slug or an empty string when it cannot be resolved
  */
 export function getCategorySlugFromHash(hash = '') {
-  const path = hash.split('?')[0];
-  const match = path.match(/^#\/categories\/([^/]+)\/items\/?$/);
-
-  return match?.[1] || '';
+  return Router.extractParams('/categories/:slug/items', hash).slug || '';
 }
 
 /**

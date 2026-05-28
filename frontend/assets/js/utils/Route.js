@@ -6,6 +6,9 @@ export default class Route {
   /** @type {RegExp} */
   #regex;
 
+  /** @type {Array<string>} */
+  #paramNames;
+
   /** @type {string} */
   #page;
 
@@ -19,7 +22,11 @@ export default class Route {
    * @param {string} page page identifier to associate with this route
    */
   constructor(path, page) {
-    const pattern = path.replace(/:([^/]+)/g, '[^/]+');
+    this.#paramNames = [];
+    const pattern = path.replace(/:([^/]+)/g, (_, name) => {
+      this.#paramNames.push(name);
+      return '([^/]+)';
+    });
     this.#regex = new RegExp(`^${pattern}/?$`);
     this.#page = page;
   }
@@ -32,6 +39,25 @@ export default class Route {
    */
   matches(route) {
     return this.#regex.test(route);
+  }
+
+  /**
+   * Extracts params from a route path.
+   *
+   * @param {string} route route path to parse (without query string)
+   * @returns {Object<string, string>} extracted params or empty object when unmatched
+   */
+  params(route) {
+    const match = route.match(this.#regex);
+
+    if (!match) {
+      return {};
+    }
+
+    return this.#paramNames.reduce((acc, name, index) => {
+      acc[name] = match[index + 1] || '';
+      return acc;
+    }, {});
   }
 
   /**
