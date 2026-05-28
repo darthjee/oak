@@ -1,3 +1,5 @@
+import Route from './Route.js';
+
 /**
  * Manages route registration and resolution.
  *
@@ -9,7 +11,7 @@ export default class Router {
   /** @type {Router|null} */
   static #registry = null;
 
-  /** @type {Array<{regex: RegExp, page: string}>} */
+  /** @type {Array<Route>} */
   #routes = [];
 
   /**
@@ -58,9 +60,7 @@ export default class Router {
    * @param {string} page page identifier to associate with this route
    */
   register(path, page) {
-    const pattern = path.replace(/:([^/]+)/g, '[^/]+');
-    const regex = new RegExp(`^${pattern}/?$`);
-    this.#routes.push({ regex, page });
+    this.#routes.push(new Route(path, page));
   }
 
   /**
@@ -70,11 +70,8 @@ export default class Router {
    * @returns {string} page identifier, or 'home' if no match is found
    */
   resolve(route) {
-    for (const { regex, page } of this.#routes) {
-      if (regex.test(route)) {
-        return page;
-      }
-    }
-    return 'home';
+    const match = this.#routes.find((r) => r.matches(route));
+    return match ? match.page : 'home';
   }
 }
+
