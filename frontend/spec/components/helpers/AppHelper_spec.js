@@ -2,9 +2,9 @@ import AppHelper from '../../../assets/js/components/helpers/AppHelper.jsx';
 import { renderStatic } from '../../support/factories.js';
 
 describe('AppHelper', function() {
-  const renderPage = (page, hash) => renderStatic(AppHelper.render(page, hash));
+  const renderPage = (page, hash) => renderStatic(AppHelper({ page, hash }));
 
-  describe('.render', function() {
+  describe('component', function() {
     it('renders the header', function() {
       const html = renderPage('home');
 
@@ -66,7 +66,7 @@ describe('AppHelper', function() {
     });
 
     it('uses the provided hash as the page fragment key', function() {
-      const element = AppHelper.render('home', '#/categories?page=2&per_page=10');
+      const element = AppHelper({ page: 'home', hash: '#/categories?page=2&per_page=10' });
 
       expect(element.props.children[1].key).toBe('#/categories?page=2&per_page=10');
     });

@@ -46,7 +46,7 @@ export default class CategoryItemsHelper {
         <CatalogList>
           {items.map((item) => this.#renderCard(item, slug))}
         </CatalogList>
-        {PaginationHelper.render(pagination, basePath)}
+        <PaginationHelper pagination={pagination} basePath={basePath} />
       </>
     );
   }

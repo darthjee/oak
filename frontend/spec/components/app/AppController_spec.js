@@ -1,4 +1,5 @@
 import AppController from '../../../assets/js/components/AppController.js';
+import AppHelper from '../../../assets/js/components/helpers/AppHelper.jsx';
 
 describe('AppController', function() {
   describe('#getPage', function() {
@@ -72,19 +73,21 @@ describe('AppController', function() {
   });
 
   describe('#renderPage', function() {
-    it('delegates to AppHelper and returns a React element', function() {
+    it('returns the AppHelper component element', function() {
       const controller = new AppController(null, null, () => '');
       const element = controller.renderPage('home');
 
       expect(element).not.toBeNull();
       expect(typeof element).toBe('object');
+      expect(element.type).toBe(AppHelper);
     });
 
-    it('forwards the current hash to AppHelper', function() {
+    it('forwards page and current hash to AppHelper props', function() {
       const controller = new AppController(null, null, () => '');
       const element = controller.renderPage('home', '#/categories?page=2&per_page=10');
 
-      expect(element.props.children[1].key).toBe('#/categories?page=2&per_page=10');
+      expect(element.props.page).toBe('home');
+      expect(element.props.hash).toBe('#/categories?page=2&per_page=10');
     });
   });
 

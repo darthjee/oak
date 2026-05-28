@@ -1,3 +1,4 @@
+import React from 'react';
 import AppHelper from './helpers/AppHelper.jsx';
 import HashRouteResolver from '../utils/HashRouteResolver.js';
 
@@ -37,7 +38,7 @@ export default class AppController {
    * @returns {JSX.Element} rendered page element
    */
   renderPage(page, hash = '') {
-    return AppHelper.render(page, hash);
+    return React.createElement(AppHelper, { page, hash });
   }
 
   /**

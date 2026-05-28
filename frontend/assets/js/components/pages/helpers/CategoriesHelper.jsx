@@ -43,7 +43,7 @@ export default class CategoriesHelper {
         <CatalogList>
           {categories.map((category) => this.#renderCard(category))}
         </CatalogList>
-        {PaginationHelper.render(pagination, '/#/categories')}
+        <PaginationHelper pagination={pagination} basePath='/#/categories' />
       </>
     );
   }

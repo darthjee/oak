@@ -16,24 +16,20 @@ const PAGES = {
 };
 
 /**
- * Renders the top-level application layout for a given page identifier.
+ * Top-level application layout for a given page identifier.
+ *
+ * @param {Object} props component props
+ * @param {string} props.page page identifier, e.g. `'categories'` or `'home'`
+ * @param {string} [props.hash=''] current location hash
+ * @returns {JSX.Element} application layout with header and page content
  */
-export default class AppHelper {
-  /**
-   * Renders the full page layout, including the header and the requested page content.
-   *
-   * @param {string} page page identifier, e.g. `'categories'` or `'home'`
-   * @param {string} [hash=''] current location hash
-   * @returns {JSX.Element} application layout with header and page content
-   */
-  static render(page, hash = '') {
-    return (
-      <>
-        <Header />
-        <React.Fragment key={hash}>
-          {PAGES[page]}
-        </React.Fragment>
-      </>
-    );
-  }
+export default function AppHelper({ page, hash = '' }) {
+  return (
+    <>
+      <Header />
+      <React.Fragment key={hash}>
+        {PAGES[page]}
+      </React.Fragment>
+    </>
+  );
 }

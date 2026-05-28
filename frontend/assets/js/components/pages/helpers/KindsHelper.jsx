@@ -41,7 +41,7 @@ export default class KindsHelper {
         <CatalogList>
           {kinds.map((kind) => this.#renderCard(kind))}
         </CatalogList>
-        {PaginationHelper.render(pagination, '/#/kinds')}
+        <PaginationHelper pagination={pagination} basePath='/#/kinds' />
       </>
     );
   }
