@@ -1,5 +1,6 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
+import Router from '../../../utils/Router.js';
 
 /**
  * Extracts category slug and item id from a category item edit hash route.
@@ -8,12 +9,10 @@ import BasePageController from './BasePageController.js';
  * @returns {{slug: string, id: string}} route params or empty values when unresolved
  */
 export function getCategoryItemEditParamsFromHash(hash = '') {
-  const path = hash.split('?')[0];
-  const match = path.match(/^#\/categories\/([^/]+)\/items\/([^/]+)\/edit\/?$/);
-
   return {
-    slug: match?.[1] || '',
-    id: match?.[2] || '',
+    slug: '',
+    id: '',
+    ...Router.extractParams('/categories/:slug/items/:id/edit', hash),
   };
 }
 
