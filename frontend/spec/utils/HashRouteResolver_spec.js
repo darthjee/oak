@@ -34,6 +34,12 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).toBe('categoryItemEdit');
     });
 
+    it('returns "categoryItemNew" for category item new routes', function() {
+      const resolver = new HashRouteResolver(() => '#/categories/project/items/new');
+
+      expect(resolver.getPage()).toBe('categoryItemNew');
+    });
+
     it('returns "categoryItem" for category item routes', function() {
       const resolver = new HashRouteResolver(() => '#/categories/project/items/35');
 

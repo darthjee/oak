@@ -55,6 +55,25 @@ export default class GenericClient {
   }
 
   /**
+   * Sends a POST request with JSON payload and returns the parsed JSON body.
+   *
+   * @param {string} path resource path
+   * @param {Object} body JSON payload body
+   * @returns {Promise<*>} parsed JSON response body
+   * @throws {Error} if the response is not ok
+   */
+  async post(path, body) {
+    return this.#request(path, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
    * Sends a PATCH request with JSON payload and returns the parsed JSON body.
    *
    * @param {string} path resource path
