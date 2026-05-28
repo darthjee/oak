@@ -1,6 +1,20 @@
 import HashRouteResolver from '../../assets/js/utils/HashRouteResolver.js';
 
 describe('HashRouteResolver', function() {
+  describe('#currentHash', function() {
+    it('uses the default hash provider when none is provided', function() {
+      const originalWindow = global.window;
+      global.window = { location: { hash: '#/kinds?page=2' } };
+
+      try {
+        const resolver = new HashRouteResolver();
+        expect(resolver.currentHash()).toBe('#/kinds?page=2');
+      } finally {
+        global.window = originalWindow;
+      }
+    });
+  });
+
   describe('#getPage', function() {
     it('returns "categoryItem" for category item routes', function() {
       const resolver = new HashRouteResolver(() => '#/categories/project/items/35');
@@ -42,6 +56,12 @@ describe('HashRouteResolver', function() {
       const resolver = new HashRouteResolver(() => '#/other');
 
       expect(resolver.getPage()).toBe('home');
+    });
+
+    it('resolves routes even when hash prefix is missing', function() {
+      const resolver = new HashRouteResolver(() => '/categories');
+
+      expect(resolver.getPage()).toBe('categories');
     });
   });
 
