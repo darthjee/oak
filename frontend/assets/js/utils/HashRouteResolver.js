@@ -31,6 +31,10 @@ export default class HashRouteResolver {
   getPage() {
     const hash = this.currentHash();
 
+    if (/^#\/categories\/[^/]+\/items\/[^/]+\/edit\/?(\?.*)?$/.test(hash)) {
+      return 'categoryItemEdit';
+    }
+
     if (/^#\/categories\/[^/]+\/items\/[^/]+\/?(\?.*)?$/.test(hash)) {
       return 'categoryItem';
     }

@@ -61,6 +61,31 @@ export default class GenericClient {
   }
 
   /**
+   * Sends a PATCH request with JSON payload and returns the parsed JSON body.
+   *
+   * @param {string} path resource path
+   * @param {Object} body JSON payload body
+   * @returns {Promise<*>} parsed JSON response body
+   * @throws {Error} if the response is not ok
+   */
+  async patch(path, body) {
+    const response = await fetch(path, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed for ${path}`);
+    }
+
+    return response.json();
+  }
+
+  /**
    * Fetches the given path, forwarding hash query params, and returns both the JSON body
    * and pagination info extracted from response headers.
    *

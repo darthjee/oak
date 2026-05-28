@@ -2,6 +2,12 @@ import HashRouteResolver from '../../assets/js/utils/HashRouteResolver.js';
 
 describe('HashRouteResolver', function() {
   describe('#getPage', function() {
+    it('returns "categoryItemEdit" for category item edit routes', function() {
+      const resolver = new HashRouteResolver(() => '#/categories/project/items/35/edit');
+
+      expect(resolver.getPage()).toBe('categoryItemEdit');
+    });
+
     it('returns "categoryItem" for category item routes', function() {
       const resolver = new HashRouteResolver(() => '#/categories/project/items/35');
 
