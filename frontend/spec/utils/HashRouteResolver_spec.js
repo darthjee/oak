@@ -13,6 +13,18 @@ describe('HashRouteResolver', function() {
         global.window = originalWindow;
       }
     });
+
+    it('returns an empty hash when window is unavailable', function() {
+      const originalWindow = global.window;
+      global.window = undefined;
+
+      try {
+        const resolver = new HashRouteResolver();
+        expect(resolver.currentHash()).toBe('');
+      } finally {
+        global.window = originalWindow;
+      }
+    });
   });
 
   describe('#getPage', function() {
