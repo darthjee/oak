@@ -71,9 +71,9 @@ export default class CategoryItemHelper {
   static #renderInfo(item) {
     return (
       <CategoryItemInfoCard name={item.name}>
-          <LabelValueParagraph label='Category' value={item.category?.name} />
-          <LabelValueParagraph label='Kind' value={item.kind?.name} />
-          <p className='mb-0'>{item.description}</p>
+        <LabelValueParagraph label='Category' value={item.category?.name} />
+        <LabelValueParagraph label='Kind' value={item.kind?.name} />
+        <p className='mb-0'>{item.description}</p>
       </CategoryItemInfoCard>
     );
   }

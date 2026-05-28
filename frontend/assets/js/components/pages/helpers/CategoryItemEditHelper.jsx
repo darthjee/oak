@@ -51,65 +51,79 @@ export default class CategoryItemEditHelper {
     onAddLink,
     onSave
   ) {
-    const slug = item.category?.slug || '';
-    const links = Array.isArray(item.links) && item.links.length > 0 ? item.links : [{ text: '', url: '' }];
-
     return (
       <div className='container mt-4'>
-        <div className='mb-3'>
-          <a className='btn btn-outline-secondary me-2' href={`/#/categories/${slug}/items/${item.id}`}>
-            Back
-          </a>
-          <button className='btn btn-success' disabled={saving} onClick={onSave} type='button'>
-            {saving ? 'Saving...' : 'Save'}
-          </button>
-        </div>
-
-        <CategoryItemInfoCard name={item.name || 'Edit Item'}>
-          <LabeledInput
-            id='category-item-edit-name'
-            label='Name'
-            value={item.name || ''}
-            onChange={(event) => onFieldChange('name', event.target.value)}
-          />
-          <LabeledInput
-            id='category-item-edit-category'
-            label='Category'
-            readOnly
-            value={item.category?.name || ''}
-          />
-          <div className='mb-3'>
-            <label className='form-label' htmlFor='category-item-edit-kind'>
-              Kind
-            </label>
-            <select
-              className='form-select'
-              id='category-item-edit-kind'
-              onChange={(event) => onFieldChange('kind_slug', event.target.value)}
-              value={item.kind_slug || ''}
-            >
-              {kinds.map((kind) => (
-                <option key={kind.slug} value={kind.slug}>
-                  {kind.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <LabeledInput
-            id='category-item-edit-description'
-            label='Description'
-            value={item.description || ''}
-            onChange={(event) => onFieldChange('description', event.target.value)}
-          />
-        </CategoryItemInfoCard>
+        {this.#renderActions(item, saving, onSave)}
+        {this.#renderInfoCard(item, kinds, onFieldChange)}
 
         <CategoryItemLinksEditor
-          links={links}
+          links={this.#normalizeLinks(item.links)}
           onAddLink={onAddLink}
           onLinkChange={onLinkChange}
           onRemoveLink={onRemoveLink}
         />
       </div>
     );
+  }
+
+  static #renderActions(item, saving, onSave) {
+    const slug = item.category?.slug || '';
+
+    return (
+      <div className='mb-3'>
+        <a className='btn btn-outline-secondary me-2' href={`/#/categories/${slug}/items/${item.id}`}>
+          Back
+        </a>
+        <button className='btn btn-success' disabled={saving} onClick={onSave} type='button'>
+          {saving ? 'Saving...' : 'Save'}
+        </button>
+      </div>
+    );
+  }
+
+  static #renderInfoCard(item, kinds, onFieldChange) {
+    return (
+      <CategoryItemInfoCard name={item.name || 'Edit Item'}>
+        <LabeledInput
+          id='category-item-edit-name'
+          label='Name'
+          value={item.name || ''}
+          onChange={(event) => onFieldChange('name', event.target.value)}
+        />
+        <LabeledInput
+          id='category-item-edit-category'
+          label='Category'
+          readOnly
+          value={item.category?.name || ''}
+        />
+        <div className='mb-3'>
+          <label className='form-label' htmlFor='category-item-edit-kind'>
+            Kind
+          </label>
+          <select
+            className='form-select'
+            id='category-item-edit-kind'
+            onChange={(event) => onFieldChange('kind_slug', event.target.value)}
+            value={item.kind_slug || ''}
+          >
+            {kinds.map((kind) => (
+              <option key={kind.slug} value={kind.slug}>
+                {kind.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <LabeledInput
+          id='category-item-edit-description'
+          label='Description'
+          value={item.description || ''}
+          onChange={(event) => onFieldChange('description', event.target.value)}
+        />
+      </CategoryItemInfoCard>
+    );
+  }
+
+  static #normalizeLinks(links) {
+    return Array.isArray(links) && links.length > 0 ? links : [{ text: '', url: '' }];
   }
 }
