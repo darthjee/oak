@@ -37,49 +37,15 @@ export default function CategoryItemNew() {
     return CategoryItemEditHelper.renderError('Unable to load category item new form.');
   }
 
-  const onFieldChange = (field, value) => {
-    setItem((current) => ({ ...current, [field]: value }));
-  };
-
-  const onLinkChange = (index, field, value) => {
-    setItem((current) => {
-      const links = [...(current.links || [])];
-      links[index] = { ...(links[index] || {}), [field]: value };
-      return { ...current, links };
-    });
-  };
-
-  const onRemoveLink = (index) => {
-    setItem((current) => {
-      const links = [...(current.links || [])];
-      links.splice(index, 1);
-      return { ...current, links };
-    });
-  };
-
-  const onAddLink = () => {
-    setItem((current) => ({
-      ...current,
-      links: [...(current.links || []), { text: '', url: '' }],
-    }));
-  };
-
-  const onSave = () => {
-    controller.save(item);
-  };
-
-  const slug = item.category?.slug || '';
-  const cancelHref = `/#/categories/${slug}/items`;
-
   return CategoryItemEditHelper.render(
     item,
     kinds,
     saving,
-    onFieldChange,
-    onLinkChange,
-    onRemoveLink,
-    onAddLink,
-    onSave,
-    cancelHref
+    (field, value) => controller.onFieldChange(field, value),
+    (index, field, value) => controller.onLinkChange(index, field, value),
+    (index) => controller.onRemoveLink(index),
+    () => controller.onAddLink(),
+    () => controller.save(item),
+    controller.cancelHref(item)
   );
 }

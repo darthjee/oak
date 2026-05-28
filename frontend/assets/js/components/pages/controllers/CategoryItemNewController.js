@@ -89,6 +89,65 @@ export default class CategoryItemNewController extends BasePageController {
       });
   }
 
+  /**
+   * Updates a single field on the current item state.
+   *
+   * @param {string} field field name to update
+   * @param {string} value new field value
+   */
+  onFieldChange(field, value) {
+    this.setItem((current) => ({ ...current, [field]: value }));
+  }
+
+  /**
+   * Updates a field on a link at the given index.
+   *
+   * @param {number} index link index
+   * @param {string} field field name to update
+   * @param {string} value new field value
+   */
+  onLinkChange(index, field, value) {
+    this.setItem((current) => {
+      const links = [...(current.links || [])];
+      links[index] = { ...(links[index] || {}), [field]: value };
+      return { ...current, links };
+    });
+  }
+
+  /**
+   * Removes the link at the given index from the current item state.
+   *
+   * @param {number} index link index to remove
+   */
+  onRemoveLink(index) {
+    this.setItem((current) => {
+      const links = [...(current.links || [])];
+      links.splice(index, 1);
+      return { ...current, links };
+    });
+  }
+
+  /**
+   * Appends an empty link entry to the current item state.
+   */
+  onAddLink() {
+    this.setItem((current) => ({
+      ...current,
+      links: [...(current.links || []), { text: '', url: '' }],
+    }));
+  }
+
+  /**
+   * Returns the cancel/back href for the new item page.
+   *
+   * @param {Object} item current item state
+   * @returns {string} href pointing to the category items index
+   */
+  cancelHref(item) {
+    const slug = item?.category?.slug || '';
+    return `/#/categories/${slug}/items`;
+  }
+
   #loadData(safeSet, slug) {
     Promise.all([
       this.#fetchItem(slug),

@@ -171,4 +171,91 @@ describe('CategoryItemNewController', function() {
     expect(setError).toHaveBeenCalledWith('Unable to save category item.');
     expect(setSaving).toHaveBeenCalledWith(false);
   });
+
+  describe('#onFieldChange', function() {
+    it('updates the specified field on the item', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+
+      controller.onFieldChange('name', 'Updated Name');
+
+      const updater = setItem.calls.mostRecent().args[0];
+
+      expect(updater({ name: 'Old', links: [] })).toEqual({ name: 'Updated Name', links: [] });
+    });
+  });
+
+  describe('#onLinkChange', function() {
+    it('updates the specified field on a link at the given index', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+
+      controller.onLinkChange(0, 'text', 'GitHub');
+
+      const updater = setItem.calls.mostRecent().args[0];
+
+      expect(updater({ links: [{ text: '', url: 'https://github.com' }] })).toEqual({
+        links: [{ text: 'GitHub', url: 'https://github.com' }],
+      });
+    });
+  });
+
+  describe('#onRemoveLink', function() {
+    it('removes the link at the given index', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+
+      controller.onRemoveLink(0);
+
+      const updater = setItem.calls.mostRecent().args[0];
+
+      expect(updater({ links: [{ text: 'A' }, { text: 'B' }] })).toEqual({
+        links: [{ text: 'B' }],
+      });
+    });
+  });
+
+  describe('#onAddLink', function() {
+    it('appends an empty link to the item links', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+
+      controller.onAddLink();
+
+      const updater = setItem.calls.mostRecent().args[0];
+
+      expect(updater({ links: [] })).toEqual({
+        links: [{ text: '', url: '' }],
+      });
+    });
+  });
+
+  describe('#cancelHref', function() {
+    it('returns the items index href for the item category slug', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+      const item = { category: { slug: 'project' } };
+
+      expect(controller.cancelHref(item)).toBe('/#/categories/project/items');
+    });
+
+    it('returns a fallback href when category slug is absent', function() {
+      const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+      const controller = new CategoryItemNewController(
+        setItem, setKinds, setLoading, setSaving, setError, mockClient, mockLocation
+      );
+
+      expect(controller.cancelHref({})).toBe('/#/categories//items');
+    });
+  });
 });
