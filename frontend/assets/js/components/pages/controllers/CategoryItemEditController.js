@@ -96,10 +96,7 @@ export default class CategoryItemEditController extends BasePageController {
       this.#fetchItem(slug, id),
       this.#fetchKinds(slug),
     ])
-      .then(([item, kinds]) => {
-        safeSet(this.setItem, this.#normalizeItem(item));
-        safeSet(this.setKinds, kinds);
-      })
+      .then(([item, kinds]) => this.#applyLoadedData(safeSet, item, kinds))
       .catch((error) => {
         safeSet(this.setError, error?.message || 'Unable to load category item edit form.');
       })
@@ -123,14 +120,23 @@ export default class CategoryItemEditController extends BasePageController {
         description: item.description || '',
         kind_slug: item.kind_slug || '',
         visible: item.visible,
-        links: (Array.isArray(item.links) ? item.links : []).map((link, index) => ({
-          id: link.id,
-          text: link.text || '',
-          url: link.url || '',
-          order: link.order ?? index + 1,
-        })),
+        links: this.#buildLinkPayload(item.links),
       },
     };
+  }
+
+  #applyLoadedData(safeSet, item, kinds) {
+    safeSet(this.setItem, this.#normalizeItem(item));
+    safeSet(this.setKinds, kinds);
+  }
+
+  #buildLinkPayload(links) {
+    return (Array.isArray(links) ? links : []).map((link, index) => ({
+      id: link.id,
+      text: link.text || '',
+      url: link.url || '',
+      order: link.order ?? index + 1,
+    }));
   }
 
   #fetchItem(slug, id) {

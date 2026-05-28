@@ -49,15 +49,9 @@ export default class GenericClient {
    * @throws {Error} if the response is not ok
    */
   async fetch(path) {
-    const response = await fetch(this.#buildUrl(path, getHashQueryParams(this.currentHash())), {
+    return this.#request(this.#buildUrl(path, getHashQueryParams(this.currentHash())), {
       headers: { Accept: 'application/json' },
     });
-
-    if (!response.ok) {
-      throw new Error(`Request failed for ${path}`);
-    }
-
-    return response.json();
   }
 
   /**
@@ -69,7 +63,7 @@ export default class GenericClient {
    * @throws {Error} if the response is not ok
    */
   async patch(path, body) {
-    const response = await fetch(path, {
+    return this.#request(path, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json',
@@ -77,12 +71,6 @@ export default class GenericClient {
       },
       body: JSON.stringify(body),
     });
-
-    if (!response.ok) {
-      throw new Error(`Request failed for ${path}`);
-    }
-
-    return response.json();
   }
 
   /**
@@ -145,5 +133,23 @@ export default class GenericClient {
    */
   #clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  /**
+   * Performs a request and returns the parsed JSON response body.
+   *
+   * @param {string} path request path
+   * @param {Object} options fetch options
+   * @returns {Promise<*>} parsed response body
+   * @throws {Error} if the response is not ok
+   */
+  async #request(path, options) {
+    const response = await fetch(path, options);
+
+    if (!response.ok) {
+      throw new Error(`Request failed for ${path}`);
+    }
+
+    return response.json();
   }
 }

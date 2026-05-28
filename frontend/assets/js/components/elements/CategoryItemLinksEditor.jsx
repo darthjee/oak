@@ -1,5 +1,5 @@
 import React from 'react';
-import CategoryItemLinkEditor from './CategoryItemLinkEditor.jsx';
+import CategoryItemLinkEditorList from './CategoryItemLinkEditorList.jsx';
 
 /**
  * Renders editable links controls for category item editing.
@@ -20,18 +20,20 @@ export default function CategoryItemLinksEditor({
   return (
     <div className='mb-4'>
       <h5>Links</h5>
-      {links.map((link, index) => (
-        <CategoryItemLinkEditor
-          key={`link-${link.id || index}`}
-          link={link}
-          index={index}
-          onLinkChange={onLinkChange}
-          onRemoveLink={onRemoveLink}
-        />
-      ))}
-      <button className='btn btn-primary btn-sm' onClick={onAddLink} type='button'>
-        Add link
-      </button>
+      <CategoryItemLinkEditorList
+        links={links}
+        onLinkChange={onLinkChange}
+        onRemoveLink={onRemoveLink}
+      />
+      {renderAddLinkButton(onAddLink)}
     </div>
+  );
+}
+
+function renderAddLinkButton(onAddLink) {
+  return (
+    <button className='btn btn-primary btn-sm' onClick={onAddLink} type='button'>
+      Add link
+    </button>
   );
 }

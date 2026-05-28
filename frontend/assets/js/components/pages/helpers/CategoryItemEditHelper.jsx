@@ -88,7 +88,7 @@ export default class CategoryItemEditHelper {
           id='category-item-edit-name'
           label='Name'
           value={item.name || ''}
-          onChange={(event) => onFieldChange('name', event.target.value)}
+          onChange={this.#buildFieldChangeHandler(onFieldChange, 'name')}
         />
         <LabeledInput
           id='category-item-edit-category'
@@ -103,7 +103,7 @@ export default class CategoryItemEditHelper {
           <select
             className='form-select'
             id='category-item-edit-kind'
-            onChange={(event) => onFieldChange('kind_slug', event.target.value)}
+            onChange={this.#buildFieldChangeHandler(onFieldChange, 'kind_slug')}
             value={item.kind_slug || ''}
           >
             {kinds.map((kind) => (
@@ -117,7 +117,7 @@ export default class CategoryItemEditHelper {
           id='category-item-edit-description'
           label='Description'
           value={item.description || ''}
-          onChange={(event) => onFieldChange('description', event.target.value)}
+          onChange={this.#buildFieldChangeHandler(onFieldChange, 'description')}
         />
       </CategoryItemInfoCard>
     );
@@ -125,5 +125,9 @@ export default class CategoryItemEditHelper {
 
   static #normalizeLinks(links) {
     return Array.isArray(links) && links.length > 0 ? links : [{ text: '', url: '' }];
+  }
+
+  static #buildFieldChangeHandler(onFieldChange, field) {
+    return (event) => onFieldChange(field, event.target.value);
   }
 }
