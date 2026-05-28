@@ -1,5 +1,6 @@
 import React from 'react';
 import CategoryItemInfoCard from '../../elements/CategoryItemInfoCard.jsx';
+import CategoryItemKindSelect from '../../elements/CategoryItemKindSelect.jsx';
 import CategoryItemLinksEditor from '../../elements/CategoryItemLinksEditor.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LabeledInput from '../../elements/LabeledInput.jsx';
@@ -96,23 +97,11 @@ export default class CategoryItemEditHelper {
           readOnly
           value={item.category?.name || ''}
         />
-        <div className='mb-3'>
-          <label className='form-label' htmlFor='category-item-edit-kind'>
-            Kind
-          </label>
-          <select
-            className='form-select'
-            id='category-item-edit-kind'
-            onChange={this.#buildFieldChangeHandler(onFieldChange, 'kind_slug')}
-            value={item.kind_slug || ''}
-          >
-            {kinds.map((kind) => (
-              <option key={kind.slug} value={kind.slug}>
-                {kind.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CategoryItemKindSelect
+          kinds={kinds}
+          onChange={this.#buildFieldChangeHandler(onFieldChange, 'kind_slug')}
+          value={item.kind_slug}
+        />
         <LabeledInput
           id='category-item-edit-description'
           label='Description'
