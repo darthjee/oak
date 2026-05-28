@@ -11,11 +11,13 @@ export default class AppController {
    * @param {Function|null} setPage state setter for updating the current page
    * @param {EventTarget} [eventTarget=window] target used to listen for hash change events
    * @param {Function} [locationProvider] function returning the current location hash
+   * @param {Function|null} [setHash=null] state setter for updating the current hash
    */
-  constructor(setPage, eventTarget = window, locationProvider = () => window.location.hash) {
+  constructor(setPage, eventTarget = window, locationProvider = () => window.location.hash, setHash = null) {
     this.setPage = setPage;
     this.eventTarget = eventTarget;
     this.routeResolver = new HashRouteResolver(locationProvider);
+    this.setHash = setHash;
   }
 
   /**
@@ -31,10 +33,11 @@ export default class AppController {
    * Renders the component for the given page identifier.
    *
    * @param {string} page page identifier to render
+   * @param {string} [hash=''] current location hash
    * @returns {JSX.Element} rendered page element
    */
-  renderPage(page) {
-    return AppHelper.render(page);
+  renderPage(page, hash = '') {
+    return AppHelper.render(page, hash);
   }
 
   /**
@@ -44,7 +47,10 @@ export default class AppController {
    */
   buildEffect() {
     return () => {
-      const handleHashChange = () => this.setPage(this.getPage());
+      const handleHashChange = () => {
+        this.setPage(this.getPage());
+        this.setHash?.(this.routeResolver.currentHash());
+      };
 
       this.eventTarget.addEventListener('hashchange', handleHashChange);
 
