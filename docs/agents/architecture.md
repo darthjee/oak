@@ -2,7 +2,7 @@
 
 ## Overview
 
-Oak is a Rails monolithic application that serves both the frontend and the JSON API from the same process. The frontend is a Single Page Application (SPA) built with **AngularJS** and styled with **Bootstrap**. All Rails code lives under `source/`.
+Oak is a Rails monolithic application that serves JSON endpoints and the SPA shell from the same process. The frontend is a Single Page Application (SPA) built with **React** + **Vite** in `frontend/`, styled with **Bootstrap**, and mounted into `frontend/index.html` via `frontend/assets/js/main.jsx`. All Rails code lives under `source/`.
 
 In development and production a reverse proxy (**darthjee/tent**) sits in front of the Rails app to cache HTML responses and simulate the production setup. In development the proxy runs as the `oak_proxy` Docker service (port 3000); in production the same proxy binary runs natively (without Docker).
 
@@ -30,14 +30,13 @@ In production there is no `oak_photos` container; uploaded files are served by t
 
 ## Request Routing
 
-Every HTTP request to the Rails app follows one of four paths:
+Frontend-serving requests follow one of these paths:
 
 | Pattern | Behaviour |
 |---------|-----------|
-| `GET /` | Renders the home page (layout + full HTML). Handled by `HomeController`. |
-| `GET /<path>` (HTML, no `?ajax`) | Redirected to `/#/<path>` by the `OnePageApplication` concern so AngularJS takes over navigation. No data is fetched. |
-| `GET /<path>?ajax=true` | Returns the ERB template for that route **without the application layout**. AngularJS (via Cyberhawk) fetches this to render the view. |
-| `GET /<path>.json` | Returns the JSON payload for that route via Azeroth decorators. AngularJS fetches this for the data. |
+| `GET /` | Serves the SPA shell (`index.html`) handled by `HomeController`, which boots the React app. |
+| `GET /<path>` (HTML) | Redirected to `/#/<path>` by the `OnePageApplication` concern so client-side hash routing takes over navigation. |
+| `GET /<path>.json` | Returns JSON payloads for frontend data loading via Azeroth decorators. |
 
 The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, which uses the **Tarquinn** gem. Controllers include `OnePageApplication` to opt in to SPA behaviour.
 
@@ -45,10 +44,14 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 
 ## Frontend
 
-- **AngularJS** — handles client-side routing via URL anchors (`#/<path>`).
-- **Cyberhawk** (<https://github.com/darthjee/cyberhawk>) — manages the request lifecycle: intercepts anchor navigation, fetches `?ajax=true` templates and `.json` data, then renders the page.
+- **React + Vite** — client-side application and build/dev tooling (`frontend/`, `vite.config.js`).
+- **Hash-based routing utilities** — `AppController` + `HashRouteResolver` + `Router`/`Route` resolve `#/<path>` URLs and route params.
+- **React Query** — mounted in `main.jsx` through `QueryClientProvider` for async state/query lifecycle.
 - **Bootstrap** — CSS framework used in all ERB templates.
-- Routes are defined with anchors; no full page reloads happen after the initial load.
+- Routes are anchor-based (`#/<path>`); after initial load, navigation stays in the SPA shell.
+- **Tent proxy** serves frontend differently by mode:
+  - `FRONTEND_DEV_MODE=true`: proxies `/`, `/assets/js/`, `/assets/css/`, `/assets/images/`, `/@vite/`, `/node_modules/`, and `/@react-refresh` to `http://frontend:8080` (Vite + HMR).
+  - `FRONTEND_DEV_MODE=false`: serves static files from `/var/www/html/static`; `/` is rewritten to `/index.html`.
 
 ---
 
@@ -75,7 +78,7 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 | Gem | Role |
 |-----|------|
 | **[Azeroth](https://github.com/darthjee/azeroth)** | Generates standard CRUD controller actions and JSON serialization via decorators. See [azeroth-usage.md](azeroth-usage.md). |
-| **[Magicka](https://github.com/darthjee/magicka)** | Renders AngularJS-compatible form and display elements inside ERB templates. See [magicka-usage.md](magicka-usage.md). |
+| **[Magicka](https://github.com/darthjee/magicka)** | Renders reusable form/display elements in ERB templates. See [magicka-usage.md](magicka-usage.md). |
 | **[Sinclair](https://github.com/darthjee/sinclair)** | Dynamic method builder; also used for configuration (`Sinclair::Configurable`), option objects, and plain models. See [sinclair-usage.md](sinclair-usage.md). |
 | **[Tarquinn](https://github.com/darthjee/tarquinn)** | Declarative controller-level redirection rules (powers the SPA redirect). See [tarquinn-usage.md](tarquinn-usage.md). |
 | **[Jace](https://github.com/darthjee/jace)** | Internal event/lifecycle hooks for service operations. See [jace-usage.md](jace-usage.md). |
@@ -95,4 +98,4 @@ show.html.erb  → magicka_display → renders _form.html.erb
 
 `_form.html.erb` uses `form.only(:form)` / `form.only(:display)` to conditionally render editable vs. read-only elements in the same partial.
 
-When `?ajax=true` is present, the layout is suppressed and only the template fragment is returned so Cyberhawk can inject it into the SPA shell.
+Frontend SPA pages are rendered in React. Rails views remain in use for server-rendered pages/partials and form/display templates.
