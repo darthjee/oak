@@ -32,7 +32,7 @@ describe('CategoryItemEditHelper', function() {
     expect(html).toContain('/#/categories/project/items/35');
     expect(html).toContain('Save');
     expect(html).toContain('Name');
-    expect(html).toContain('Category');
+    expect(html).not.toContain('Category');
     expect(html).toContain('Kind');
     expect(html).toContain('Description');
     expect(html).toContain('Code');
