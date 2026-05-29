@@ -1,20 +1,19 @@
 import React from 'react';
+import CategoryKindBadge from '../CategoryKindBadge.jsx';
 
 /**
- * Builds category kinds UI fragments.
+ * Renders reusable pieces for the category kinds display.
  */
 export default class CategoryKindsHelper {
   /**
-   * Renders a category kind badge.
+   * Renders a list of kind badges for display (read-only).
    *
-   * @param {Object} kind category kind data
-   * @returns {JSX.Element} rendered badge
+   * @param {Array<Object>} kinds category kinds
+   * @returns {JSX.Element[]} array of kind badge elements
    */
-  static renderKindBadge(kind) {
-    return (
-      <span key={kind.slug} className='badge text-bg-primary me-2 mb-2'>
-        {kind.name}
-      </span>
-    );
+  static renderKindsBadges(kinds) {
+    return kinds.map((kind) => (
+      <CategoryKindBadge key={kind.slug} kind={kind} />
+    ));
   }
 }

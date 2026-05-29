@@ -17,7 +17,7 @@ export default function CategoryKinds({ kinds }) {
     <>
       <p className='mb-2'>Kinds</p>
       <div className='d-flex flex-wrap'>
-        {kinds.map((kind) => CategoryKindsHelper.renderKindBadge(kind))}
+        {CategoryKindsHelper.renderKindsBadges(kinds)}
       </div>
     </>
   );
