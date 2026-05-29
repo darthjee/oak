@@ -1,5 +1,5 @@
 import React from 'react';
-import CategoryKindsHelper from './helpers/CategoryKindsHelper.jsx';
+import CategoryKindBadge from './CategoryKindBadge.jsx';
 
 /**
  * Renders category kinds as badges or an empty state message.
@@ -17,7 +17,9 @@ export default function CategoryKinds({ kinds }) {
     <>
       <p className='mb-2'>Kinds</p>
       <div className='d-flex flex-wrap'>
-        {kinds.map((kind) => CategoryKindsHelper.renderKindBadge(kind))}
+        {kinds.map((kind) => (
+          <CategoryKindBadge key={kind.slug} kind={kind} />
+        ))}
       </div>
     </>
   );
