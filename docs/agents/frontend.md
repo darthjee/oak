@@ -1,8 +1,18 @@
 # Front-End Architecture
 
-The Oak front-end is a React + Vite SPA located in `frontend/`. It runs in its own Docker container (`oak_fe`) and is served by the tent proxy.
+The Oak front-end is a React + Vite SPA located in `frontend/`. It runs in its own Docker container (`oak_fe`) and is served through the Tent proxy.
 
 Reference implementations: `../navi/frontend/src/components/` (component pattern) and `../weave/frontend/` (build/tooling setup).
+
+---
+
+## Runtime Boot Flow
+
+The SPA boot sequence is:
+
+1. `frontend/index.html` defines `<div id="root"></div>` and loads `/assets/js/main.jsx`.
+2. `frontend/assets/js/main.jsx` imports Bootstrap CSS/JS plus local CSS/SCSS, creates a `QueryClient`, and mounts `<App />` inside `QueryClientProvider`.
+3. `frontend/assets/js/components/App.jsx` uses `AppController` to resolve the current hash route and render the matching page.
 
 ---
 
@@ -202,14 +212,34 @@ Controlled by `FRONTEND_DEV_MODE` in `.env`:
 
 | Mode | Behaviour |
 |------|-----------|
-| `FRONTEND_DEV_MODE=true` | Tent proxies all front-end requests to the Vite dev server. HMR works. No caching. |
-| `FRONTEND_DEV_MODE=false` | Tent serves pre-built static files from `docker_volumes/static/`. |
+| `FRONTEND_DEV_MODE=true` | Tent proxies `GET /`, `/assets/js/`, `/assets/css/`, `/assets/images/`, `/@vite/`, `/node_modules/`, and `/@react-refresh` to `http://frontend:8080` (Vite dev server with HMR). |
+| `FRONTEND_DEV_MODE=false` | Tent serves static files from `/var/www/html/static`; `GET /` is rewritten to `/index.html`. |
 
 ---
 
-## Inline Documentation
+## Routing Utilities
 
-All public classes, methods, and exported functions in `frontend/assets/js/` must have JSDoc comments. ESLint enforces this via `eslint-plugin-jsdoc` (rules run as part of `npm run lint`).
+Routing helpers live under `frontend/assets/js/utils/`:
+
+- `Router.register(path, page)` registers route patterns.
+- `Router.resolve(route)` resolves a route path into a page key.
+- `Router.extractParams(path, route)` extracts params for `:param` segments.
+- `Route` compiles `:param` path segments into regex capture groups and exposes parsed params.
+
+`HashRouteResolver` builds the known route table and resolves the current `window.location.hash`, stripping query strings before route matching.
+
+---
+
+## Linting and Inline Documentation
+
+ESLint (`frontend/eslint.config.mjs`) enforces:
+
+- JSDoc for public classes/methods/functions in JS/JSX.
+- React + React Hooks rules (`react-hooks/rules-of-hooks` and `react-hooks/exhaustive-deps`).
+- Complexity/size constraints (`complexity`, `max-lines`, `max-depth`).
+- Jasmine-specific exceptions under `spec/` (JSDoc requirements are disabled for test files).
+
+All public classes, methods, and exported functions in `frontend/assets/js/` should include JSDoc comments.
 
 ### Convention
 

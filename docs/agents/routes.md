@@ -1,12 +1,12 @@
 # Routes
 
-Routes fall into two categories: **resource routes** that are full SPA pages (redirect + `?ajax=true` template + `.json` data), and **utility routes** that are pure API endpoints called by AngularJS in the background (no template, no redirect).
+Routes fall into two categories: **resource routes** used by SPA pages (HTML redirect + `.json` data endpoints), and **utility routes** that are pure API endpoints called by the frontend in the background (no HTML template flow).
 
 ---
 
 ## Resource Routes
 
-These routes participate in the full SPA flow. An HTML GET request redirects to `/#/<path>`; AngularJS then fetches `/<path>?ajax=true` for the template and `/<path>.json` for the data.
+These routes participate in the SPA flow. An HTML GET request redirects to `/#/<path>`; the React frontend then fetches `/<path>.json` for data loading.
 
 All resource controllers include `OnePageApplication` (directly or via `UserRequired`).
 
@@ -73,7 +73,7 @@ Full user management, restricted to admins.
 
 ## Utility Routes
 
-These routes are **API-only**: they return JSON (or perform an action) and have no `?ajax=true` template. They are called directly by AngularJS — never navigated to as pages.
+These routes are **API-only**: they return JSON (or perform an action) and are called directly by frontend clients/controllers — never navigated to as pages.
 
 ### Session
 
