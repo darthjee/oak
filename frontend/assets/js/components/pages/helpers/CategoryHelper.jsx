@@ -60,12 +60,20 @@ export default class CategoryHelper {
         <a className='btn btn-primary me-2' href={`/#/categories/${category.slug}/items`}>
           Items
         </a>
-        {logged ? (
-          <a className='btn btn-secondary' href={`/#/categories/${category.slug}/edit`}>
-            Edit
-          </a>
-        ) : null}
+        {this.#renderEditAction(category, logged)}
       </div>
+    );
+  }
+
+  static #renderEditAction(category, logged) {
+    if (!logged) {
+      return null;
+    }
+
+    return (
+      <a className='btn btn-secondary' href={`/#/categories/${category.slug}/edit`}>
+        Edit
+      </a>
     );
   }
 }
