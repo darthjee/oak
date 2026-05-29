@@ -58,6 +58,12 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).toBe('categoryNew');
     });
 
+    it('returns "categoryEdit" for category edit routes', function() {
+      const resolver = new HashRouteResolver(() => '#/categories/project/edit');
+
+      expect(resolver.getPage()).toBe('categoryEdit');
+    });
+
     it('returns "category" for category routes', function() {
       const resolver = new HashRouteResolver(() => '#/categories/project?page=2&per_page=10');
 

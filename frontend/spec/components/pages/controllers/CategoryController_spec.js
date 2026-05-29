@@ -18,12 +18,14 @@ describe('CategoryController', function() {
 
   const buildSetters = () => buildSpies(
     'setCategory',
+    'setLogged',
     'setLoading',
     'setError'
   );
 
   beforeEach(function() {
     mockClient = buildMockClient();
+    spyOn(CategoryController.prototype, 'checkLogin').and.returnValue(Promise.resolve(true));
   });
 
   describe('getCategorySlugFromHash', function() {
@@ -47,7 +49,7 @@ describe('CategoryController', function() {
   });
 
   it('fetches category in buildEffect', async function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
     const category = {
       slug: 'project',
       name: 'Project',
@@ -59,13 +61,14 @@ describe('CategoryController', function() {
       fetch: jasmine.createSpy('fetch').and.returnValue(Promise.resolve(category)),
     });
 
-    const controller = new CategoryController(setCategory, setLoading, setError, mockClient);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project.json');
     expect(setCategory).toHaveBeenCalledWith(category);
+    expect(setLogged).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).not.toHaveBeenCalled();
 
@@ -73,7 +76,7 @@ describe('CategoryController', function() {
   });
 
   it('normalizes missing kinds to an empty array', async function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       fetch: jasmine.createSpy('fetch').and.returnValue(
@@ -81,7 +84,7 @@ describe('CategoryController', function() {
       ),
     });
 
-    const controller = new CategoryController(setCategory, setLoading, setError, mockClient);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -94,7 +97,7 @@ describe('CategoryController', function() {
   });
 
   it('calls setError when category fetch fails', async function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       fetch: jasmine.createSpy('fetch').and.returnValue(
@@ -102,7 +105,7 @@ describe('CategoryController', function() {
       ),
     });
 
-    const controller = new CategoryController(setCategory, setLoading, setError, mockClient);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -115,13 +118,13 @@ describe('CategoryController', function() {
   });
 
   it('calls setError when params cannot be extracted from hash', async function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories'),
     });
 
-    const controller = new CategoryController(setCategory, setLoading, setError, mockClient);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
@@ -134,9 +137,9 @@ describe('CategoryController', function() {
   });
 
   it('does not call setters after unmount', async function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
 
-    const controller = new CategoryController(setCategory, setLoading, setError, mockClient);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     cleanup();
@@ -149,9 +152,9 @@ describe('CategoryController', function() {
   });
 
   it('defaults client to a new GenericClient when none is provided', function() {
-    const { setCategory, setLoading, setError } = buildSetters();
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
 
-    const controller = new CategoryController(setCategory, setLoading, setError);
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError);
 
     expect(controller.client).toBeInstanceOf(GenericClient);
   });

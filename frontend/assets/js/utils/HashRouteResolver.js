@@ -21,6 +21,7 @@ export default class HashRouteResolver {
     router.register('/categories/:slug/items/new', 'categoryItemNew');
     router.register('/categories/:slug/items/:id', 'categoryItem');
     router.register('/categories/:slug/items', 'categoryItems');
+    router.register('/categories/:slug/edit', 'categoryEdit');
     router.register('/categories/new', 'categoryNew');
     router.register('/categories/:slug', 'category');
     router.register('/categories', 'categories');

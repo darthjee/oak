@@ -4,7 +4,6 @@ import CategoryKinds from '../../elements/CategoryKinds.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import OptionalImage from '../../elements/OptionalImage.jsx';
-import PageActionsHelper from './PageActionsHelper.jsx';
 
 /**
  * Renders the category page HTML for different states.
@@ -33,12 +32,13 @@ export default class CategoryHelper {
    * Renders the fully populated category page.
    *
    * @param {Object} category category data
+   * @param {boolean} logged whether the current user is logged in
    * @returns {JSX.Element} category content
    */
-  static render(category) {
+  static render(category, logged) {
     return (
       <div className='container mt-4'>
-        {this.#renderActions(category)}
+        {this.#renderActions(category, logged)}
         <CategoryItemInfoCard name={category.name}>
           <OptionalImage
             src={category.snap_url}
@@ -51,11 +51,29 @@ export default class CategoryHelper {
     );
   }
 
-  static #renderActions(category) {
-    return PageActionsHelper.render(
-      '/#/categories',
-      `/#/categories/${category.slug}/items`,
-      'Items'
+  static #renderActions(category, logged) {
+    return (
+      <div className='mb-3'>
+        <a className='btn btn-outline-secondary me-2' href='/#/categories'>
+          Back
+        </a>
+        <a className='btn btn-primary me-2' href={`/#/categories/${category.slug}/items`}>
+          Items
+        </a>
+        {this.#renderEditAction(category, logged)}
+      </div>
+    );
+  }
+
+  static #renderEditAction(category, logged) {
+    if (!logged) {
+      return null;
+    }
+
+    return (
+      <a className='btn btn-secondary' href={`/#/categories/${category.slug}/edit`}>
+        Edit
+      </a>
     );
   }
 }
