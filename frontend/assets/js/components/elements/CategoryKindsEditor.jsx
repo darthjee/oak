@@ -1,4 +1,6 @@
 import React from 'react';
+import CategoryKindsEditorList from './CategoryKindsEditorList.jsx';
+import CategoryKindsEditorSelect from './CategoryKindsEditorSelect.jsx';
 
 /**
  * Renders an editable kinds selector for category forms.
@@ -25,50 +27,16 @@ export default function CategoryKindsEditor({
 }) {
   return (
     <div className='border p-3 mb-3 bg-light rounded'>
-      <div className='mb-3'>
-        <label className='form-label' htmlFor='category-new-kind-select'>
-          Add a Kind
-        </label>
-        <div className='d-flex align-items-center gap-2'>
-          <select
-            className='form-select'
-            id='category-new-kind-select'
-            onChange={(e) => onSelectChange(e.target.value)}
-            value={selectedSlug || ''}
-          >
-            <option value=''>-- Select a kind --</option>
-            {allKinds.map((kind) => (
-              <option key={kind.slug} value={kind.slug}>
-                {kind.name}
-              </option>
-            ))}
-          </select>
-          <button className='btn btn-success' onClick={onAddKind} type='button'>
-            Add
-          </button>
-        </div>
-      </div>
-      <div>
-        <label className='form-label'>
-          Kinds
-        </label>
-        <div className='d-flex flex-wrap gap-2'>
-          {selectedKinds.length === 0
-            ? <p className='mb-0'>No kinds selected.</p>
-            : selectedKinds.map((kind) => (
-              <span key={kind.slug} className='badge bg-primary d-flex align-items-center gap-1'>
-                {kind.name}
-                <button
-                  className='btn btn-sm btn-danger ms-1'
-                  onClick={() => onRemoveKind(kind.slug)}
-                  type='button'
-                >
-                  x
-                </button>
-              </span>
-            ))}
-        </div>
-      </div>
+      <CategoryKindsEditorSelect
+        kinds={allKinds}
+        selectedSlug={selectedSlug}
+        onSelectChange={onSelectChange}
+        onAddKind={onAddKind}
+      />
+      <CategoryKindsEditorList
+        kinds={selectedKinds}
+        onRemoveKind={onRemoveKind}
+      />
     </div>
   );
 }
