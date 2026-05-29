@@ -1,4 +1,5 @@
 import React from 'react';
+import CollectionSelectHelper from './helpers/CollectionSelectHelper.jsx';
 
 /**
  * Renders a generic select dropdown backed by a collection of objects.
@@ -32,11 +33,7 @@ export default function CollectionSelect({
       value={selectedValue}
     >
       <option value=''>{placeholder}</option>
-      {collection.map((item) => (
-        <option key={item[keyColumn]} value={item[keyColumn]}>
-          {item[labelColumn]}
-        </option>
-      ))}
+      {CollectionSelectHelper.renderOptions(collection, keyColumn, labelColumn)}
     </select>
   );
 }
