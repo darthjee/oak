@@ -6,6 +6,7 @@ import CategoryItem from '../pages/CategoryItem.jsx';
 import CategoryItemEdit from '../pages/CategoryItemEdit.jsx';
 import CategoryItemNew from '../pages/CategoryItemNew.jsx';
 import CategoryItems from '../pages/CategoryItems.jsx';
+import CategoryNew from '../pages/CategoryNew.jsx';
 import Kinds from '../pages/Kinds.jsx';
 
 const PAGES = {
@@ -15,6 +16,7 @@ const PAGES = {
   categoryItemEdit: <CategoryItemEdit />,
   categoryItemNew: <CategoryItemNew />,
   categoryItems: <CategoryItems />,
+  categoryNew: <CategoryNew />,
   home: <Categories />,
   kinds: <Kinds />,
 };
