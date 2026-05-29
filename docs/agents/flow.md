@@ -6,28 +6,26 @@ A user can arrive at the application through three entry points:
 
 | Entry point | What happens |
 |-------------|--------------|
-| `GET /` | Rails renders the SPA shell: the full HTML page with the application layout, loading all JS and CSS assets. AngularJS boots and takes over. |
+| `GET /` | Rails serves the SPA shell (`index.html`) with frontend assets. React boots and takes over. |
 | `GET /<path>` | Rails (via `OnePageApplication` + Tarquinn) redirects the browser to `/#/<path>`. No content is rendered directly. |
-| `/#/<path>` directly | The browser already has the SPA shell. AngularJS/Cyberhawk intercepts the anchor and loads the page content (see below). |
+| `/#/<path>` directly | The browser already has the SPA shell. React route resolution picks the page from the hash path. |
 
 ---
 
 ## SPA Page Load
 
-Once the browser is on any `/#/<path>` — including `/#/` — Cyberhawk makes two parallel requests to populate the page:
+Once the browser is on any `/#/<path>` — including `/#/` — React resolves the hash route and the page controller fetches JSON data as needed:
 
 ```
 Browser on /#/<path>
         │
-        ├── GET /<path>?ajax=true  →  Rails returns the ERB template fragment (no layout)
-        │                                        (cached by darthjee/tent proxy)
         └── GET /<path>.json       →  Rails returns the JSON data for that resource
                 │
                 ▼
-        AngularJS merges template + data and renders the page
+        React renders/updates the page
 ```
 
-The proxy (**darthjee/tent**) caches the `?ajax=true` HTML responses, so repeated visits to the same page are served from cache without hitting Rails.
+When `FRONTEND_DEV_MODE=true`, Tent proxies frontend assets and Vite endpoints to `frontend:8080`. When disabled, Tent serves built static files from `/var/www/html/static`.
 
 ---
 
@@ -42,7 +40,7 @@ Some routes exist to support the application but are **not SPA resources** — t
 | `GET /users/login/check` | Checks whether the current session is valid. |
 | `GET /forbidden` | Returns `403 Forbidden` (used for authorization redirects). |
 
-These are called by AngularJS directly (e.g., on form submit) and their responses are handled in JS, not by rendering a new page.
+These are called by frontend clients/controllers directly (e.g., on form submit) and their responses are handled in JS, not by rendering a new page.
 
 ---
 
@@ -58,20 +56,18 @@ Browser loads /#/categories
   → GET /            (if shell not yet loaded)
       Rails renders full layout + JS/CSS assets
 
-Cyberhawk intercepts /#/categories:
-  → GET /categories?ajax=true            → template fragment (possibly from proxy cache)
+React resolves /#/categories:
   → GET /categories.json                 → JSON data
-  AngularJS renders the categories list
+  React renders the categories list
 ```
 
 ### User clicks a link inside the SPA (e.g., to `/categories/electronics`)
 
 ```
-AngularJS updates the anchor to /#/categories/electronics
+The frontend updates the anchor to /#/categories/electronics
 
-Cyberhawk intercepts:
-  → GET /categories/electronics?ajax=true  → template fragment
+React route resolver handles:
   → GET /categories/electronics.json       → JSON data
-  AngularJS renders the category detail page
+  React renders the category detail page
   (no full page reload)
 ```
