@@ -54,13 +54,17 @@ export default class CategoryController extends BasePageController {
   }
 
   #loadData(safeSet, slug) {
-    Promise.all([
-      this.#fetchCategory(slug),
-      this.checkLogin(),
-    ])
+    this.#fetchCategoryAndLogin(slug)
       .then(this.#setCategoryState.bind(this, safeSet))
       .catch(this.#setErrorState.bind(this, safeSet))
       .finally(this.#setLoadingState.bind(this, safeSet));
+  }
+
+  #fetchCategoryAndLogin(slug) {
+    return Promise.all([
+      this.#fetchCategory(slug),
+      this.checkLogin(),
+    ]);
   }
 
   #setCategoryState(safeSet, [category, logged]) {
