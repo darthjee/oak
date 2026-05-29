@@ -1,4 +1,5 @@
 import React from 'react';
+import CollectionSelect from './CollectionSelect.jsx';
 
 /**
  * Renders a kind select dropdown paired with an Add button.
@@ -18,19 +19,15 @@ export default function CategoryKindSelectInput({
 }) {
   return (
     <div className='d-flex align-items-center gap-2'>
-      <select
-        className='form-select'
+      <CollectionSelect
+        collection={kinds}
         id='category-new-kind-select'
-        onChange={(e) => onSelectChange(e.target.value)}
-        value={selectedSlug || ''}
-      >
-        <option value=''>-- Select a kind --</option>
-        {kinds.map((kind) => (
-          <option key={kind.slug} value={kind.slug}>
-            {kind.name}
-          </option>
-        ))}
-      </select>
+        keyColumn='slug'
+        labelColumn='name'
+        onChange={onSelectChange}
+        placeholder='-- Select a kind --'
+        selectedValue={selectedSlug || ''}
+      />
       <button className='btn btn-success' onClick={onAddKind} type='button'>
         Add
       </button>
