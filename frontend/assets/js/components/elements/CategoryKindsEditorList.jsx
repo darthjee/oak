@@ -1,5 +1,5 @@
 import React from 'react';
-import CategoryKindBadge from './CategoryKindBadge.jsx';
+import CategoryKindsEditorListHelper from './helpers/CategoryKindsEditorListHelper.jsx';
 
 /**
  * Renders the list of currently selected kinds with remove buttons, or an empty message.
@@ -16,11 +16,7 @@ export default function CategoryKindsEditorList({ kinds, onRemoveKind }) {
         Kinds
       </label>
       <div className='d-flex flex-wrap gap-2'>
-        {kinds.length === 0
-          ? <p className='mb-0'>No kinds selected.</p>
-          : kinds.map((kind) => (
-            <CategoryKindBadge key={kind.slug} kind={kind} onRemove={onRemoveKind} />
-          ))}
+        {CategoryKindsEditorListHelper.renderKinds(kinds, onRemoveKind)}
       </div>
     </div>
   );
