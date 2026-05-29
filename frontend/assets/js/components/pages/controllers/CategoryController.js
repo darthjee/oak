@@ -53,15 +53,21 @@ export default class CategoryController extends BasePageController {
 
   #loadData(safeSet, slug) {
     this.#fetchCategory(slug)
-      .then((category) => {
-        safeSet(this.setCategory, category);
-      })
-      .catch((error) => {
-        safeSet(this.setError, error?.message || 'Unable to load category.');
-      })
-      .finally(() => {
-        safeSet(this.setLoading, false);
-      });
+      .then(this.#setCategoryState.bind(this, safeSet))
+      .catch(this.#setErrorState.bind(this, safeSet))
+      .finally(this.#setLoadingState.bind(this, safeSet));
+  }
+
+  #setCategoryState(safeSet, category) {
+    safeSet(this.setCategory, category);
+  }
+
+  #setErrorState(safeSet, error) {
+    safeSet(this.setError, error?.message || 'Unable to load category.');
+  }
+
+  #setLoadingState(safeSet) {
+    safeSet(this.setLoading, false);
   }
 
   #fetchCategory(slug) {

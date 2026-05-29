@@ -4,7 +4,6 @@ import CategoryKinds from '../../elements/CategoryKinds.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import OptionalImage from '../../elements/OptionalImage.jsx';
-import PageActions from '../../elements/PageActions.jsx';
 
 /**
  * Renders the category page HTML for different states.
@@ -38,11 +37,7 @@ export default class CategoryHelper {
   static render(category) {
     return (
       <div className='container mt-4'>
-        <PageActions
-          backHref='/#/categories'
-          actionHref={`/#/categories/${category.slug}/items`}
-          actionLabel='Items'
-        />
+        {this.#renderActions(category)}
         <CategoryItemInfoCard name={category.name}>
           <OptionalImage
             src={category.snap_url}
@@ -51,6 +46,19 @@ export default class CategoryHelper {
           />
           <CategoryKinds kinds={category.kinds} />
         </CategoryItemInfoCard>
+      </div>
+    );
+  }
+
+  static #renderActions(category) {
+    return (
+      <div className='mb-3'>
+        <a className='btn btn-outline-secondary me-2' href='/#/categories'>
+          Back
+        </a>
+        <a className='btn btn-primary' href={`/#/categories/${category.slug}/items`}>
+          Items
+        </a>
       </div>
     );
   }
