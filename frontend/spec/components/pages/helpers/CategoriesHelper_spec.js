@@ -18,7 +18,7 @@ describe('CategoriesHelper', function() {
     const html = renderStatic(CategoriesHelper.render(categories, false, { page: 1, pages: 1, perPage: 10 }));
 
     expect(html).toContain('Project');
-    expect(html).toContain('/#/categories/project/items');
+    expect(html).toContain('/#/categories/project');
     expect(html).toContain('http://example.com/snap.png');
     expect(html).not.toContain('/#/categories/new');
   });
@@ -42,8 +42,8 @@ describe('CategoriesHelper', function() {
 
     expect(html).toContain('Project');
     expect(html).toContain('Miniatures');
-    expect(html).toContain('/#/categories/project/items');
-    expect(html).toContain('/#/categories/miniatures/items');
+    expect(html).toContain('/#/categories/project');
+    expect(html).toContain('/#/categories/miniatures');
     expect(html).toContain('http://example.com/mini.png');
   });
 });
