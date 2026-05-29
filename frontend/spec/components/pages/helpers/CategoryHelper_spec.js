@@ -16,18 +16,26 @@ describe('CategoryHelper', function() {
   itRendersLoadingAndErrorStates(CategoryHelper, 'Loading category...');
 
   it('renders actions and category data', function() {
-    const html = renderStatic(CategoryHelper.render(category));
+    const html = renderStatic(CategoryHelper.render(category, false));
 
     expect(html).toContain('/#/categories');
     expect(html).toContain('/#/categories/project/items');
+    expect(html).not.toContain('/#/categories/project/edit');
     expect(html).toContain('Back');
     expect(html).toContain('Items');
     expect(html).toContain('Project');
     expect(html).toContain('http://example.com/project.png');
   });
 
+  it('renders edit action when user is logged in', function() {
+    const html = renderStatic(CategoryHelper.render(category, true));
+
+    expect(html).toContain('/#/categories/project/edit');
+    expect(html).toContain('Edit');
+  });
+
   it('renders connected kinds as badges', function() {
-    const html = renderStatic(CategoryHelper.render(category));
+    const html = renderStatic(CategoryHelper.render(category, false));
 
     expect(html).toContain('Kinds');
     expect(html).toContain('Code');
@@ -36,7 +44,7 @@ describe('CategoryHelper', function() {
   });
 
   it('renders empty kinds message when category has no kinds', function() {
-    const html = renderStatic(CategoryHelper.render({ ...category, kinds: [] }));
+    const html = renderStatic(CategoryHelper.render({ ...category, kinds: [] }, false));
 
     expect(html).toContain('No kinds connected.');
   });
