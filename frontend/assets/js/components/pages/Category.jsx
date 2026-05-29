@@ -9,11 +9,12 @@ import CategoryHelper from './helpers/CategoryHelper.jsx';
  */
 export default function Category() {
   const [category, setCategory] = useState(null);
+  const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const controller = useMemo(
-    () => new CategoryController(setCategory, setLoading, setError),
+    () => new CategoryController(setCategory, setLogged, setLoading, setError),
     []
   );
 
@@ -31,5 +32,5 @@ export default function Category() {
     return CategoryHelper.renderError(error);
   }
 
-  return CategoryHelper.render(category);
+  return CategoryHelper.render(category, logged);
 }

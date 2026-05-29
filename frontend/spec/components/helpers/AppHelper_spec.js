@@ -41,6 +41,12 @@ describe('AppHelper', function() {
       expect(html).toContain('Loading category...');
     });
 
+    it('renders the CategoryEdit component for "categoryEdit" page', function() {
+      const html = renderPage('categoryEdit');
+
+      expect(html).toContain('Loading category new form...');
+    });
+
     it('does not render the home placeholder for "categories" page', function() {
       const html = renderPage('categories');
 

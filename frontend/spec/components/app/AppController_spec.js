@@ -34,6 +34,12 @@ describe('AppController', function() {
       expect(controller.getPage()).toBe('categoryItems');
     });
 
+    it('returns "categoryEdit" for #/categories/:slug/edit', function() {
+      const controller = new AppController(null, null, () => '#/categories/project/edit');
+
+      expect(controller.getPage()).toBe('categoryEdit');
+    });
+
     it('returns "categories" for #/categories', function() {
       const controller = new AppController(null, null, () => '#/categories');
 
