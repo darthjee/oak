@@ -66,14 +66,26 @@ export default class CategoryController extends BasePageController {
 
   #fetchCategory(slug) {
     if (!slug) {
-      return Promise.reject(new Error('Unable to load category.'));
+      return Promise.reject(CategoryController.#buildLoadError());
     }
 
     return this.client.fetch(`/categories/${slug}.json`)
-      .then((category) => ({
-        ...category,
-        kinds: Array.isArray(category.kinds) ? category.kinds : [],
-      }))
-      .catch(() => { throw new Error('Unable to load category.'); });
+      .then(CategoryController.#normalizeCategory)
+      .catch(CategoryController.#raiseLoadError);
+  }
+
+  static #normalizeCategory(category) {
+    return {
+      ...category,
+      kinds: Array.isArray(category.kinds) ? category.kinds : [],
+    };
+  }
+
+  static #raiseLoadError() {
+    throw CategoryController.#buildLoadError();
+  }
+
+  static #buildLoadError() {
+    return new Error('Unable to load category.');
   }
 }

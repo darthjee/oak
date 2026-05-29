@@ -4,6 +4,7 @@ import CategoryItemLinks from '../../elements/CategoryItemLinks.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LabelValueParagraph from '../../elements/LabelValueParagraph.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
+import PageActions from '../../elements/PageActions.jsx';
 import PhotosCarousel from '../../elements/PhotosCarousel.jsx';
 
 /**
@@ -49,22 +50,14 @@ export default class CategoryItemHelper {
 
   static #renderActions(item, id, logged) {
     const slug = item.category?.slug || '';
+    const actionHref = logged ? `/#/categories/${slug}/items/${id}/edit` : null;
 
     return (
-      <div className='mb-3'>
-        <a className='btn btn-outline-secondary me-2' href={`/#/categories/${slug}/items`}>
-          Back
-        </a>
-        {logged ? this.#renderEditButton(slug, id) : null}
-      </div>
-    );
-  }
-
-  static #renderEditButton(slug, id) {
-    return (
-      <a className='btn btn-primary' href={`/#/categories/${slug}/items/${id}/edit`}>
-        Edit
-      </a>
+      <PageActions
+        backHref={`/#/categories/${slug}/items`}
+        actionHref={actionHref}
+        actionLabel='Edit'
+      />
     );
   }
 

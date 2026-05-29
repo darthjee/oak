@@ -1,8 +1,10 @@
 import React from 'react';
 import CategoryItemInfoCard from '../../elements/CategoryItemInfoCard.jsx';
+import CategoryKinds from '../../elements/CategoryKinds.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import OptionalImage from '../../elements/OptionalImage.jsx';
+import PageActions from '../../elements/PageActions.jsx';
 
 /**
  * Renders the category page HTML for different states.
@@ -36,48 +38,20 @@ export default class CategoryHelper {
   static render(category) {
     return (
       <div className='container mt-4'>
-        {this.#renderActions(category)}
+        <PageActions
+          backHref='/#/categories'
+          actionHref={`/#/categories/${category.slug}/items`}
+          actionLabel='Items'
+        />
         <CategoryItemInfoCard name={category.name}>
           <OptionalImage
             src={category.snap_url}
             alt={category.name}
             className='img-fluid rounded mb-3'
           />
-          {this.#renderKinds(category.kinds)}
+          <CategoryKinds kinds={category.kinds} />
         </CategoryItemInfoCard>
       </div>
-    );
-  }
-
-  static #renderActions(category) {
-    return (
-      <div className='mb-3'>
-        <a className='btn btn-outline-secondary me-2' href='/#/categories'>
-          Back
-        </a>
-        <a className='btn btn-primary' href={`/#/categories/${category.slug}/items`}>
-          Items
-        </a>
-      </div>
-    );
-  }
-
-  static #renderKinds(kinds) {
-    if (!kinds || kinds.length === 0) {
-      return <p className='mb-0'>No kinds connected.</p>;
-    }
-
-    return (
-      <>
-        <p className='mb-2'>Kinds</p>
-        <div className='d-flex flex-wrap'>
-          {kinds.map((kind) => (
-            <span key={kind.slug} className='badge text-bg-primary me-2 mb-2'>
-              {kind.name}
-            </span>
-          ))}
-        </div>
-      </>
     );
   }
 }
