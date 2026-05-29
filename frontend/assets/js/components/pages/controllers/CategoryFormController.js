@@ -47,15 +47,7 @@ export default class CategoryFormController extends BasePageController {
       return;
     }
 
-    this.setCategory((current) => {
-      const kinds = current.kinds || [];
-
-      if (kinds.some((k) => k.slug === kind.slug)) {
-        return current;
-      }
-
-      return { ...current, kinds: [...kinds, kind] };
-    });
+    this.setCategory((current) => this.#appendKind(current, kind));
   }
 
   /**
@@ -144,5 +136,15 @@ export default class CategoryFormController extends BasePageController {
    */
   finalizeLoad(safeSet) {
     safeSet(this.setLoading, false);
+  }
+
+  #appendKind(current, kind) {
+    const kinds = current.kinds || [];
+
+    if (kinds.some((k) => k.slug === kind.slug)) {
+      return current;
+    }
+
+    return { ...current, kinds: [...kinds, kind] };
   }
 }
