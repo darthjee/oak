@@ -71,7 +71,7 @@ export default class CategoriesHelper {
     return (
       <CatalogCard
         key={slug}
-        href={`/#/categories/${slug}/items`}
+        href={`/#/categories/${slug}`}
         title={name}
         imageSrc={snapUrl}
       />

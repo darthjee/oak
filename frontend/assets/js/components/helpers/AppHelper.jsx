@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../elements/Header.jsx';
+import Category from '../pages/Category.jsx';
 import Categories from '../pages/Categories.jsx';
 import CategoryItem from '../pages/CategoryItem.jsx';
 import CategoryItemEdit from '../pages/CategoryItemEdit.jsx';
@@ -8,6 +9,7 @@ import CategoryItems from '../pages/CategoryItems.jsx';
 import Kinds from '../pages/Kinds.jsx';
 
 const PAGES = {
+  category: <Category />,
   categories: <Categories />,
   categoryItem: <CategoryItem />,
   categoryItemEdit: <CategoryItemEdit />,
