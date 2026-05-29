@@ -4,6 +4,7 @@ import CategoryKinds from '../../elements/CategoryKinds.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 import OptionalImage from '../../elements/OptionalImage.jsx';
+import PageActionsHelper from './PageActionsHelper.jsx';
 
 /**
  * Renders the category page HTML for different states.
@@ -51,15 +52,10 @@ export default class CategoryHelper {
   }
 
   static #renderActions(category) {
-    return (
-      <div className='mb-3'>
-        <a className='btn btn-outline-secondary me-2' href='/#/categories'>
-          Back
-        </a>
-        <a className='btn btn-primary' href={`/#/categories/${category.slug}/items`}>
-          Items
-        </a>
-      </div>
+    return PageActionsHelper.render(
+      '/#/categories',
+      `/#/categories/${category.slug}/items`,
+      'Items'
     );
   }
 }
