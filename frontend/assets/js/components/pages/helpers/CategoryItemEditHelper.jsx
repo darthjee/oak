@@ -95,12 +95,6 @@ export default class CategoryItemEditHelper {
           value={item.name || ''}
           onChange={this.#buildFieldChangeHandler(onFieldChange, 'name')}
         />
-        <LabeledInput
-          id='category-item-edit-category'
-          label='Category'
-          readOnly
-          value={item.category?.name || ''}
-        />
         <CategoryItemKindSelect
           kinds={kinds}
           onChange={this.#buildFieldChangeHandler(onFieldChange, 'kind_slug')}
