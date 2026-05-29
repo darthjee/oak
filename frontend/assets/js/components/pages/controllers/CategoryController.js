@@ -1,0 +1,79 @@
+import GenericClient from '../../../client/GenericClient.js';
+import BasePageController from './BasePageController.js';
+import Router from '../../../utils/Router.js';
+
+/**
+ * Extracts category slug from a category hash route.
+ *
+ * @param {string} [hash=''] current location hash
+ * @returns {string} category slug or an empty string when it cannot be resolved
+ */
+export function getCategorySlugFromHash(hash = '') {
+  return Router.extractParams('/categories/:slug', hash).slug || '';
+}
+
+/**
+ * Manages category page state by fetching category data from the API.
+ */
+export default class CategoryController extends BasePageController {
+  /**
+   * Creates a new CategoryController instance.
+   *
+   * @param {Function} setCategory state setter for category data
+   * @param {Function} setLoading state setter for loading status
+   * @param {Function} setError state setter for error message
+   * @param {GenericClient|null} [client] optional client instance
+   */
+  constructor(setCategory, setLoading, setError, client = null) {
+    super();
+    this.setCategory = setCategory;
+    this.setLoading = setLoading;
+    this.setError = setError;
+    this.client = client ?? new GenericClient();
+  }
+
+  /**
+   * Builds the React effect that loads category data on mount.
+   *
+   * @returns {Function} effect function that starts loading and returns a cleanup function
+   */
+  buildEffect() {
+    return () => {
+      let mounted = true;
+      const safeSet = this.buildSafeSetter(() => mounted);
+      const slug = getCategorySlugFromHash(this.client.currentHash());
+
+      this.#loadData(safeSet, slug);
+
+      return () => {
+        mounted = false;
+      };
+    };
+  }
+
+  #loadData(safeSet, slug) {
+    this.#fetchCategory(slug)
+      .then((category) => {
+        safeSet(this.setCategory, category);
+      })
+      .catch((error) => {
+        safeSet(this.setError, error?.message || 'Unable to load category.');
+      })
+      .finally(() => {
+        safeSet(this.setLoading, false);
+      });
+  }
+
+  #fetchCategory(slug) {
+    if (!slug) {
+      return Promise.reject(new Error('Unable to load category.'));
+    }
+
+    return this.client.fetch(`/categories/${slug}.json`)
+      .then((category) => ({
+        ...category,
+        kinds: Array.isArray(category.kinds) ? category.kinds : [],
+      }))
+      .catch(() => { throw new Error('Unable to load category.'); });
+  }
+}
