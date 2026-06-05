@@ -44,4 +44,4 @@
 |--------------|-------------|
 | `mysql_data/` | Persistent MySQL data directory. |
 | `proxy_cache/` | Cache storage for the darthjee/tent proxy. |
-| `proxy_configuration/` | Configuration files for the darthjee/tent proxy. |
+| `proxy_configuration/` | Configuration files for the darthjee/tent proxy. See [HOW_TO_USE_DARTHJEE-TENT.md](HOW_TO_USE_DARTHJEE-TENT.md) for configuration reference. |

@@ -4,7 +4,7 @@
 
 Oak is a Rails monolithic application that serves JSON endpoints and the SPA shell from the same process. The frontend is a Single Page Application (SPA) built with **React** + **Vite** in `frontend/`, styled with **Bootstrap**, and mounted into `frontend/index.html` via `frontend/assets/js/main.jsx`. All Rails code lives under `source/`.
 
-In development and production a reverse proxy (**darthjee/tent**) sits in front of the Rails app to cache HTML responses and simulate the production setup. In development the proxy runs as the `oak_proxy` Docker service (port 3000); in production the same proxy binary runs natively (without Docker).
+In development and production a reverse proxy (**darthjee/tent**) sits in front of the Rails app to cache HTML responses and simulate the production setup. In development the proxy runs as the `oak_proxy` Docker service (port 3000); in production the same proxy binary runs natively (without Docker). See [HOW_TO_USE_DARTHJEE-TENT.md](HOW_TO_USE_DARTHJEE-TENT.md) for full proxy configuration reference.
 
 ---
 
@@ -52,6 +52,7 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 - **Tent proxy** serves frontend differently by mode:
   - `FRONTEND_DEV_MODE=true`: proxies `/`, `/assets/js/`, `/assets/css/`, `/assets/images/`, `/@vite/`, `/node_modules/`, and `/@react-refresh` to `http://frontend:8080` (Vite + HMR).
   - `FRONTEND_DEV_MODE=false`: serves static files from `/var/www/html/static`; `/` is rewritten to `/index.html`.
+  - See [HOW_TO_USE_DARTHJEE-TENT.md](HOW_TO_USE_DARTHJEE-TENT.md) for rule/middleware details.
 
 ---
 

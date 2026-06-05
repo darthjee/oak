@@ -25,7 +25,7 @@ Browser on /#/<path>
         React renders/updates the page
 ```
 
-When `FRONTEND_DEV_MODE=true`, Tent proxies frontend assets and Vite endpoints to `frontend:8080`. When disabled, Tent serves built static files from `/var/www/html/static`.
+When `FRONTEND_DEV_MODE=true`, Tent proxies frontend assets and Vite endpoints to `frontend:8080`. When disabled, Tent serves built static files from `/var/www/html/static`. See [HOW_TO_USE_DARTHJEE-TENT.md](HOW_TO_USE_DARTHJEE-TENT.md) for proxy configuration details.
 
 ---
 
