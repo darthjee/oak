@@ -192,5 +192,13 @@ describe LoginController do
           .to be < Time.zone.now
       end
     end
+
+    context 'when requesting JSON' do
+      before do
+        delete :logoff, format: :json
+      end
+
+      it { expect(response).to have_http_status(:ok) }
+    end
   end
 end

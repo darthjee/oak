@@ -19,6 +19,7 @@ class LoginController < ApplicationController
 
   def logoff
     destroy_session
+    head :ok
   end
 
   private
