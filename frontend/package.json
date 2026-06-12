@@ -1,7 +1,7 @@
 {
   "name": "oak",
   "type": "module",
-  "version": "2.0.0",
+  "version": "1.6.8",
   "description": "Oak front-end",
   "main": "index.js",
   "scripts": {
