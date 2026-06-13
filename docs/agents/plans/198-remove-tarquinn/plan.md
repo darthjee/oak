@@ -74,7 +74,8 @@ File: `source/spec/controllers/concerns/user_required_spec.rb` _(new)_
 - `source/spec/controllers/concerns/user_required_spec.rb` — new spec file
 - `source/Gemfile` — remove `gem 'tarquinn'`
 - `source/Gemfile.lock` — updated by `bundle install`
-- `AGENTS.md` — remove Tarquinn section
+- `AGENTS.md` — remove Tarquinn section and `redirection_rule` / `skip_redirection_rule` usage from Controller Patterns
+- `docs/agents/architecture.md` — remove Tarquinn from line ~41 (redirect logic description) and from the Key Gems table
 - `docs/agents/tarquinn-usage.md` — delete
 
 ## CI Checks
