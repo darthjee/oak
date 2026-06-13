@@ -2,17 +2,25 @@
 
 module OnePageApplication
   extend ActiveSupport::Concern
-  include Tarquinn
 
   included do
     after_action :cache_control
 
     layout :layout_for_page
-    redirection_rule :render_root, :perform_angular_redirect?
-    skip_redirection_rule :render_root, :ajax?, :home?
+    before_action :maybe_redirect_to_spa
   end
 
   private
+
+  def maybe_redirect_to_spa
+    return if spa_redirect_skipped?
+
+    redirect_to render_root if perform_angular_redirect?
+  end
+
+  def spa_redirect_skipped?
+    ajax? || home?
+  end
 
   def render_root
     "/##{request.path}"

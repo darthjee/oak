@@ -7,8 +7,7 @@ module UserRequired
     include LoggedUser
     include OnePageApplication
 
-    redirection_rule :render_forbidden, :missing_user?
-    skip_redirection_rule :render_root, :missing_user?
+    before_action :redirect_if_unauthorized
 
     delegate :user_required?, to: :class
   end
@@ -25,6 +24,16 @@ module UserRequired
     def user_required?(action)
       require_user_actions.include?(action.to_sym)
     end
+  end
+
+  private
+
+  def redirect_if_unauthorized
+    redirect_to render_forbidden if missing_user?
+  end
+
+  def spa_redirect_skipped?
+    super || missing_user?
   end
 
   def render_forbidden
