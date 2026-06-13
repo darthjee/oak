@@ -5,7 +5,6 @@ module UserRequired
 
   included do
     include LoggedUser
-    include OnePageApplication
 
     prepend_before_action :redirect_if_unauthorized
 

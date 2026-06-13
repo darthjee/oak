@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class LoginController < ApplicationController
-  include OnePageApplication
   include LoggedUser
 
   protect_from_forgery except: %i[create logoff]
