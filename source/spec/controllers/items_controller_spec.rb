@@ -74,12 +74,12 @@ RSpec.describe ItemsController do
         get :index, params: parameters
       end
 
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to("/#/categories/#{category.slug}/items")
+      it 'renders the correct template' do
+        expect(response).to render_template(:index)
       end
     end
 
@@ -189,13 +189,12 @@ RSpec.describe ItemsController do
         get :show, params: params
       end
 
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'redirects to the correct path' do
-        expect(response)
-          .to redirect_to("/#/categories/#{category.slug}/items/#{item.id}")
+      it 'renders the correct template' do
+        expect(response).to render_template(:show)
       end
     end
 
@@ -265,12 +264,12 @@ RSpec.describe ItemsController do
         get :new, params: { category_slug: category.slug }
       end
 
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to("/#/categories/#{category.slug}/items/new")
+      it 'renders the correct template' do
+        expect(response).to render_template(:new)
       end
     end
 
@@ -489,12 +488,12 @@ RSpec.describe ItemsController do
           get :edit, params: { category_slug: category.slug, id: item.id }
         end
 
-        it 'returns a redirect response' do
-          expect(response).to have_http_status(:found) # HTTP status 302
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
         end
 
-        it 'redirects to the correct path' do
-          expect(response).to redirect_to("/#/categories/#{category.slug}/items/#{item.id}/edit")
+        it 'renders the correct template' do
+          expect(response).to render_template(:edit)
         end
       end
 
