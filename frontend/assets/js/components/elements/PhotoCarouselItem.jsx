@@ -9,9 +9,9 @@ import Carousel from 'react-bootstrap/cjs/Carousel.js';
  * @param {string} props.name item name for image alt
  * @returns {JSX.Element} single carousel item
  */
-export default function PhotoCarouselItem({ photo, name }) {
+export default function PhotoCarouselItem({ photo, name, ...props }) {
   return (
-    <Carousel.Item>
+    <Carousel.Item {...props}>
       <img
         className='d-block w-100'
         src={photo.photo_url}
