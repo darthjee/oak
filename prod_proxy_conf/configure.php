@@ -9,6 +9,10 @@ use Tent\Models\Server;
 use Tent\Models\FolderLocation;
 use Tent\Models\RequestMatcher;
 
-require_once __DIR__ . '/rules/frontend.php';
-require_once __DIR__ . '/rules/backend.php';
-require_once __DIR__ . '/rules/redirects.php';
+if (getenv('NEW_FRONTEND') === 'true') {
+    require_once __DIR__ . '/rules/frontend.php';
+    require_once __DIR__ . '/rules/backend.php';
+    require_once __DIR__ . '/rules/redirects.php';
+} else {
+    require_once __DIR__ . '/rules/backend_legacy.php';
+}
