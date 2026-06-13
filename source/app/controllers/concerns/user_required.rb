@@ -7,7 +7,7 @@ module UserRequired
     include LoggedUser
     include OnePageApplication
 
-    before_action :redirect_if_unauthorized
+    prepend_before_action :redirect_if_unauthorized
 
     delegate :user_required?, to: :class
   end
@@ -30,10 +30,6 @@ module UserRequired
 
   def redirect_if_unauthorized
     redirect_to render_forbidden if missing_user?
-  end
-
-  def spa_redirect_skipped?
-    super || missing_user?
   end
 
   def render_forbidden
