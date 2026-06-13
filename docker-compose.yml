@@ -162,3 +162,14 @@ services:
     command: /bin/bash bin/sidekiq.sh
     volumes:
       - ./prod_public_files/photos:/tmp/photos
+
+  oak_prod_navi:
+    image: darthjee/navi-hey:latest
+    volumes:
+      - .circleci/:/home/node/app
+    command: navi-hey --config navi_config.yaml
+    environment:
+      - OAK_PRODUCTION_URL=$OAK_PRODUCTION_URL
+      - NAVI_PORT=3000
+    ports:
+      - 0.0.0.0:3100:3000
