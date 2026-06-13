@@ -167,7 +167,7 @@ services:
     image: darthjee/navi-hey:latest
     volumes:
       - .circleci/:/home/node/app
-    command: navi-hey --config avi_config.yaml
+    command: navi-hey --config navi_config.yaml
     environment:
       - OAK_PRODUCTION_URL=$OAK_PRODUCTION_URL
       - NAVI_PORT=3000
