@@ -7,7 +7,7 @@ A user can arrive at the application through three entry points:
 | Entry point | What happens |
 |-------------|--------------|
 | `GET /` | Rails serves the SPA shell (`index.html`) with frontend assets. React boots and takes over. |
-| `GET /<path>` | Rails (via `OnePageApplication` + Tarquinn) redirects the browser to `/#/<path>`. No content is rendered directly. |
+| `GET /<path>` | Tent proxy redirects the browser to `/#/<path>` (302). No content is rendered directly. |
 | `/#/<path>` directly | The browser already has the SPA shell. React route resolution picks the page from the hash path. |
 
 ---
@@ -50,7 +50,7 @@ These are called by frontend clients/controllers directly (e.g., on form submit)
 
 ```
 GET /categories
-  → 302 redirect to /#/categories        (OnePageApplication concern)
+  → 302 redirect to /#/categories        (Tent proxy redirect rule)
 
 Browser loads /#/categories
   → GET /            (if shell not yet loaded)

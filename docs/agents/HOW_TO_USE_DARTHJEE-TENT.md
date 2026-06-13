@@ -66,7 +66,8 @@ proxy_configuration/
 ├── configure.php          # entry point — loads rule files
 └── rules/
     ├── backend.php        # routing rules for the API
-    └── frontend.php       # routing rules for the frontend
+    ├── frontend.php       # routing rules for the frontend
+    └── redirects.php      # catch-all redirects (loaded last)
 ```
 
 ### `configure.php`
@@ -80,9 +81,10 @@ use Tent\Configuration;
 
 require_once __DIR__ . '/rules/frontend.php';
 require_once __DIR__ . '/rules/backend.php';
+require_once __DIR__ . '/rules/redirects.php'; // always last
 ```
 
-You can split rules into as many files as makes sense for your project — the only requirement is that `configure.php` requires them all.
+You can split rules into as many files as makes sense for your project — the only requirement is that `configure.php` requires them all. Load catch-all rules (redirects, fallbacks) **last** so that more specific frontend and backend rules always take precedence.
 
 ---
 
@@ -622,7 +624,8 @@ my-project/
 │   ├── configure.php
 │   └── rules/
 │       ├── backend.php
-│       └── frontend.php
+│       ├── frontend.php
+│       └── redirects.php
 └── docker_volumes/
     ├── cache/                    # FileCacheMiddleware writes here
     └── static/                   # Vite build output, shared with Tent
@@ -664,6 +667,7 @@ services:
 
 require_once __DIR__ . '/rules/frontend.php';
 require_once __DIR__ . '/rules/backend.php';
+require_once __DIR__ . '/rules/redirects.php';
 ```
 
 ### `proxy_configuration/rules/backend.php`
