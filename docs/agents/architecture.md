@@ -35,7 +35,7 @@ Frontend-serving requests follow one of these paths:
 | Pattern | Behaviour |
 |---------|-----------|
 | `GET /` | Serves the SPA shell (`index.html`) handled by `HomeController`, which boots the React app. |
-| `GET /<path>` (HTML) | Redirected to `/#/<path>` by the `OnePageApplication` concern so client-side hash routing takes over navigation. |
+| `GET /<path>` (HTML) | Redirected to `/#/<path>` by the Tent proxy (`rules/redirects.php`) before the request reaches Rails. `OnePageApplication` remains as a fallback for any request that bypasses the proxy. |
 | `GET /<path>.json` | Returns JSON payloads for frontend data loading via Azeroth decorators. |
 
 The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, which uses the **Tarquinn** gem. Controllers include `OnePageApplication` to opt in to SPA behaviour.
