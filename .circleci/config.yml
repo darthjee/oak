@@ -38,8 +38,15 @@ workflows:
               only: /\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
+      - upload_fe_files:
+          requires: [test, checks, jasmine, frontend-checks]
+          filters:
+            tags:
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
       - release:
-          requires: [build-and-release, upload_proxy_files]
+          requires: [build-and-release, upload_proxy_files, upload_fe_files]
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
@@ -161,6 +168,29 @@ jobs:
       - run:
           name: Check JS Lint
           command: npm run lint
+  upload_fe_files:
+    docker:
+      - image: darthjee/vite_weave-base:0.0.4
+    steps:
+      - checkout
+      - run:
+          name: Set folder
+          command: rm source -rf; cp frontend/* frontend/.??* ./ -r; rm frontend -rf
+      - run:
+          name: Yarn install
+          command: yarn install
+      - run:
+          name: Build assets
+          command: deploy_frontend.sh build
+      - run:
+          name: Generate key file
+          command: deploy_frontend.sh generate_key_file
+      - run:
+          name: Generate folder
+          command: SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/static/ deploy_frontend.sh generate_folder
+      - run:
+          name: Upload assets
+          command: SOURCE=dist/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/static/ deploy_frontend.sh upload
   build-and-release:
     machine: true
     steps:

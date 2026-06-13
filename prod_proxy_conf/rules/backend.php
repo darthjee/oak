@@ -12,6 +12,6 @@ Configuration::buildRule([
         'host' => 'https://oak-api.ffavs.net/'
     ],
     'matchers' => [
-        ['method' => 'GET', 'uri' => '/', 'type' => 'begins_with']
+        ['uri' => '.json', 'type' => 'ends_with']
     ]
 ]);
