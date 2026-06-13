@@ -170,3 +170,6 @@ services:
     command: navi-hey --config avi_config.yaml
     environment:
       - OAK_PRODUCTION_URL=$OAK_PRODUCTION_URL
+      - NAVI_PORT=3000
+    ports:
+      - 0.0.0.0:3100:3000
