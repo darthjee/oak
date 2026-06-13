@@ -38,7 +38,7 @@ Frontend-serving requests follow one of these paths:
 | `GET /<path>` (HTML) | Redirected to `/#/<path>` by the Tent proxy (`rules/redirects.php`) before the request reaches Rails. `OnePageApplication` remains as a fallback for any request that bypasses the proxy. |
 | `GET /<path>.json` | Returns JSON payloads for frontend data loading via Azeroth decorators. |
 
-The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, which uses the **Tarquinn** gem. Controllers include `OnePageApplication` to opt in to SPA behaviour.
+The redirect logic lives in `app/controllers/concerns/one_page_application.rb` via a `before_action`. Controllers include `OnePageApplication` to opt in to SPA behaviour.
 
 ---
 
@@ -81,7 +81,6 @@ The redirect logic lives in `app/controllers/concerns/one_page_application.rb`, 
 | **[Azeroth](https://github.com/darthjee/azeroth)** | Generates standard CRUD controller actions and JSON serialization via decorators. See [azeroth-usage.md](azeroth-usage.md). |
 | **[Magicka](https://github.com/darthjee/magicka)** | Renders reusable form/display elements in ERB templates. See [magicka-usage.md](magicka-usage.md). |
 | **[Sinclair](https://github.com/darthjee/sinclair)** | Dynamic method builder; also used for configuration (`Sinclair::Configurable`), option objects, and plain models. See [sinclair-usage.md](sinclair-usage.md). |
-| **[Tarquinn](https://github.com/darthjee/tarquinn)** | Declarative controller-level redirection rules (powers the SPA redirect). See [tarquinn-usage.md](tarquinn-usage.md). |
 | **[Jace](https://github.com/darthjee/jace)** | Internal event/lifecycle hooks for service operations. See [jace-usage.md](jace-usage.md). |
 | **Sidekiq** | Background job processing (photo upload pipeline). |
 

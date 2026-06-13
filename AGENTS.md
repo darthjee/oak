@@ -66,18 +66,6 @@ Key features used in this project:
 
 When adding fields to views, prefer Magicka's built-in elements before creating new ones. Shared form partials (`_form.html.erb`) are used across `new`, `edit`, and `show` views using `form.only` to differentiate context.
 
-## Tarquinn Usage
-
-Oak uses the **tarquinn** gem for controller-level redirections. Refer to [tarquinn-usage.md](docs/agents/tarquinn-usage.md) for the full usage guide.
-
-Key features used in this project:
-
-- **`redirection_rule`** – Declares a redirect with one or more condition methods (or a block); fires when any condition is truthy
-- **`skip_redirection_rule`** – Prevents an inherited rule from firing when a condition is truthy
-- **`skip_redirection`** – Bypasses a rule for specific controller actions
-
-When adding new redirection logic, prefer `redirection_rule` in base controllers and use `skip_redirection_rule` / `skip_redirection` in child controllers to override inherited rules.
-
 ## Jace Usage
 
 Oak uses the **jace** gem for internal event-driven logic. Refer to [jace-usage.md](docs/agents/jace-usage.md) for the full usage guide.
