@@ -57,7 +57,7 @@ services:
     <<: *base
     build:
       context: source
-      dockerfile: dockerfiles/oak/Dockerfile
+      dockerfile: ../dockerfiles/oak/Dockerfile
     command: echo done
 
   base_prod_build:
