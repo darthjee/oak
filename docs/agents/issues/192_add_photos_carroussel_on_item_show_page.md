@@ -2,28 +2,43 @@
 
 ## Description
 
-The item show page in the new React frontend is not displaying the photos carousel that exists in the old Rails/AngularJS frontend.
+The item show page in the new React frontend displays the "Photos" heading but no carousel content, even when the JSON endpoint (`/categories/:slug/items/:id.json`) returns a non-empty `photos` array.
 
 ## Problem
 
-- The new frontend's item show page does not render the photos carousel.
-- The existing carousel is implemented as a Rails partial at `source/app/views/items/_form_carousel.html.erb`, which is only used by the old frontend.
+`PhotoCarouselItem` wraps `<Carousel.Item>` but does not forward extra props. react-bootstrap's `Carousel` uses `React.cloneElement` to inject `className="active"` (and a ref) into each direct child. Because `PhotoCarouselItem` ignores those injected props, the `active` class never reaches the underlying `<div class="carousel-item">`. Bootstrap CSS hides every `.carousel-item` that lacks `.active` (`display: none`), so all slides stay invisible.
 
-## Expected Behavior
+## Root Cause
 
-- The item show page in the new React frontend should display a photos carousel.
-- Individual photos within the carousel should be extracted as separate React components/elements.
+```jsx
+// Before — className injected by Carousel is silently dropped
+export default function PhotoCarouselItem({ photo, name }) {
+  return (
+    <Carousel.Item>   {/* never receives className="active" */}
+      <img ... />
+    </Carousel.Item>
+  );
+}
+```
 
 ## Solution
 
-- Create a new React component for the photos carousel using React and Bootstrap.
-- Extract individual photo items from the carousel into their own sub-component.
-- Reference the old carousel partial (`source/app/views/items/_form_carousel.html.erb`) as a guide for the expected structure and behavior.
+Forward all extra props from `Carousel` down to `<Carousel.Item>`:
+
+```jsx
+export default function PhotoCarouselItem({ photo, name, ...props }) {
+  return (
+    <Carousel.Item {...props}>
+      <img ... />
+    </Carousel.Item>
+  );
+}
+```
 
 ## Benefits
 
-- Feature parity between the old and new frontends for the item show page.
-- Improved user experience with a modern, React/Bootstrap-based carousel.
+- Photos carousel is now visible on the item show page in the new frontend.
+- Feature parity with the old Rails/AngularJS frontend.
 
 ---
 See issue for details: https://github.com/darthjee/oak/issues/192
