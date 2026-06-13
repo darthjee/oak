@@ -48,10 +48,27 @@ Configuration::buildRule([
 
 Add `require_once __DIR__ . '/rules/redirects.php';` as the **last** line in `configure.php`, after `frontend.php` and `backend.php`, so those rules always take precedence.
 
+### Step 3 — Update `docs/agents/HOW_TO_USE_DARTHJEE-TENT.md`
+
+- Add `redirects.php` to the "Configuration Folder Layout" directory tree and `configure.php` example.
+- Add a `RedirectMiddleware` entry to the middlewares reference section explaining its `pattern`/`replacement` props.
+
+### Step 4 — Update `docs/agents/flow.md`
+
+- Entry point table: change `GET /<path>` description from "Rails (via `OnePageApplication` + Tarquinn) redirects…" to "Tent proxy redirects the browser to `/#/<path>`."
+- Complete flow example ("User types `oakapp.com/categories`"): update the `302 redirect` line to credit the proxy, not `OnePageApplication concern`.
+
+### Step 5 — Update `docs/agents/architecture.md`
+
+- Request Routing table: update `GET /<path> (HTML)` row to say the redirect is handled by the Tent proxy (with `OnePageApplication` remaining as a fallback).
+
 ## Files to Change
 
 - `docker_volumes/proxy_configuration/rules/redirects.php` — new file with the catch-all redirect rule
 - `docker_volumes/proxy_configuration/configure.php` — add `require_once` for `redirects.php` at the end
+- `docs/agents/HOW_TO_USE_DARTHJEE-TENT.md` — add `redirects.php` to layout/example and document `RedirectMiddleware`
+- `docs/agents/flow.md` — update entry point table and flow example to credit the proxy
+- `docs/agents/architecture.md` — update Request Routing table
 
 ## Notes
 
