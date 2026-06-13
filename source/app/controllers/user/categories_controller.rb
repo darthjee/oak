@@ -2,7 +2,6 @@
 
 class User < ApplicationRecord
   class CategoriesController < ApplicationController
-    include OnePageApplication
     include LoggedUser
 
     protect_from_forgery except: %i[index]

@@ -25,9 +25,9 @@ describe Admin::UsersController do
         get :new
       end
 
-      it do
-        expect(response).to redirect_to('/#/admin/users/new')
-      end
+      it { expect(response).to be_successful }
+
+      it { expect(response).to render_template('admin/users/new') }
     end
 
     context 'when requesting json', :not_cached do
@@ -141,7 +141,9 @@ describe Admin::UsersController do
         get :index
       end
 
-      it { expect(response).to redirect_to('/#/admin/users') }
+      it { expect(response).to be_successful }
+
+      it { expect(response).to render_template('admin/users/index') }
     end
   end
 
@@ -251,9 +253,9 @@ describe Admin::UsersController do
         get :show, params: { id: user_id }
       end
 
-      it do
-        expect(response).to redirect_to("/#/admin/users/#{user_id}")
-      end
+      it { expect(response).to be_successful }
+
+      it { expect(response).to render_template('admin/users/show') }
     end
 
     context 'when requesting json', :not_cached do

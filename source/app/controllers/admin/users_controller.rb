@@ -2,8 +2,6 @@
 
 module Admin
   class UsersController < ApplicationController
-    include OnePageApplication
-
     protect_from_forgery except: %i[create update]
 
     resource_for :user,

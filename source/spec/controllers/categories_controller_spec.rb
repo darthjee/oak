@@ -188,12 +188,12 @@ RSpec.describe CategoriesController do
           get :edit, params: { slug: category.slug }
         end
 
-        it 'returns a redirect response' do
-          expect(response).to have_http_status(:found) # HTTP status 302
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
         end
 
-        it 'redirects to the correct path' do
-          expect(response).to redirect_to("/#/categories/#{category.slug}/edit")
+        it 'renders the correct template' do
+          expect(response).to render_template(:edit)
         end
       end
 
@@ -294,12 +294,12 @@ RSpec.describe CategoriesController do
         get :show, params: parameters
       end
 
-      it 'returns a redirect response' do
-        expect(response).to have_http_status(:found) # HTTP status 302
+      it 'returns a successful response' do
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'redirects to the correct path' do
-        expect(response).to redirect_to("/#/categories/#{slug}")
+      it 'renders the correct template' do
+        expect(response).to render_template(:show)
       end
     end
   end
