@@ -1,5 +1,6 @@
 import getHashQueryParams from '../utils/hashQueryParams.js';
 import HashRouteResolver from '../utils/HashRouteResolver.js';
+import { isLoggedIn } from '../utils/authState.js';
 
 /**
  * A generic HTTP client that handles query param forwarding and pagination header reading.
@@ -50,7 +51,7 @@ export default class GenericClient {
    */
   async fetch(path) {
     return this.#request(this.#buildUrl(path, getHashQueryParams(this.currentHash())), {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', ...this.#skipCacheHeader() },
     });
   }
 
@@ -68,6 +69,7 @@ export default class GenericClient {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        ...this.#skipCacheHeader(),
       },
       body: JSON.stringify(body),
     });
@@ -87,6 +89,7 @@ export default class GenericClient {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        ...this.#skipCacheHeader(),
       },
       body: JSON.stringify(body),
     });
@@ -102,7 +105,7 @@ export default class GenericClient {
    */
   async fetchIndex(path) {
     const response = await fetch(this.#buildUrl(path, this.#routeResolver.getPaginationParams()), {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', ...this.#skipCacheHeader() },
     });
 
     if (!response.ok) {
@@ -162,6 +165,10 @@ export default class GenericClient {
    * @returns {Promise<*>} parsed response body
    * @throws {Error} if the response is not ok
    */
+  #skipCacheHeader() {
+    return isLoggedIn() ? { 'X-Skip-Cache': '1' } : {};
+  }
+
   async #request(path, options) {
     const response = await fetch(path, options);
 

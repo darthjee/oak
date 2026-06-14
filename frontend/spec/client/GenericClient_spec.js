@@ -1,4 +1,5 @@
 import GenericClient from '../../assets/js/client/GenericClient.js';
+import { setLoggedIn } from '../../assets/js/utils/authState.js';
 import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
 
 describe('GenericClient', function() {
@@ -22,6 +23,7 @@ describe('GenericClient', function() {
 
   afterEach(function() {
     restoreGlobals();
+    setLoggedIn(false);
   });
 
   describe('#fetch', function() {
@@ -59,6 +61,29 @@ describe('GenericClient', function() {
       const client = new GenericClient(() => '');
 
       await expectAsync(client.fetch('/items.json')).toBeRejectedWithError('Request failed for /items.json');
+    });
+
+    it('includes X-Skip-Cache when user is logged in', async function() {
+      stubJsonResponse({ name: 'Item' });
+      setLoggedIn(true);
+
+      const client = new GenericClient(() => '');
+      await client.fetch('/items.json');
+
+      expect(global.fetch).toHaveBeenCalledWith('/items.json', {
+        headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
+      });
+    });
+
+    it('omits X-Skip-Cache when user is not logged in', async function() {
+      stubJsonResponse({ name: 'Item' });
+
+      const client = new GenericClient(() => '');
+      await client.fetch('/items.json');
+
+      expect(global.fetch).toHaveBeenCalledWith('/items.json', {
+        headers: { Accept: 'application/json' },
+      });
     });
   });
 
@@ -129,6 +154,33 @@ describe('GenericClient', function() {
 
       await expectAsync(client.fetchIndex('/categories.json')).toBeRejectedWithError('Request failed for /categories.json');
     });
+
+    it('includes X-Skip-Cache when user is logged in', async function() {
+      const headers = buildResponseHeaders({ page: '1', pages: '1', per_page: '10' });
+
+      stubJsonResponse([], { headers });
+      setLoggedIn(true);
+
+      const client = new GenericClient(() => '');
+      await client.fetchIndex('/categories.json');
+
+      expect(global.fetch).toHaveBeenCalledWith('/categories.json', {
+        headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
+      });
+    });
+
+    it('omits X-Skip-Cache when user is not logged in', async function() {
+      const headers = buildResponseHeaders({ page: '1', pages: '1', per_page: '10' });
+
+      stubJsonResponse([], { headers });
+
+      const client = new GenericClient(() => '');
+      await client.fetchIndex('/categories.json');
+
+      expect(global.fetch).toHaveBeenCalledWith('/categories.json', {
+        headers: { Accept: 'application/json' },
+      });
+    });
   });
 
   describe('#post', function() {
@@ -159,6 +211,25 @@ describe('GenericClient', function() {
         client.post('/categories/project/items.json', { item: { name: '' } })
       ).toBeRejectedWithError('Request failed for /categories/project/items.json');
     });
+
+    it('includes X-Skip-Cache when user is logged in', async function() {
+      stubJsonResponse({ id: 36, name: 'New Item' });
+      setLoggedIn(true);
+
+      const client = new GenericClient(() => '');
+      const payload = { item: { name: 'New Item' } };
+      await client.post('/categories/project/items.json', payload);
+
+      expect(global.fetch).toHaveBeenCalledWith('/categories/project/items.json', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Skip-Cache': '1',
+        },
+        body: JSON.stringify(payload),
+      });
+    });
   });
 
   describe('#patch', function() {
@@ -188,6 +259,25 @@ describe('GenericClient', function() {
       await expectAsync(
         client.patch('/categories/project/items/35.json', { item: { name: '' } })
       ).toBeRejectedWithError('Request failed for /categories/project/items/35.json');
+    });
+
+    it('includes X-Skip-Cache when user is logged in', async function() {
+      stubJsonResponse({ id: 35, name: 'Oak Updated' });
+      setLoggedIn(true);
+
+      const client = new GenericClient(() => '');
+      const payload = { item: { name: 'Oak Updated' } };
+      await client.patch('/categories/project/items/35.json', payload);
+
+      expect(global.fetch).toHaveBeenCalledWith('/categories/project/items/35.json', {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Skip-Cache': '1',
+        },
+        body: JSON.stringify(payload),
+      });
     });
   });
 });
