@@ -1,0 +1,138 @@
+<?php
+
+namespace Tent\Models;
+
+use Tent\RequestHandlers\RequestHandler;
+use Tent\Matchers\RequestMatcher;
+use Tent\Common\SimpleModel;
+
+/**
+ * Represents a routing rule for processing HTTP requests.
+ *
+ * A Rule contains multiple RequestMatchers to validate if a request applies to this rule.
+ * When a request matches, the Rule provides the RequestHandler to process the request.
+ */
+class Rule extends SimpleModel
+{
+    /**
+     * Default values for response attributes.
+     */
+    protected const DEFAULT_ATTRIBUTES = [
+        'handler' => null,
+        'handlerConfig' => [],
+        'matchers' => null,
+        'matchersConfig' => [],
+        'name' => null
+    ];
+
+    /**
+     * @var RequestHandler|null The handler used to process matching requests.
+     */
+    protected ?RequestHandler $handler;
+    protected array $handlerConfig;
+
+    /**
+     * @var RequestMatcher[]|null List of matchers to validate if a request applies to this rule.
+     */
+    protected ?array $matchers;
+    protected ?array $matchersConfig;
+
+    /**
+     * @var string|null Optional name for the rule.
+     */
+    protected ?string $name;
+
+    /**
+     * Returns the name of the rule, or null if not set.
+     *
+     * @return string|null
+     */
+    public function name(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Returns the RequestHandler for this rule.
+     *
+     * @return RequestHandler
+     */
+    public function handler(): RequestHandler
+    {
+        if (!isset($this->handler) && isset($this->handlerConfig)) {
+            $this->handler = RequestHandler::build($this->handlerConfig);
+        }
+        return $this->handler;
+    }
+
+    /**
+     * Returns the list of RequestMatchers for this rule.
+     *
+     * @return RequestMatcher[]
+     */
+    private function matchers(): array
+    {
+        if (!isset($this->matchers) && isset($this->matchersConfig)) {
+            $this->matchers = RequestMatcher::buildMatchers($this->matchersConfig);
+        }
+        return $this->matchers;
+    }
+
+    /**
+     * Builds a Rule using named parameters for handler and matchers.
+     *
+     * Example:
+     *   Rule::build([
+     *     'handler' => ['type' => 'proxy', 'host' => 'http://api.com'],
+     *     'matchers' => [
+     *         ['method' => 'GET', 'uri' => '/persons', 'type' => 'exact']
+     *     ]
+     *   ])
+     *
+     * @param array $params Associative array with keys:
+     *   - 'handler': array, parameters for RequestHandler::build.
+     *   - 'matchers': array of associative arrays, each with keys 'method', 'uri', 'type'.
+     *   - 'name': string|null, optional name for the rule.
+     * @return Rule
+     */
+    public static function build(array $params): self
+    {
+        $handlerParams = $params['handler'];
+        $handlerParams['middlewares'] = $params['middlewares'] ?? [];
+
+        return new self([
+            'handlerConfig' => $handlerParams,
+            'matchersConfig' => $params['matchers'] ?? [],
+            'name' => $params['name'] ?? null
+        ]);
+    }
+
+    /**
+     * Adds a new matcher to the rule from an array of parameters.
+     *
+     * @param array $params Associative array with keys 'method', 'uri', 'type' (see RequestMatcher::build).
+     * @return void
+     */
+    public function addMatcher(array $params): void
+    {
+        $this->matchers = $this->matchers();
+        $this->matchers[] = RequestMatcher::build($params);
+    }
+
+    /**
+     * Checks if the given request matches any of the rule's matchers.
+     *
+     * @param RequestInterface $request The incoming HTTP request.
+     * @return boolean True if any matcher applies to the request.
+     */
+    public function match(RequestInterface $request): bool
+    {
+        foreach ($this->matchers() as $matcher) {
+            if ($matcher->matches($request)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
