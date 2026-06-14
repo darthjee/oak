@@ -15,15 +15,6 @@ clients:
     timeout: 20000
 
 resources:
-  home:
-    - url: /
-      status: 200
-      assets:
-        - selector: 'link[rel="stylesheet"]'
-          attribute: href
-        - selector: 'script[src]'
-          attribute: src
-
   user_navigation:
     - url: /user/categories.json
       status: 200
