@@ -9,7 +9,7 @@ export default class HeaderClient {
    */
   checkLogin() {
     return fetch('/users/login.json', {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
     });
   }
 
@@ -32,7 +32,7 @@ export default class HeaderClient {
   logoff() {
     return fetch('/users/logoff.json', {
       method: 'DELETE',
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
     });
   }
 }

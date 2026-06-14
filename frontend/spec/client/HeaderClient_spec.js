@@ -21,7 +21,7 @@ describe('HeaderClient', function() {
       await client.checkLogin();
 
       expect(global.fetch).toHaveBeenCalledWith('/users/login.json', {
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
       });
     });
   });
@@ -50,7 +50,7 @@ describe('HeaderClient', function() {
 
       expect(global.fetch).toHaveBeenCalledWith('/users/logoff.json', {
         method: 'DELETE',
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', 'X-Skip-Cache': '1' },
       });
     });
   });
