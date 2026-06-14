@@ -24,6 +24,7 @@ describe('LoginModalClient', function() {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        'X-Skip-Cache': '1',
       },
       body: JSON.stringify({
         login: {

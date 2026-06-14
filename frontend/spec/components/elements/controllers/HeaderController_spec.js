@@ -1,4 +1,5 @@
 import HeaderController from '../../../../assets/js/components/elements/controllers/HeaderController.js';
+import { isLoggedIn, setLoggedIn } from '../../../../assets/js/utils/authState.js';
 import {
   buildSpies,
   flushPromises,
@@ -22,6 +23,7 @@ describe('HeaderController', function() {
 
   afterEach(function() {
     restoreGlobals();
+    setLoggedIn(false);
   });
 
   it('loads login state and categories in buildEffect', async function() {
@@ -51,6 +53,7 @@ describe('HeaderController', function() {
     await flushPromises();
 
     expect(setLogged).toHaveBeenCalledWith(true);
+    expect(isLoggedIn()).toBe(true);
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'miniatures', name: 'Miniatures' },
     ]);
@@ -85,6 +88,7 @@ describe('HeaderController', function() {
     await flushPromises();
 
     expect(setLogged).toHaveBeenCalledWith(false);
+    expect(isLoggedIn()).toBe(false);
     expect(setLoading).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).toHaveBeenCalledWith(null);
@@ -117,6 +121,7 @@ describe('HeaderController', function() {
     await controller.handleLogoff();
 
     expect(setLogged).toHaveBeenCalledWith(false);
+    expect(isLoggedIn()).toBe(false);
     expect(setLoading).toHaveBeenCalledWith(true);
     expect(setCategories).toHaveBeenCalledWith([
       { slug: 'all', name: 'All Categories' },

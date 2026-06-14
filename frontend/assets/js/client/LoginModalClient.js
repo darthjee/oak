@@ -15,6 +15,7 @@ export default class LoginModalClient {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        'X-Skip-Cache': '1',
       },
       body: JSON.stringify({
         login: { login, password },
