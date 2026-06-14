@@ -1,4 +1,5 @@
 import HeaderClient from '../../../client/HeaderClient.js';
+import { setLoggedIn } from '../../../utils/authState.js';
 
 /**
  * Manages header state by fetching login status and categories from the API.
@@ -123,7 +124,9 @@ export default class HeaderController {
   }
 
   #setLoggedFromSession(safeSet, session) {
-    safeSet(this.setLogged, Boolean(session));
+    const logged = Boolean(session);
+    setLoggedIn(logged);
+    safeSet(this.setLogged, logged);
   }
 
   #parseCategoriesResponse(response) {
