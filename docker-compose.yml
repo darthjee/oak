@@ -119,7 +119,7 @@ services:
     env_file: .env
   
   oak_proxy:
-    image: darthjee/tent:0.7.6
+    image: darthjee/tent:0.7.7
     container_name: oak_proxy
     env_file: .env
     volumes:
