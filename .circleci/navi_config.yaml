@@ -28,8 +28,6 @@ resources:
             - pages: headers['pages']
             - page_key: page
             - zero_indexed: false
-    - url: /categories
-      status: 302
 
   paginated_categories:
     - url: /categories.json?page={:page}
@@ -41,14 +39,10 @@ resources:
         - resource: category_items
           parameters:
             category_slug: parsedBody.slug
-    - url: /categories?page={:page}
-      status: 302
 
   category:
     - url: /categories/{:slug}.json
       status: 200
-    - url: /categories/{:slug}
-      status: 302
 
   category_items:
     - url: /categories/{:category_slug}/items.json
@@ -59,8 +53,6 @@ resources:
             - pages: headers['pages']
             - page_key: page
             - zero_indexed: false
-    - url: /categories/{:category_slug}/items
-      status: 302
 
   paginated_category_items:
     - url: /categories/{:category_slug}/items.json?page={:page}
@@ -70,14 +62,10 @@ resources:
           parameters:
             id: parsedBody.id
             category_slug: parsedBody.category_slug
-    - url: /categories/{:category_slug}/items?page={:page}
-      status: 302
 
   category_item:
     - url: /categories/{:category_slug}/items/{:id}.json
       status: 200
-    - url: /categories/{:category_slug}/items/{:id}
-      status: 302
 
   kinds:
     - url: /kinds.json
@@ -88,8 +76,6 @@ resources:
             - pages: headers['pages']
             - page_key: page
             - zero_indexed: false
-    - url: /kinds
-      status: 302
 
   paginated_kinds:
     - url: /kinds.json?page={:page}
@@ -98,11 +84,7 @@ resources:
         - resource: kind
           parameters:
             slug: parsedBody.slug
-    - url: /kinds?page={:page}
-      status: 302
 
   kind:
     - url: /kinds/{:slug}.json
       status: 200
-    - url: /kinds/{:slug}
-      status: 302
