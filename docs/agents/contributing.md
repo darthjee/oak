@@ -164,6 +164,46 @@ Each file should define exactly one class or module. The file name must match th
 
 Methods should do one thing and stay within 5 lines when possible. If a method is growing, extract the excess into focused private helper methods.
 
+## Dependency Injection
+
+Classes must receive their dependencies (collaborators, configuration, data) as initializer arguments. A class must never reach out to load files, read environment variables, or query global state on its own.
+
+This makes every class independently testable: tests simply instantiate the class with the data they need, without touching the filesystem or environment.
+
+*Example:*
+```ruby
+# Good: class receives its collaborator — easy to test
+class ItemPublisher
+  def initialize(item:, notifier: NotificationJob)
+    @item = item
+    @notifier = notifier
+  end
+
+  def call
+    item.update!(status: :published)
+    notifier.perform_later(item)
+  end
+
+  private
+
+  attr_reader :item, :notifier
+end
+
+# Bad: class reaches out to load its own dependency — hard to test
+class ItemPublisher
+  def initialize(item)
+    @item = item
+  end
+
+  def call
+    item.update!(status: :published)
+    NotificationJob.perform_later(item) # ❌ hardcoded dependency
+  end
+end
+```
+
+This principle applies to all classes — including builders and decorators. If a class needs data or a collaborator, it gets it through its initializer.
+
 ## Refactoring Guidelines
 
 When refactoring, aim to:
