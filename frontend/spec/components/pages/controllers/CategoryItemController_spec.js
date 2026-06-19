@@ -1,15 +1,12 @@
 import CategoryItemController, { getCategoryItemParamsFromHash } from '../../../../assets/js/components/pages/controllers/CategoryItemController.js';
 import GenericClient from '../../../../assets/js/client/GenericClient.js';
+import { isLoggedIn, setLoggedIn } from '../../../../assets/js/utils/authState.js';
 import {
   buildSpies,
   flushPromises,
-  preserveGlobals,
-  stubFetch,
-  stubLoginFetch,
 } from '../../../support/factories.js';
 
 describe('CategoryItemController', function() {
-  let restoreGlobals;
   let mockClient;
 
   const buildMockClient = (overrides = {}) => ({
@@ -28,12 +25,11 @@ describe('CategoryItemController', function() {
   );
 
   beforeEach(function() {
-    restoreGlobals = preserveGlobals('fetch');
     mockClient = buildMockClient();
   });
 
   afterEach(function() {
-    restoreGlobals();
+    setLoggedIn(false);
   });
 
   describe('getCategoryItemParamsFromHash', function() {
@@ -56,7 +52,7 @@ describe('CategoryItemController', function() {
     });
   });
 
-  it('fetches category item and login state in buildEffect', async function() {
+  it('fetches category item in buildEffect without waiting on a login check', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
     const item = {
       id: 35,
@@ -72,7 +68,6 @@ describe('CategoryItemController', function() {
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items/35?foo=bar'),
       fetch: jasmine.createSpy('fetch').and.returnValue(Promise.resolve(item)),
     });
-    stubLoginFetch(200);
 
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
@@ -81,45 +76,54 @@ describe('CategoryItemController', function() {
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project/items/35.json');
     expect(setItem).toHaveBeenCalledWith(item);
+    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
+  it('seeds logged state from the current authState value', function() {
+    setLoggedIn(true);
+    const { setItem, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
     expect(setLogged).toHaveBeenCalledWith(true);
-    expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    expect(isLoggedIn()).toBe(true);
 
     cleanup();
   });
 
-  it('sets logged to false when login returns 404', async function() {
+  it('updates logged state when authState changes after mount', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
-
-    stubLoginFetch(404);
 
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
+    setLogged.calls.reset();
 
-    expect(setLogged).toHaveBeenCalledWith(false);
-    expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    setLoggedIn(true);
+
+    expect(setLogged).toHaveBeenCalledWith(true);
 
     cleanup();
   });
 
-  it('sets logged to false when login returns 401', async function() {
+  it('stops updating logged state after unmount', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
-
-    stubLoginFetch(401);
 
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
-
-    expect(setLogged).toHaveBeenCalledWith(false);
-    expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
-
     cleanup();
+    setLogged.calls.reset();
+
+    setLoggedIn(true);
+
+    expect(setLogged).not.toHaveBeenCalled();
   });
 
   it('calls setError when category item fetch fails', async function() {
@@ -131,7 +135,6 @@ describe('CategoryItemController', function() {
         Promise.reject(new Error('Request failed for /categories/project/items/35.json'))
       ),
     });
-    stubLoginFetch(404);
 
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
@@ -144,37 +147,12 @@ describe('CategoryItemController', function() {
     cleanup();
   });
 
-  it('calls setError when login check returns an unexpected status', async function() {
-    const { setItem, setLogged, setLoading, setError } = buildSetters();
-
-    stubFetch((url) => {
-      if (url === '/users/login.json') {
-        return Promise.resolve({ ok: false, status: 500 });
-      }
-
-      throw new Error(`Unexpected URL: ${url}`);
-    });
-
-    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
-    const cleanup = controller.buildEffect()();
-
-    await flushPromises();
-
-    expect(setItem).not.toHaveBeenCalled();
-    expect(setLogged).not.toHaveBeenCalled();
-    expect(setError).toHaveBeenCalledWith('Unable to check login status.');
-    expect(setLoading).toHaveBeenCalledWith(false);
-
-    cleanup();
-  });
-
   it('calls setError when params cannot be extracted from hash', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items'),
     });
-    stubLoginFetch(404);
 
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
@@ -191,8 +169,6 @@ describe('CategoryItemController', function() {
   it('does not call setters after unmount', async function() {
     const { setItem, setLogged, setLoading, setError } = buildSetters();
 
-    stubLoginFetch(404);
-
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
     const cleanup = controller.buildEffect()();
 
@@ -201,7 +177,6 @@ describe('CategoryItemController', function() {
     await flushPromises();
 
     expect(setItem).not.toHaveBeenCalled();
-    expect(setLogged).not.toHaveBeenCalled();
     expect(setLoading).not.toHaveBeenCalled();
     expect(setError).not.toHaveBeenCalled();
   });
@@ -212,21 +187,5 @@ describe('CategoryItemController', function() {
     const controller = new CategoryItemController(setItem, setLogged, setLoading, setError);
 
     expect(controller.client).toBeInstanceOf(GenericClient);
-  });
-
-  it('calls setError with fallback message when error has no message', async function() {
-    const { setItem, setLogged, setLoading, setError } = buildSetters();
-
-    stubFetch(() => Promise.reject(null));
-
-    const controller = new CategoryItemController(setItem, setLogged, setLoading, setError, mockClient);
-    const cleanup = controller.buildEffect()();
-
-    await flushPromises();
-
-    expect(setError).toHaveBeenCalledWith('Unable to load category item.');
-    expect(setLoading).toHaveBeenCalledWith(false);
-
-    cleanup();
   });
 });

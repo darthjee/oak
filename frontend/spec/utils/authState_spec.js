@@ -1,8 +1,42 @@
-import { isLoggedIn, setLoggedIn } from '../../assets/js/utils/authState.js';
+import { isLoggedIn, setLoggedIn, subscribe } from '../../assets/js/utils/authState.js';
 
 describe('authState', function() {
   afterEach(function() {
     setLoggedIn(false);
+  });
+
+  describe('subscribe', function() {
+    it('notifies listeners when the login state changes', function() {
+      const listener = jasmine.createSpy('listener');
+      const unsubscribe = subscribe(listener);
+
+      setLoggedIn(true);
+
+      expect(listener).toHaveBeenCalledWith(true);
+
+      unsubscribe();
+    });
+
+    it('does not notify listeners when the value does not change', function() {
+      const listener = jasmine.createSpy('listener');
+      const unsubscribe = subscribe(listener);
+
+      setLoggedIn(false);
+
+      expect(listener).not.toHaveBeenCalled();
+
+      unsubscribe();
+    });
+
+    it('stops notifying after unsubscribing', function() {
+      const listener = jasmine.createSpy('listener');
+      const unsubscribe = subscribe(listener);
+
+      unsubscribe();
+      setLoggedIn(true);
+
+      expect(listener).not.toHaveBeenCalled();
+    });
   });
 
   describe('isLoggedIn', function() {

@@ -1,13 +1,11 @@
 import CategoryItemsController from '../../../../assets/js/components/pages/controllers/CategoryItemsController.js';
+import { isLoggedIn, setLoggedIn } from '../../../../assets/js/utils/authState.js';
 import {
   buildSpies,
   flushPromises,
-  preserveGlobals,
-  stubLoginFetch,
 } from '../../../support/factories.js';
 
 describe('CategoryItemsController', function() {
-  let restoreGlobals;
   let mockClient;
 
   const buildMockClient = (overrides = {}) => ({
@@ -27,15 +25,14 @@ describe('CategoryItemsController', function() {
   );
 
   beforeEach(function() {
-    restoreGlobals = preserveGlobals('fetch');
     mockClient = buildMockClient();
   });
 
   afterEach(function() {
-    restoreGlobals();
+    setLoggedIn(false);
   });
 
-  it('fetches category items and login state in buildEffect', async function() {
+  it('fetches category items in buildEffect without waiting on a login check', async function() {
     const { setItems, setLogged, setPagination, setLoading, setError } = buildSetters();
 
     mockClient = buildMockClient({
@@ -47,7 +44,6 @@ describe('CategoryItemsController', function() {
         })
       ),
     });
-    stubLoginFetch(200);
 
     const controller = new CategoryItemsController(
       setItems, setLogged, setPagination, setLoading, setError, mockClient
@@ -61,17 +57,29 @@ describe('CategoryItemsController', function() {
       { id: 35, name: 'Oak', snap_url: 'http://example.com/oak.png', link: null },
     ]);
     expect(setPagination).toHaveBeenCalledWith({ page: 2, pages: 6, perPage: 12 });
-    expect(setLogged).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).not.toHaveBeenCalled();
 
     cleanup();
   });
 
-  it('sets logged to false when login returns 404', async function() {
+  it('seeds logged state from the current authState value', function() {
+    setLoggedIn(true);
     const { setItems, setLogged, setPagination, setLoading, setError } = buildSetters();
 
-    stubLoginFetch(404);
+    const controller = new CategoryItemsController(
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    expect(setLogged).toHaveBeenCalledWith(true);
+    expect(isLoggedIn()).toBe(true);
+
+    cleanup();
+  });
+
+  it('updates logged state when authState changes after mount', async function() {
+    const { setItems, setLogged, setPagination, setLoading, setError } = buildSetters();
 
     const controller = new CategoryItemsController(
       setItems, setLogged, setPagination, setLoading, setError, mockClient
@@ -79,13 +87,30 @@ describe('CategoryItemsController', function() {
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
+    setLogged.calls.reset();
 
-    expect(setLogged).toHaveBeenCalledWith(false);
-    expect(setPagination).toHaveBeenCalledWith({ page: 1, pages: 1, perPage: 10 });
-    expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    setLoggedIn(true);
+
+    expect(setLogged).toHaveBeenCalledWith(true);
 
     cleanup();
+  });
+
+  it('stops updating logged state after unmount', async function() {
+    const { setItems, setLogged, setPagination, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryItemsController(
+      setItems, setLogged, setPagination, setLoading, setError, mockClient
+    );
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+    cleanup();
+    setLogged.calls.reset();
+
+    setLoggedIn(true);
+
+    expect(setLogged).not.toHaveBeenCalled();
   });
 
   it('calls setError when category items fetch fails', async function() {
@@ -97,7 +122,6 @@ describe('CategoryItemsController', function() {
         Promise.reject(new Error('Request failed for /categories/project/items.json'))
       ),
     });
-    stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
       setItems, setLogged, setPagination, setLoading, setError, mockClient
@@ -118,7 +142,6 @@ describe('CategoryItemsController', function() {
     mockClient = buildMockClient({
       currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories'),
     });
-    stubLoginFetch(404);
 
     const controller = new CategoryItemsController(
       setItems, setLogged, setPagination, setLoading, setError, mockClient
@@ -137,8 +160,6 @@ describe('CategoryItemsController', function() {
   it('does not call setters after unmount', async function() {
     const { setItems, setLogged, setPagination, setLoading, setError } = buildSetters();
 
-    stubLoginFetch(404);
-
     const controller = new CategoryItemsController(
       setItems, setLogged, setPagination, setLoading, setError, mockClient
     );
@@ -149,7 +170,6 @@ describe('CategoryItemsController', function() {
     await flushPromises();
 
     expect(setItems).not.toHaveBeenCalled();
-    expect(setLogged).not.toHaveBeenCalled();
     expect(setPagination).not.toHaveBeenCalled();
     expect(setLoading).not.toHaveBeenCalled();
     expect(setError).not.toHaveBeenCalled();

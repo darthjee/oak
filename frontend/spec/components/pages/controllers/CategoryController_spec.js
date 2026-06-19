@@ -1,5 +1,6 @@
 import CategoryController, { getCategorySlugFromHash } from '../../../../assets/js/components/pages/controllers/CategoryController.js';
 import GenericClient from '../../../../assets/js/client/GenericClient.js';
+import { isLoggedIn, setLoggedIn } from '../../../../assets/js/utils/authState.js';
 import {
   buildSpies,
   flushPromises,
@@ -25,7 +26,10 @@ describe('CategoryController', function() {
 
   beforeEach(function() {
     mockClient = buildMockClient();
-    spyOn(CategoryController.prototype, 'checkLogin').and.returnValue(Promise.resolve(true));
+  });
+
+  afterEach(function() {
+    setLoggedIn(false);
   });
 
   describe('getCategorySlugFromHash', function() {
@@ -48,7 +52,7 @@ describe('CategoryController', function() {
     });
   });
 
-  it('fetches category in buildEffect', async function() {
+  it('fetches category in buildEffect without waiting on a login check', async function() {
     const { setCategory, setLogged, setLoading, setError } = buildSetters();
     const category = {
       slug: 'project',
@@ -68,11 +72,54 @@ describe('CategoryController', function() {
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project.json');
     expect(setCategory).toHaveBeenCalledWith(category);
-    expect(setLogged).toHaveBeenCalledWith(true);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).not.toHaveBeenCalled();
 
     cleanup();
+  });
+
+  it('seeds logged state from the current authState value', function() {
+    setLoggedIn(true);
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    expect(setLogged).toHaveBeenCalledWith(true);
+    expect(isLoggedIn()).toBe(true);
+
+    cleanup();
+  });
+
+  it('updates logged state when authState changes after mount', async function() {
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+    setLogged.calls.reset();
+
+    setLoggedIn(true);
+
+    expect(setLogged).toHaveBeenCalledWith(true);
+
+    cleanup();
+  });
+
+  it('stops updating logged state after unmount', async function() {
+    const { setCategory, setLogged, setLoading, setError } = buildSetters();
+
+    const controller = new CategoryController(setCategory, setLogged, setLoading, setError, mockClient);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+    cleanup();
+    setLogged.calls.reset();
+
+    setLoggedIn(true);
+
+    expect(setLogged).not.toHaveBeenCalled();
   });
 
   it('normalizes missing kinds to an empty array', async function() {

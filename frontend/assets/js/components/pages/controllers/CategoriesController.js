@@ -1,5 +1,6 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
+import { isLoggedIn, subscribe } from '../../../utils/authState.js';
 
 /**
  * Manages categories page state by fetching categories and login status from the API.
@@ -33,7 +34,7 @@ export default class CategoriesController extends BasePageController {
   }
 
   /**
-   * Builds the React effect that loads categories and login data on mount.
+   * Builds the React effect that loads categories on mount and tracks login state.
    *
    * @returns {Function} effect function that starts data loading and returns a cleanup function
    */
@@ -42,30 +43,30 @@ export default class CategoriesController extends BasePageController {
       let mounted = true;
       const safeSet = this.buildSafeSetter(() => mounted);
 
+      safeSet(this.setLogged, isLoggedIn());
+      const unsubscribe = subscribe((logged) => safeSet(this.setLogged, logged));
+
       this.#loadData(safeSet);
 
       return () => {
         mounted = false;
+        unsubscribe();
       };
     };
   }
 
   #loadData(safeSet) {
-    Promise.all([
-      this.#fetchCategories(),
-      this.checkLogin(),
-    ])
-      .then(([categoriesData, logged]) => this.#applyData(safeSet, categoriesData, logged))
+    this.#fetchCategories()
+      .then((categoriesData) => this.#applyData(safeSet, categoriesData))
       .catch((error) => this.#handleError(safeSet, error))
       .finally(() => {
         safeSet(this.setLoading, false);
       });
   }
 
-  #applyData(safeSet, categoriesData, logged) {
+  #applyData(safeSet, categoriesData) {
     safeSet(this.setCategories, categoriesData.categories);
     safeSet(this.setPagination, categoriesData.pagination);
-    safeSet(this.setLogged, logged);
   }
 
   #handleError(safeSet, error) {

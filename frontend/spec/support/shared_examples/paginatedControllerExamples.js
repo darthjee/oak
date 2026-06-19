@@ -1,10 +1,9 @@
 import GenericClient from '../../../assets/js/client/GenericClient.js';
+import { isLoggedIn, setLoggedIn } from '../../../assets/js/utils/authState.js';
 import {
   buildPaginatedMockClient,
   buildSpies,
   flushPromises,
-  stubFetch,
-  stubLoginFetch,
 } from '../factories.js';
 
 /**
@@ -44,14 +43,17 @@ export const itBehavesLikeAPaginatedController = ({
     'setPrimary', 'setPagination', 'setLogged', 'setLoading', 'setError'
   );
 
-  it('fetches data and login state in buildEffect', async function() {
+  afterEach(function() {
+    setLoggedIn(false);
+  });
+
+  it('fetches data in buildEffect without waiting on a login check', async function() {
     const spies = makeSpies();
     const client = buildPaginatedMockClient({
       fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
         Promise.resolve({ data: sampleData, pagination: { page: 2, pages: 9, perPage: 12 } })
       ),
     });
-    stubLoginFetch(200);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -61,39 +63,62 @@ export const itBehavesLikeAPaginatedController = ({
     expect(client.fetchIndex).toHaveBeenCalledWith(endpoint);
     expect(spies.setPrimary).toHaveBeenCalledWith(sampleData);
     expect(spies.setPagination).toHaveBeenCalledWith({ page: 2, pages: 9, perPage: 12 });
-    expect(spies.setLogged).toHaveBeenCalledWith(true);
     expect(spies.setLoading).toHaveBeenCalledWith(false);
     expect(spies.setError).not.toHaveBeenCalled();
 
     cleanup();
   });
 
-  it('sets logged to false when login returns 404', async function() {
+  it('seeds logged state from the current authState value', function() {
+    setLoggedIn(true);
     const spies = makeSpies();
-    const client = buildPaginatedMockClient({
-      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(
-        Promise.resolve({ data: [], pagination: { page: 2, pages: 9, perPage: 12 } })
-      ),
-    });
-    stubLoginFetch(404);
+    const client = buildPaginatedMockClient();
+
+    const controller = buildController(spies, client);
+    const cleanup = controller.buildEffect()();
+
+    expect(spies.setLogged).toHaveBeenCalledWith(true);
+    expect(isLoggedIn()).toBe(true);
+
+    cleanup();
+  });
+
+  it('updates logged state when authState changes after mount', async function() {
+    const spies = makeSpies();
+    const client = buildPaginatedMockClient();
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
+    spies.setLogged.calls.reset();
 
-    expect(spies.setLogged).toHaveBeenCalledWith(false);
-    expect(spies.setPagination).toHaveBeenCalledWith({ page: 2, pages: 9, perPage: 12 });
-    expect(spies.setLoading).toHaveBeenCalledWith(false);
-    expect(spies.setError).not.toHaveBeenCalled();
+    setLoggedIn(true);
+
+    expect(spies.setLogged).toHaveBeenCalledWith(true);
 
     cleanup();
+  });
+
+  it('stops updating logged state after unmount', async function() {
+    const spies = makeSpies();
+    const client = buildPaginatedMockClient();
+
+    const controller = buildController(spies, client);
+    const cleanup = controller.buildEffect()();
+
+    await flushPromises();
+    cleanup();
+    spies.setLogged.calls.reset();
+
+    setLoggedIn(true);
+
+    expect(spies.setLogged).not.toHaveBeenCalled();
   });
 
   it('calls client.fetchIndex with the correct endpoint', async function() {
     const spies = makeSpies();
     const client = buildPaginatedMockClient();
-    stubLoginFetch(404);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -113,7 +138,6 @@ export const itBehavesLikeAPaginatedController = ({
         Promise.reject(new Error(`Request failed for ${endpoint}`))
       ),
     });
-    stubLoginFetch(404);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -129,7 +153,6 @@ export const itBehavesLikeAPaginatedController = ({
   it('does not call setters after unmount', async function() {
     const spies = makeSpies();
     const client = buildPaginatedMockClient();
-    stubLoginFetch(404);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -140,14 +163,12 @@ export const itBehavesLikeAPaginatedController = ({
 
     expect(spies.setPrimary).not.toHaveBeenCalled();
     expect(spies.setPagination).not.toHaveBeenCalled();
-    expect(spies.setLogged).not.toHaveBeenCalled();
     expect(spies.setLoading).not.toHaveBeenCalled();
   });
 
   it('applies fallback pagination when client returns minimal pagination', async function() {
     const spies = makeSpies();
     const client = buildPaginatedMockClient();
-    stubLoginFetch(404);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -157,21 +178,6 @@ export const itBehavesLikeAPaginatedController = ({
     expect(spies.setPagination).toHaveBeenCalledWith({ page: 1, pages: 1, perPage: 10 });
     expect(spies.setLoading).toHaveBeenCalledWith(false);
     expect(spies.setError).not.toHaveBeenCalled();
-
-    cleanup();
-  });
-
-  it('calls global.fetch directly for login check', async function() {
-    const spies = makeSpies();
-    const client = buildPaginatedMockClient();
-    stubLoginFetch(404);
-
-    const controller = buildController(spies, client);
-    const cleanup = controller.buildEffect()();
-
-    await flushPromises();
-
-    expect(global.fetch).toHaveBeenCalledWith('/users/login.json', { headers: { Accept: 'application/json' } });
 
     cleanup();
   });
@@ -190,7 +196,6 @@ export const itBehavesLikeAPaginatedController = ({
         Promise.resolve({ data: null, pagination: { page: 1, pages: 1, perPage: 10 } })
       ),
     });
-    stubLoginFetch(404);
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -206,8 +211,9 @@ export const itBehavesLikeAPaginatedController = ({
 
   it('calls setError with fallback message when error has no message', async function() {
     const spies = makeSpies();
-    const client = buildPaginatedMockClient();
-    stubFetch(() => Promise.reject(null));
+    const client = buildPaginatedMockClient({
+      fetchIndex: jasmine.createSpy('fetchIndex').and.returnValue(Promise.reject(null)),
+    });
 
     const controller = buildController(spies, client);
     const cleanup = controller.buildEffect()();
@@ -215,22 +221,6 @@ export const itBehavesLikeAPaginatedController = ({
     await flushPromises();
 
     expect(spies.setError).toHaveBeenCalledWith(unexpectedErrorMsg);
-    expect(spies.setLoading).toHaveBeenCalledWith(false);
-
-    cleanup();
-  });
-
-  it('calls setError when login returns an unexpected status', async function() {
-    const spies = makeSpies();
-    const client = buildPaginatedMockClient();
-    stubLoginFetch(500);
-
-    const controller = buildController(spies, client);
-    const cleanup = controller.buildEffect()();
-
-    await flushPromises();
-
-    expect(spies.setError).toHaveBeenCalledWith('Unable to check login status.');
     expect(spies.setLoading).toHaveBeenCalledWith(false);
 
     cleanup();
