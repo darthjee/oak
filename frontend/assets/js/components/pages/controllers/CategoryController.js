@@ -1,6 +1,7 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
 import Router from '../../../utils/Router.js';
+import { isLoggedIn, subscribe } from '../../../utils/authState.js';
 
 /**
  * Extracts category slug from a category hash route.
@@ -13,7 +14,7 @@ export function getCategorySlugFromHash(hash = '') {
 }
 
 /**
- * Manages category page state by fetching category data from the API.
+ * Manages category page state by fetching category data from the API and tracking login state.
  */
 export default class CategoryController extends BasePageController {
   /**
@@ -35,7 +36,7 @@ export default class CategoryController extends BasePageController {
   }
 
   /**
-   * Builds the React effect that loads category data on mount.
+   * Builds the React effect that loads category data on mount and tracks login state.
    *
    * @returns {Function} effect function that starts loading and returns a cleanup function
    */
@@ -45,31 +46,27 @@ export default class CategoryController extends BasePageController {
       const safeSet = this.buildSafeSetter(() => mounted);
       const slug = getCategorySlugFromHash(this.client.currentHash());
 
+      safeSet(this.setLogged, isLoggedIn());
+      const unsubscribe = subscribe((logged) => safeSet(this.setLogged, logged));
+
       this.#loadData(safeSet, slug);
 
       return () => {
         mounted = false;
+        unsubscribe();
       };
     };
   }
 
   #loadData(safeSet, slug) {
-    this.#fetchCategoryAndLogin(slug)
+    this.#fetchCategory(slug)
       .then(this.#setCategoryState.bind(this, safeSet))
       .catch(this.#setErrorState.bind(this, safeSet))
       .finally(this.#setLoadingState.bind(this, safeSet));
   }
 
-  #fetchCategoryAndLogin(slug) {
-    return Promise.all([
-      this.#fetchCategory(slug),
-      this.checkLogin(),
-    ]);
-  }
-
-  #setCategoryState(safeSet, [category, logged]) {
+  #setCategoryState(safeSet, category) {
     safeSet(this.setCategory, category);
-    safeSet(this.setLogged, logged);
   }
 
   #setErrorState(safeSet, error) {

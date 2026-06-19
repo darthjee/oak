@@ -1,8 +1,9 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
+import { isLoggedIn, subscribe } from '../../../utils/authState.js';
 
 /**
- * Manages kinds page state by fetching kinds and login status from the API.
+ * Manages kinds page state by fetching kinds from the API and tracking login state.
  */
 export default class KindsController extends BasePageController {
   /**
@@ -33,7 +34,7 @@ export default class KindsController extends BasePageController {
   }
 
   /**
-   * Builds the React effect that loads kinds and login data on mount.
+   * Builds the React effect that loads kinds on mount and tracks login state.
    *
    * @returns {Function} effect function that starts data loading and returns a cleanup function
    */
@@ -42,30 +43,30 @@ export default class KindsController extends BasePageController {
       let mounted = true;
       const safeSet = this.buildSafeSetter(() => mounted);
 
+      safeSet(this.setLogged, isLoggedIn());
+      const unsubscribe = subscribe((logged) => safeSet(this.setLogged, logged));
+
       this.#loadData(safeSet);
 
       return () => {
         mounted = false;
+        unsubscribe();
       };
     };
   }
 
   #loadData(safeSet) {
-    Promise.all([
-      this.#fetchKinds(),
-      this.checkLogin(),
-    ])
-      .then(([kindsData, logged]) => this.#applyData(safeSet, kindsData, logged))
+    this.#fetchKinds()
+      .then((kindsData) => this.#applyData(safeSet, kindsData))
       .catch((error) => this.#handleError(safeSet, error))
       .finally(() => {
         safeSet(this.setLoading, false);
       });
   }
 
-  #applyData(safeSet, kindsData, logged) {
+  #applyData(safeSet, kindsData) {
     safeSet(this.setKinds, kindsData.kinds);
     safeSet(this.setPagination, kindsData.pagination);
-    safeSet(this.setLogged, logged);
   }
 
   #handleError(safeSet, error) {

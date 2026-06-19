@@ -1,6 +1,7 @@
 import GenericClient from '../../../client/GenericClient.js';
 import BasePageController from './BasePageController.js';
 import Router from '../../../utils/Router.js';
+import { isLoggedIn, subscribe } from '../../../utils/authState.js';
 
 /**
  * Extracts the category slug from a category items hash route.
@@ -13,7 +14,7 @@ export function getCategorySlugFromHash(hash = '') {
 }
 
 /**
- * Manages category items page state by fetching category items and login status from the API.
+ * Manages category items page state by fetching category items from the API and tracking login state.
  */
 export default class CategoryItemsController extends BasePageController {
   /**
@@ -44,7 +45,7 @@ export default class CategoryItemsController extends BasePageController {
   }
 
   /**
-   * Builds the React effect that loads category items and login data on mount.
+   * Builds the React effect that loads category items on mount and tracks login state.
    *
    * @returns {Function} effect function that starts data loading and returns a cleanup function
    */
@@ -54,30 +55,30 @@ export default class CategoryItemsController extends BasePageController {
       const safeSet = this.buildSafeSetter(() => mounted);
       const slug = getCategorySlugFromHash(this.client.currentHash());
 
+      safeSet(this.setLogged, isLoggedIn());
+      const unsubscribe = subscribe((logged) => safeSet(this.setLogged, logged));
+
       this.#loadData(safeSet, slug);
 
       return () => {
         mounted = false;
+        unsubscribe();
       };
     };
   }
 
   #loadData(safeSet, slug) {
-    Promise.all([
-      this.#fetchItems(slug),
-      this.checkLogin(),
-    ])
-      .then(([itemsData, logged]) => this.#applyData(safeSet, itemsData, logged))
+    this.#fetchItems(slug)
+      .then((itemsData) => this.#applyData(safeSet, itemsData))
       .catch((error) => this.#handleError(safeSet, error))
       .finally(() => {
         safeSet(this.setLoading, false);
       });
   }
 
-  #applyData(safeSet, itemsData, logged) {
+  #applyData(safeSet, itemsData) {
     safeSet(this.setItems, itemsData.items);
     safeSet(this.setPagination, itemsData.pagination);
-    safeSet(this.setLogged, logged);
   }
 
   #handleError(safeSet, error) {
