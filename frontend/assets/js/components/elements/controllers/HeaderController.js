@@ -1,5 +1,5 @@
 import HeaderClient from '../../../client/HeaderClient.js';
-import { setLoggedIn } from '../../../utils/authState.js';
+import { isLoggedIn, setLoggedIn, subscribe } from '../../../utils/authState.js';
 
 /**
  * Manages header state by fetching login status and categories from the API.
@@ -41,10 +41,14 @@ export default class HeaderController {
       let mounted = true;
       const safeSet = this.#buildSafeSetter(() => mounted);
 
+      safeSet(this.setLogged, isLoggedIn());
+      const unsubscribe = subscribe((logged) => safeSet(this.setLogged, logged));
+
       this.reload(safeSet);
 
       return () => {
         mounted = false;
+        unsubscribe();
       };
     };
   }
@@ -81,7 +85,8 @@ export default class HeaderController {
   #checkLogin(safeSet) {
     return this.client.checkLogin()
       .then((response) => this.#parseLoginResponse(response))
-      .then((session) => this.#setLoggedFromSession(safeSet, session));
+      .then((session) => this.#setLoggedFromSession(safeSet, session))
+      .catch(() => {});
   }
 
   #fetchCategories(safeSet) {
@@ -101,10 +106,9 @@ export default class HeaderController {
   }
 
   #loadHeaderData(safeSet) {
-    return Promise.all([
-      this.#checkLogin(safeSet),
-      this.#fetchCategories(safeSet),
-    ])
+    this.#checkLogin(safeSet);
+
+    return this.#fetchCategories(safeSet)
       .catch((error) => this.#handleSafeError(safeSet, error, 'Unexpected error while loading header.'))
       .finally(() => {
         safeSet(this.setLoading, false);
