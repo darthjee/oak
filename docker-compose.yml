@@ -119,7 +119,7 @@ services:
     env_file: .env
   
   oak_proxy:
-    image: darthjee/tent:0.7.7
+    image: darthjee/tent:0.10.1
     container_name: oak_proxy
     env_file: .env
     volumes:
@@ -164,7 +164,7 @@ services:
       - ./prod_public_files/photos:/tmp/photos
 
   oak_prod_navi:
-    image: darthjee/navi-hey:latest
+    image: darthjee/navi-hey:1.6.0
     volumes:
       - .circleci/:/home/node/app
     command: navi-hey --config navi_config.yaml

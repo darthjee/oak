@@ -200,7 +200,7 @@ jobs:
           command: scripts/deploy.sh deploy
   upload_proxy_files:
     docker:
-      - image: darthjee/tent:0.7.7
+      - image: darthjee/tent:0.10.1
     workdir: /var/www/html
     steps:
       - checkout
@@ -226,7 +226,7 @@ jobs:
           command: deploy_frontend.sh release
   warm-up-cache:
     docker:
-      - image: darthjee/navi-hey:latest
+      - image: darthjee/navi-hey:1.6.0
     steps:
       - checkout
       - run:
