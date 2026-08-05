@@ -15,10 +15,14 @@
 | `docs/` | Project documentation, including agent instructions and architecture notes. |
 | `proxy/` | Tent reverse proxy configuration (`config.yml`, `navi_config.yaml`). |
 | `.circleci/` | CircleCI pipeline configuration. |
+| `.github/` | GitHub PR/commit message templates and Copilot instructions (points to `AGENTS.md`). |
+| `.claude/` | Claude Code agent definitions, helper scripts, and configuration for this project. |
 | `docker-compose.yml` | Docker Compose orchestration for all services. |
 | `Makefile` | Developer workflow shortcuts (`make setup`, `make dev`, `make tests`, etc.). |
 | `README.md` | Project overview and development setup instructions. |
 | `AGENTS.md` | Shared instructions for AI coding agents (Claude, Copilot). |
+| `CLAUDE.md` | Points to `AGENTS.md` for Claude Code. |
+| `LICENSE` | Project license. |
 
 ## `source/`
 

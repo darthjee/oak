@@ -36,3 +36,4 @@ docker_volumes/proxy_cache
 docker_volumes/node_modules/
 frontend/.vite/
 docker_volumes/static/
+.claude/state/
