@@ -164,7 +164,7 @@ services:
       - ./prod_public_files/photos:/tmp/photos
 
   oak_prod_navi:
-    image: darthjee/navi-hey:latest
+    image: darthjee/navi-hey:1.6.0
     volumes:
       - .circleci/:/home/node/app
     command: navi-hey --config navi_config.yaml
