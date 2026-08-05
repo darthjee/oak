@@ -27,7 +27,7 @@ See [contributing.md](docs/agents/contributing.md) for the full details on langu
 
 ## Sinclair Usage
 
-Oak uses the **sinclair** gem extensively. Refer to [sinclair-usage.md](docs/agents/sinclair-usage.md) for the full usage guide.
+Oak uses the **sinclair** gem extensively. Refer to [sinclair-usage.md](docs/agents/external/sinclair-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -42,7 +42,7 @@ When building new features, prefer sinclair patterns for dynamic method generati
 
 ## Azeroth Usage
 
-Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [azeroth-usage.md](docs/agents/azeroth-usage.md) for the full usage guide.
+Oak uses the **azeroth** gem for Rails controller endpoints. Refer to [azeroth-usage.md](docs/agents/external/azeroth-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -54,7 +54,7 @@ When building new controller endpoints for standard resources, prefer `resource_
 
 ## Magicka Usage
 
-Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [magicka-usage.md](docs/agents/magicka-usage.md) for the full usage guide.
+Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [magicka-usage.md](docs/agents/external/magicka-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -68,7 +68,7 @@ When adding fields to views, prefer Magicka's built-in elements before creating 
 
 ## Jace Usage
 
-Oak uses the **jace** gem for internal event-driven logic. Refer to [jace-usage.md](docs/agents/jace-usage.md) for the full usage guide.
+Oak uses the **jace** gem for internal event-driven logic. Refer to [jace-usage.md](docs/agents/external/jace-usage.md) for the full usage guide.
 
 Key features used in this project:
 
@@ -232,7 +232,7 @@ If the field is a nested attribute or an array, include the appropriate structur
 
 ### 4. Update the Views with Magicka
 
-Refer to [magicka-usage.md](docs/agents/magicka-usage.md) for the full Magicka reference.
+Refer to [magicka-usage.md](docs/agents/external/magicka-usage.md) for the full Magicka reference.
 
 Views are typically organised as:
 
@@ -306,7 +306,7 @@ class Oak::Item::Decorator < Azeroth::Decorator
 end
 ```
 
-Refer to [azeroth-usage.md](docs/agents/azeroth-usage.md) for the full decorator reference.
+Refer to [azeroth-usage.md](docs/agents/external/azeroth-usage.md) for the full decorator reference.
 
 ### 6. Creating a New Magicka Element (if needed)
 
@@ -349,8 +349,8 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | [Routes](docs/agents/routes.md) | Full list of resource and utility routes, with descriptions. |
 | [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](docs/agents/issues/) | Detailed specs for open issues. |
-| [HOW_TO_USE_NAVI](docs/agents/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
-| [HOW_TO_USE_DARTHJEE-TENT](docs/agents/HOW_TO_USE_DARTHJEE-TENT.md) | Full reference for the darthjee/tent reverse proxy: Docker setup, rule/matcher/middleware configuration, cache modes, and frontend dev-mode flip. |
+| [HOW_TO_USE_NAVI](docs/agents/external/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
+| [HOW_TO_USE_DARTHJEE-TENT](docs/agents/external/HOW_TO_USE_DARTHJEE-TENT.md) | Full reference for the darthjee/tent reverse proxy: Docker setup, rule/matcher/middleware configuration, cache modes, and frontend dev-mode flip. |
 | [Front-End](docs/agents/frontend.md) | React + Vite front-end architecture, component pattern (component / controller / helper), Docker setup, and proxy modes. |
 
 ### Issues (`docs/agents/issues/`)

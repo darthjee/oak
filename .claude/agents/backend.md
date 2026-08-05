@@ -38,6 +38,6 @@ docker-compose exec oak_app bundle exec rubocop
 ## Conventions
 
 - See [docs/agents/contributing.md](../../docs/agents/contributing.md) for commit/PR rules, Sandi Metz limits, method order, dependency injection, and refactoring guidelines.
-- See [docs/agents/azeroth-usage.md](../../docs/agents/azeroth-usage.md), [docs/agents/magicka-usage.md](../../docs/agents/magicka-usage.md), [docs/agents/sinclair-usage.md](../../docs/agents/sinclair-usage.md), [docs/agents/jace-usage.md](../../docs/agents/jace-usage.md) for gem-specific patterns.
+- See [docs/agents/azeroth-usage.md](../../docs/agents/external/azeroth-usage.md), [docs/agents/magicka-usage.md](../../docs/agents/external/magicka-usage.md), [docs/agents/sinclair-usage.md](../../docs/agents/external/sinclair-usage.md), [docs/agents/jace-usage.md](../../docs/agents/external/jace-usage.md) for gem-specific patterns.
 - Prefer `resource_for`/`model_for` over hand-written CRUD actions.
 - Navigation always goes through root with an anchor (never direct route access).

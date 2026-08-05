@@ -60,4 +60,12 @@
 |--------------|-------------|
 | `mysql_data/` | Persistent MySQL data directory. |
 | `proxy_cache/` | Cache storage for the darthjee/tent proxy. |
-| `proxy_configuration/` | Configuration files for the darthjee/tent proxy. See [HOW_TO_USE_DARTHJEE-TENT.md](HOW_TO_USE_DARTHJEE-TENT.md) for configuration reference. |
+| `proxy_configuration/` | Configuration files for the darthjee/tent proxy. See [HOW_TO_USE_DARTHJEE-TENT.md](external/HOW_TO_USE_DARTHJEE-TENT.md) for configuration reference. |
+
+## `docs/agents/`
+
+| Subdirectory | Description |
+|--------------|-------------|
+| `external/` | Reference docs for external tools and gems this project depends on (e.g. Darthjee-Tent, Navi, Azeroth, Jace, Magicka, Sinclair). Standing convention: any future usage-guide doc for a third-party tool or gem belongs here, keeping it separate from this project's own architecture/process docs. |
+| `plans/` | Implementation plans for ongoing or upcoming features, one subfolder per issue. |
+| `issues/` | Detailed specs for open issues. |
