@@ -101,8 +101,8 @@ Before a PR is considered complete, all CI checks must pass locally:
 |--------------|--------------|---------------|
 | `test` | RSpec + coverage | `docker-compose exec oak_app bundle exec rspec` |
 | `checks` | RuboCop | `docker-compose exec oak_app bundle exec rubocop` |
-| `fe_test` | Jasmine (frontend) | `docker-compose run --rm oak_fe npm test` |
-| `fe_lint` | ESLint (frontend) | `docker-compose run --rm oak_fe npm run lint` |
+| `jasmine` | Jasmine + coverage (frontend) | `docker-compose run --rm oak_fe npm run coverage` |
+| `frontend-checks` | ESLint (frontend) | `docker-compose run --rm oak_fe npm run lint` |
 
 All jobs must pass before merging. Use `exec` when the container is already running, or `run --rm` to start a one-off container.
 

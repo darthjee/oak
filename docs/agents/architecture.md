@@ -71,6 +71,8 @@ All redirect and HTML cache logic lives exclusively in the Tent proxy configurat
 | `views/templates/display/` | Magicka display element partials (e.g., `_text`, `_ng_select_text`, `_ng_pagination`). |
 | `jobs/` | Sidekiq background jobs for photo processing (`CreateItemPhotosJob`, `ProcessUserItemPhotosJob`). |
 | `utils/` | Utility/helper modules shared across the application. |
+| `helpers/` | Rails view helpers (`ApplicationHelper`, `Path::SafePath`). |
+| `assets/javascripts/`, `assets/stylesheets/` | Legacy Sprockets JS/CSS (`controllers/`, `modules/`, `services/`), still loaded by `application.html.erb` for server-rendered (non-SPA) views. Distinct from the React/Vite frontend in `frontend/`. |
 
 ---
 
