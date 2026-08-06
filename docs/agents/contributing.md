@@ -106,6 +106,11 @@ Before a PR is considered complete, all CI checks must pass locally:
 
 All jobs must pass before merging. Use `exec` when the container is already running, or `run --rm` to start a one-off container.
 
+Whenever a custom image tag in `.circleci/config.yml` is bumped or a
+`dockerfiles/*/Dockerfile` changes, also run `scripts/audit_working_dirs.sh`
+— see [CI Working Directory Audit](ci-working-directory-audit.md) for what
+it checks and why.
+
 ## Language Standard
 
 - **English only:** All code, PR titles/descriptions, documentation, commit messages, and code comments must be written in English.

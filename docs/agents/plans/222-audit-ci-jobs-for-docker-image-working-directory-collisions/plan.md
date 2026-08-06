@@ -30,12 +30,14 @@ audit into a repeatable, documented check.
 ### Step 1 — Write the audit script
 
 Add `scripts/audit_working_dirs.sh`:
-- Parse `.circleci/config.yml` (Ruby's built-in `YAML` — Ruby is already a
-  first-class dependency of this repo, keeping the parsing robust without
-  adding a new tool) to list every job using the `docker:` executor **and**
-  declaring an explicit `working_directory` (jobs relying on CircleCI's
-  default `~/project` are out of scope for the coupling described in the
-  issue — none of the images built from `dockerfiles/` bake content there).
+- Parse `.circleci/config.yml` with a small `awk` parser (no ruby/python
+  YAML dependency required on the host — this repo's own workflow already
+  runs everything through `docker-compose`, so the host isn't guaranteed to
+  have a working Ruby/Python install) to list every job using the
+  `docker:` executor **and** declaring an explicit `working_directory`
+  (jobs relying on CircleCI's default `~/project` are out of scope for the
+  coupling described in the issue — none of the images built from
+  `dockerfiles/` bake content there).
 - For each such job, `docker run --rm <image> sh -c "ls -A '<working_directory>'"`
   and report whether the directory is empty (OK) or already contains files
   (COLLISION), printing per-job results.

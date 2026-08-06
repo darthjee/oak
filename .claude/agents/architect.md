@@ -41,6 +41,7 @@ When a task spans multiple agents:
 | [Flow](../../docs/agents/flow.md) | Main runtime flow of the application. |
 | [Routes](../../docs/agents/routes.md) | Full list of resource and utility routes, with descriptions. |
 | [Front-End](../../docs/agents/frontend.md) | React + Vite front-end architecture, component pattern, Docker setup, and proxy modes. |
+| [CI Working Directory Audit](../../docs/agents/ci-working-directory-audit.md) | Runbook and baseline for auditing CircleCI job `working_directory` collisions against their Docker image's baked-in content. |
 | [Plans](../../docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
 | [Issues](../../docs/agents/issues/) | Detailed specs for open issues. |
 
