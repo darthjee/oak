@@ -1,31 +1,53 @@
-version: 2
+version: 2.1
 workflows:
   version: 2
   test:
     jobs:
       - test:
-          filters:
+          filters: &semver_tags
             tags:
-              only: /.*/
+              only: /\d+\.\d+\.\d+/
+          requires: [release-circleci_oak-base]
       - checks:
-          filters:
-            tags:
-              only: /.*/
+          filters: *semver_tags
+          requires: [release-circleci_oak-base]
       - jasmine:
-          filters:
-            tags:
-              only: /.*/
+          filters: *semver_tags
+          requires: [release-vite_oak-base, release-vite_oak-base-arm64]
       - coverage-final:
           requires: [test, jasmine]
-          filters:
-            tags:
-              only: /.*/
+          filters: *semver_tags
       - frontend-checks:
-          filters:
-            tags:
-              only: /.*/
+          filters: *semver_tags
+          requires: [release-vite_oak-base, release-vite_oak-base-arm64]
+      - release-image:
+          name: release-oak-base
+          image: oak-base
+          filters: *semver_tags
+      - release-image:
+          name: release-oak-base-arm64
+          image: oak-base
+          arch: arm64
+          filters: *semver_tags
+      - release-image:
+          name: release-circleci_oak-base
+          image: circleci_oak-base
+          filters: *semver_tags
+      - release-image:
+          name: release-production_oak-base
+          image: production_oak-base
+          filters: *semver_tags
+      - release-image:
+          name: release-vite_oak-base
+          image: vite_oak-base
+          filters: *semver_tags
+      - release-image:
+          name: release-vite_oak-base-arm64
+          image: vite_oak-base
+          arch: arm64
+          filters: *semver_tags
       - build-and-release:
-          requires: [test, checks, jasmine, frontend-checks]
+          requires: [test, checks, jasmine, frontend-checks, release-production_oak-base]
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
@@ -39,14 +61,23 @@ workflows:
             branches:
               ignore: /.*/
       - upload_fe_files:
-          requires: [test, checks, jasmine, frontend-checks]
+          requires: [test, checks, jasmine, frontend-checks, release-vite_oak-base, release-vite_oak-base-arm64]
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
       - release:
-          requires: [build-and-release, upload_proxy_files, upload_fe_files]
+          requires:
+            - build-and-release
+            - upload_proxy_files
+            - upload_fe_files
+            - release-oak-base
+            - release-oak-base-arm64
+            - release-circleci_oak-base
+            - release-production_oak-base
+            - release-vite_oak-base
+            - release-vite_oak-base-arm64
           filters:
             tags:
               only: /\d+\.\d+\.\d+/
@@ -60,6 +91,23 @@ workflows:
             branches:
               ignore: /.*/
 jobs:
+  release-image:
+    parameters:
+      image:
+        type: string
+      arch:
+        type: string
+        default: ""
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Set up QEMU
+          command: bin/image.sh qemu << parameters.image >>
+      - run:
+          name: Release
+          command: bin/image.sh push << parameters.image >> << parameters.arch >>
+
   test:
     docker:
       - image: darthjee/circleci_oak-base:0.0.4
@@ -170,7 +218,7 @@ jobs:
           command: npm run lint
   upload_fe_files:
     docker:
-      - image: darthjee/vite_weave-base:0.0.4
+      - image: darthjee/vite_oak-base:0.0.1
     steps:
       - checkout
       - run:
@@ -201,7 +249,7 @@ jobs:
   upload_proxy_files:
     docker:
       - image: darthjee/tent:0.10.1
-    workdir: /var/www/html
+    working_directory: /var/www/html
     steps:
       - checkout
       - run:
@@ -215,7 +263,7 @@ jobs:
           command: TARGET=configuration/ deploy_frontend.sh copy_files
   release:
     docker:
-      - image: darthjee/vite_weave-base:0.0.4
+      - image: darthjee/vite_oak-base:0.0.1
     steps:
       - checkout
       - run:
