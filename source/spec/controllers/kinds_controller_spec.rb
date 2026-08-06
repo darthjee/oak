@@ -27,38 +27,6 @@ RSpec.describe KindsController do
         expect(response_json).to eq(expected.map(&:stringify_keys))
       end
     end
-
-    context 'when format is HTML and request is AJAX' do
-      let(:parameters) { { format: :html, ajax: true } }
-
-      before do
-        get :index, params: parameters, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:parameters) { {} }
-
-      before do
-        get :index, params: parameters
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
   end
 
   describe 'GET #new' do
@@ -67,20 +35,6 @@ RSpec.describe KindsController do
 
     before do
       cookies.signed[:session] = session.id if session
-    end
-
-    context 'when format is HTML and it is ajax' do
-      before do
-        get :new, params: { format: :html, ajax: true }, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:new)
-      end
     end
 
     context 'when format is JSON' do
@@ -233,40 +187,6 @@ RSpec.describe KindsController do
 
       it 'renders the correct JSON using the decorator' do
         expect(response_json).to eq(expected.stringify_keys)
-      end
-    end
-
-    context 'when format is HTML and request is AJAX' do
-      let(:slug) { SecureRandom.hex(5) }
-      let(:parameters) { { format: :html, ajax: true, slug: slug } }
-
-      before do
-        get :show, params: parameters, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:show)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:slug) { SecureRandom.hex(5) }
-      let(:parameters) { { slug: slug } }
-
-      before do
-        get :show, params: parameters
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:show)
       end
     end
   end

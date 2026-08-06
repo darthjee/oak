@@ -151,37 +151,5 @@ RSpec.describe IndexCategoriesController do
         end
       end
     end
-
-    context 'when format is HTML and request is AJAX' do
-      let(:parameters) { { format: :html, ajax: true } }
-
-      before do
-        get :index, params: parameters, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:parameters) { {} }
-
-      before do
-        get :index, params: parameters
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
   end
 end

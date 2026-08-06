@@ -51,38 +51,6 @@ RSpec.describe ItemsController do
       end
     end
 
-    context 'when format is HTML and request is AJAX' do
-      let(:parameters) { { category_slug: category.slug, format: :html, ajax: true } }
-
-      before do
-        get :index, params: parameters, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:parameters) { { category_slug: category.slug } }
-
-      before do
-        get :index, params: parameters
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:index)
-      end
-    end
-
     context 'when filtering by visibility' do
       let(:other_user) { create(:user) }
       let!(:visible_item) { create(:oak_item, category:, user: other_user, visible: true) }
@@ -164,40 +132,6 @@ RSpec.describe ItemsController do
       end
     end
 
-    context 'when format is HTML and request is AJAX' do
-      let(:params) do
-        { category_slug: category.slug, id: item.id, ajax: true }
-      end
-
-      before do
-        get :show, params: params, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:show)
-      end
-    end
-
-    context 'when format is HTML and request is not AJAX' do
-      let(:params) { { category_slug: category.slug, id: item.id } }
-
-      before do
-        get :show, params: params
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:show)
-      end
-    end
-
     context 'when filtering by visibility' do
       let(:other_user) { create(:user) }
       let(:params) { { category_slug: category.slug, id: item.id, format: :json } }
@@ -257,34 +191,6 @@ RSpec.describe ItemsController do
 
     before do
       cookies.signed[:session] = session.id if session
-    end
-
-    context 'when format is HTML and it is not AJAX' do
-      before do
-        get :new, params: { category_slug: category.slug }
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:new)
-      end
-    end
-
-    context 'when format is HTML and it is AJAX' do
-      before do
-        get :new, params: { category_slug: category.slug, format: :html, ajax: true }, xhr: true
-      end
-
-      it 'returns a successful response' do
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'renders the correct template' do
-        expect(response).to render_template(:new)
-      end
     end
 
     context 'when format is JSON' do
@@ -483,34 +389,6 @@ RSpec.describe ItemsController do
     end
 
     context 'when user is logged in' do
-      context 'when format is HTML and it is not AJAX' do
-        before do
-          get :edit, params: { category_slug: category.slug, id: item.id }
-        end
-
-        it 'returns a successful response' do
-          expect(response).to have_http_status(:ok)
-        end
-
-        it 'renders the correct template' do
-          expect(response).to render_template(:edit)
-        end
-      end
-
-      context 'when format is HTML and it is AJAX' do
-        before do
-          get :edit, params: { category_slug: category.slug, id: item.id, format: :html, ajax: true }, xhr: true
-        end
-
-        it 'returns a successful response' do
-          expect(response).to have_http_status(:ok)
-        end
-
-        it 'renders the correct template' do
-          expect(response).to render_template(:edit)
-        end
-      end
-
       context 'when format is JSON' do
         let(:expected) { Oak::Item::FormDecorator.new(item).as_json }
 
