@@ -20,13 +20,6 @@ module Oak
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-    %w[
-      node_modules
-      node_modules/bootstrap/dist/css
-      node_modules/bootstrap/dist/js
-    ].each do |path|
-      config.assets.paths << Rails.root.join(*path.split('/'))
-    end
 
     # Configure allowed hosts from environment variable
     config.hosts.concat(ENV['ALLOWED_HOSTS'].split(',').map(&:strip)) if ENV['ALLOWED_HOSTS'].present?
