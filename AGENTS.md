@@ -52,20 +52,6 @@ Key features used in this project:
 
 When building new controller endpoints for standard resources, prefer `resource_for` over hand-written CRUD actions to ensure consistent behavior.
 
-## Magicka Usage
-
-Oak uses the **magicka** gem to render AngularJS-compatible form and display elements inside ERB templates. Refer to [magicka-usage.md](docs/agents/external/magicka-usage.md) for the full usage guide.
-
-Key features used in this project:
-
-- **`magicka_form(model)`** – Yields a form builder for new/edit views; elements are bound via `ng-model` and show validation errors.
-- **`magicka_display(model)`** – Yields a read-only display builder for show views.
-- **`form.only(:form)` / `form.only(:display)`** – Conditionally renders content based on whether the context is a form (new/edit) or a display (show).
-- **Built-in elements** – `input`, `textarea`, `select`, `ng_select`, `text`, `ng_select_text`, `pagination`, `button`.
-- **Custom elements** – Extend `Magicka::Input`, `Magicka::Select`, `Magicka::Text`, or `Magicka::Element` and create the corresponding ERB template partial.
-
-When adding fields to views, prefer Magicka's built-in elements before creating new ones. Shared form partials (`_form.html.erb`) are used across `new`, `edit`, and `show` views using `form.only` to differentiate context.
-
 ## Jace Usage
 
 Oak uses the **jace** gem for internal event-driven logic. Refer to [jace-usage.md](docs/agents/external/jace-usage.md) for the full usage guide.
@@ -92,14 +78,10 @@ end
 
 ## Frontend Patterns
 
-Frontend is served from the same Rails app, so all templates and assets are managed within the Rails structure. AngularJS handles the dynamic rendering and Cyberhawk manages the request lifecycle for templates and data.
-
-### AngularJS + Cyberhawk
+`source/` is a pure JSON API — it no longer renders any application page. The frontend is a separate React + Vite SPA in `frontend/`. See [frontend.md](docs/agents/frontend.md) for its component pattern, routing, and Docker/proxy setup.
 
 - Routes defined with anchors (`#/path`)
-- Templates loaded via AJAX with `?ajax=true` parameter
-- Data loaded via `.json` endpoints
-- Cyberhawk manages the request lifecycle
+- Data loaded via `.json` endpoints served by `source/`
 
 ## Useful Docker Commands
 
@@ -123,12 +105,11 @@ docker-compose exec oak_app bundle exec rubocop
 ## When Working on This Project
 
 1. **Always consider the SPA flow**: Route changes must respect the redirection pattern
-2. **HTML templates must respond to `?ajax=true`**: To be loaded by the frontend
-3. **APIs must have JSON version**: Controllers must respond to JSON format
-4. **Run `make setup` before `docker-compose up`**: This is mandatory for local bootstrap and it generates `.env` from `.env.example`
-5. **Test everything**: Don't suggest code without corresponding tests
-6. **Clean RuboCop**: Code must pass RuboCop before commit
-7. **Follow Sandi Metz**: Question if classes/methods are getting too large
+2. **APIs must have JSON version**: Controllers must respond to JSON format
+3. **Run `make setup` before `docker-compose up`**: This is mandatory for local bootstrap and it generates `.env` from `.env.example`
+4. **Test everything**: Don't suggest code without corresponding tests
+5. **Clean RuboCop**: Code must pass RuboCop before commit
+6. **Follow Sandi Metz**: Question if classes/methods are getting too large
 
 ## Adding a Field to an ActiveRecord Model
 
@@ -230,69 +211,7 @@ If the field is a nested attribute or an array, include the appropriate structur
 .permit(:name, links: %i[id url text order])
 ```
 
-### 4. Update the Views with Magicka
-
-Refer to [magicka-usage.md](docs/agents/external/magicka-usage.md) for the full Magicka reference.
-
-Views are typically organised as:
-
-| File | Purpose |
-|---|---|
-| `new.html.erb` | Renders `magicka_form` and delegates to `_form.html.erb` |
-| `edit.html.erb` | Same as `new.html.erb` |
-| `show.html.erb` | Renders `magicka_display` and delegates to `_form.html.erb` |
-| `_form.html.erb` | Shared partial used by all three views above |
-| `index.html.erb` | List view — usually shows a subset of fields |
-
-#### Adding a plain text / string field
-
-```erb
-<%# _form.html.erb %>
-<div class="form-group">
-  <%= form.input(:status, placeholder: "Status", class: "form-control") %>
-</div>
-```
-
-#### Adding a textarea field
-
-```erb
-<div class="form-group">
-  <%= form.textarea(:bio, placeholder: "Short bio", class: "form-control") %>
-</div>
-```
-
-#### Adding a foreign-key select (AngularJS list)
-
-Use `form.only(:form)` for the editable select and `form.only(:display)` for the read-only version:
-
-```erb
-<%# Editable select — shown only in new/edit %>
-<%= form.only(:form) do
-  form.ng_select(
-    :status,
-    options: "gnc.statuses",
-    reference_key: :value,
-    text_field: :label,
-    ng_errors: "gnc.data.errors.status",
-    class: "form-control"
-  )
-end %>
-
-<%# Read-only display — shown only in show %>
-<%= form.only(:display) do
-  form.input("status", label: "Status", class: "form-control-plaintext")
-end %>
-```
-
-#### Adding a field to the index view
-
-The index view (`index.html.erb`) uses raw AngularJS expressions — add a new column or card field directly:
-
-```erb
-<p>{{item.status}}</p>
-```
-
-### 5. Update the Decorator (JSON Serialization)
+### 4. Update the Decorator (JSON Serialization)
 
 If the field should be returned by the JSON API, expose it in the relevant decorator:
 
@@ -308,31 +227,19 @@ end
 
 Refer to [azeroth-usage.md](docs/agents/external/azeroth-usage.md) for the full decorator reference.
 
-### 6. Creating a New Magicka Element (if needed)
-
-If the new field type is not covered by the built-in Magicka elements (e.g., a star-rating widget, a date-picker, a rich-text editor), create a custom element:
-
-1. **Model** in `app/models/magicka/my_element.rb` — extend an appropriate base class and declare extra locals with `with_attribute_locals`.
-2. **Template** in `app/views/templates/forms/_my_element.html.erb` (or `templates/display/`) — write the ERB/HTML that uses the declared locals.
-
-See [.github/magicka-usage.md](.github/magicka-usage.md#creating-a-new-magicka-element) for a step-by-step example.
-
 ### Checklist
 
 - [ ] Migration created and run (`rails db:migrate`)
 - [ ] `source/db/schema.rb` updated
 - [ ] Model validations added/updated
 - [ ] Controller `permit` list updated
-- [ ] Views updated with Magicka elements (`_form.html.erb`, `index.html.erb`)
 - [ ] Decorator updated if the field must appear in JSON responses
-- [ ] New Magicka element created if no built-in element is suitable
 - [ ] RSpec tests written for model, controller, and decorator changes
 - [ ] RuboCop passes with no new offences
 
 ## Important Notes
 
 - Navigation ALWAYS goes through root with anchor (never direct route access)
-- AngularJS is legacy but it's what we currently use
 - Prioritize readability and testability over other considerations
 - Builders and Decorators are preferred for complex logic outside models
 

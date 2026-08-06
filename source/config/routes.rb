@@ -3,8 +3,6 @@
 Rails.application.routes.draw do
   get '/' => 'home#show', as: :home
 
-  get '/forbidden' => 'static#forbidden', as: :forbidden
-
   resources :users, only: [:index] do
     collection do
       resources :login, only: [:create] do

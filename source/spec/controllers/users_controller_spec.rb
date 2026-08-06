@@ -8,8 +8,6 @@ describe UsersController do
   end
 
   describe 'GET index' do
-    render_views
-
     before { create_list(:user, 3) }
 
     context 'when requesting json', :not_cached do

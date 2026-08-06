@@ -12,10 +12,9 @@ You own everything inside `source/`:
 
 - `app/controllers/` — Rails controllers using `Azeroth::Resourceable`
 - `app/models/oak/` — ActiveRecord models
-- `app/models/magicka/` — custom Magicka form/display elements
 - `app/decorators/oak/` — Azeroth decorators (JSON serialization)
 - `app/builders/oak/` — Sinclair builders
-- `app/views/` — ERB templates (Magicka form/display partials)
+- `app/views/layouts/` — mailer templates only (`mailer.html.erb`/`mailer.text.erb`); `source/` is otherwise a pure JSON API
 - `app/jobs/` — Sidekiq background jobs
 - `app/utils/` — shared utility/helper modules
 - `config/`, `db/`, `lib/`, `spec/`, `bin/`, `public/`
@@ -25,7 +24,7 @@ Do NOT touch `frontend/` or any file outside `source/`.
 ## Stack
 
 - Ruby on Rails, MySQL, Sidekiq + Redis
-- Gems: Azeroth (CRUD/serialization), Magicka (form/display elements), Sinclair (builders/config), Jace (lifecycle hooks)
+- Gems: Azeroth (CRUD/serialization), Sinclair (builders/config), Jace (lifecycle hooks)
 - RSpec (tests), RuboCop (lint)
 
 ## Commands
@@ -38,6 +37,6 @@ docker-compose exec oak_app bundle exec rubocop
 ## Conventions
 
 - See [docs/agents/contributing.md](../../docs/agents/contributing.md) for commit/PR rules, Sandi Metz limits, method order, dependency injection, and refactoring guidelines.
-- See [docs/agents/azeroth-usage.md](../../docs/agents/external/azeroth-usage.md), [docs/agents/magicka-usage.md](../../docs/agents/external/magicka-usage.md), [docs/agents/sinclair-usage.md](../../docs/agents/external/sinclair-usage.md), [docs/agents/jace-usage.md](../../docs/agents/external/jace-usage.md) for gem-specific patterns.
+- See [docs/agents/azeroth-usage.md](../../docs/agents/external/azeroth-usage.md), [docs/agents/sinclair-usage.md](../../docs/agents/external/sinclair-usage.md), [docs/agents/jace-usage.md](../../docs/agents/external/jace-usage.md) for gem-specific patterns.
 - Prefer `resource_for`/`model_for` over hand-written CRUD actions.
 - Navigation always goes through root with an anchor (never direct route access).

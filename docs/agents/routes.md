@@ -63,11 +63,9 @@ Full user management, restricted to admins.
 | PATCH/PUT | `/admin/users/:id` | `admin/users#update` | Updates a user. |
 | DELETE | `/admin/users/:id` | `admin/users#destroy` | Deletes a user. |
 
-### Static Pages
+### Forbidden
 
-| Method | Path | Controller#Action | Description |
-|--------|------|-------------------|-------------|
-| GET | `/forbidden` | `static#forbidden` | Forbidden page. Has a template but no JSON data. Redirected to by `UserRequired` when a non-logged user tries to access a protected action. |
+`GET /forbidden` no longer exists as a Rails route — `static#forbidden` and its route were removed. `UserRequired` still redirects a non-logged user to the SPA hash target `/#/forbidden` when a protected action is accessed, but React has no page there yet (tracked in [#226](https://github.com/darthjee/oak/issues/226)).
 
 ---
 

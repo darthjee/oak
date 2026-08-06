@@ -3,8 +3,6 @@
 class ApplicationController < ActionController::Base
   include Azeroth::Resourceable
 
-  helper Magicka::Helper
-
   after_action :set_skip_cache_header
 
   def forbidden

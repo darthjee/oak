@@ -47,7 +47,7 @@ All redirect and HTML cache logic lives exclusively in the Tent proxy configurat
 - **React + Vite** — client-side application and build/dev tooling (`frontend/`, `vite.config.js`).
 - **Hash-based routing utilities** — `AppController` + `HashRouteResolver` + `Router`/`Route` resolve `#/<path>` URLs and route params.
 - **React Query** — mounted in `main.jsx` through `QueryClientProvider` for async state/query lifecycle.
-- **Bootstrap** — CSS framework used in all ERB templates.
+- **Bootstrap** — CSS framework used throughout the React frontend.
 - Routes are anchor-based (`#/<path>`); after initial load, navigation stays in the SPA shell.
 - **Tent proxy** serves frontend differently by mode:
   - `FRONTEND_DEV_MODE=true`: proxies `/`, `/assets/js/`, `/assets/css/`, `/assets/images/`, `/@vite/`, `/node_modules/`, and `/@react-refresh` to `http://frontend:8080` (Vite + HMR).
@@ -60,19 +60,16 @@ All redirect and HTML cache logic lives exclusively in the Tent proxy configurat
 
 | Directory | Role |
 |-----------|------|
-| `controllers/` | Rails controllers. All include `Azeroth::Resourceable`. `ApplicationController` wires up Azeroth and Magicka helpers globally. |
+| `controllers/` | Rails controllers. All include `Azeroth::Resourceable`. `ApplicationController` wires up Azeroth globally. |
 | `controllers/concerns/` | Shared controller behaviour (`UserRequired`, `LoggedUser`, etc.). |
 | `models/oak/` | ActiveRecord models (`Category`, `Item`, `Kind`, `Link`, `Photo`, `Subscription`). |
-| `models/magicka/` | Custom Magicka element classes (form/display widgets). |
 | `decorators/oak/` | Azeroth decorators — control which attributes are exposed in JSON responses. One decorator (sub)directory per resource. |
 | `builders/oak/` | Sinclair builders — encapsulate complex object construction logic outside of models. |
-| `views/<resource>/` | ERB templates. Each resource has `index`, `new`, `edit`, `show`, and a shared `_form.html.erb` partial. |
-| `views/templates/forms/` | Magicka form element partials (e.g., `_input`, `_ng_select`, `_button`). |
-| `views/templates/display/` | Magicka display element partials (e.g., `_text`, `_ng_select_text`, `_ng_pagination`). |
+| `views/layouts/` | `mailer.html.erb`/`mailer.text.erb` only — the old AngularJS/ERB shell and per-resource views were removed once the React/Vite frontend reached full parity. |
 | `jobs/` | Sidekiq background jobs for photo processing (`CreateItemPhotosJob`, `ProcessUserItemPhotosJob`). |
 | `utils/` | Utility/helper modules shared across the application. |
 | `helpers/` | Rails view helpers (`ApplicationHelper`, `Path::SafePath`). |
-| `assets/javascripts/`, `assets/stylesheets/` | Legacy Sprockets JS/CSS (`controllers/`, `modules/`, `services/`), still loaded by `application.html.erb` for server-rendered (non-SPA) views. Distinct from the React/Vite frontend in `frontend/`. |
+| `assets/images/` | Static image assets. The legacy Sprockets JS/CSS pipeline (`assets/javascripts/`, `assets/stylesheets/`) was removed along with the old frontend shell. |
 
 ---
 
@@ -81,7 +78,6 @@ All redirect and HTML cache logic lives exclusively in the Tent proxy configurat
 | Gem | Role |
 |-----|------|
 | **[Azeroth](https://github.com/darthjee/azeroth)** | Generates standard CRUD controller actions and JSON serialization via decorators. See [azeroth-usage.md](external/azeroth-usage.md). |
-| **[Magicka](https://github.com/darthjee/magicka)** | Renders reusable form/display elements in ERB templates. See [magicka-usage.md](external/magicka-usage.md). |
 | **[Sinclair](https://github.com/darthjee/sinclair)** | Dynamic method builder; also used for configuration (`Sinclair::Configurable`), option objects, and plain models. See [sinclair-usage.md](external/sinclair-usage.md). |
 | **[Jace](https://github.com/darthjee/jace)** | Internal event/lifecycle hooks for service operations. See [jace-usage.md](external/jace-usage.md). |
 | **Sidekiq** | Background job processing (photo upload pipeline). |
@@ -90,14 +86,4 @@ All redirect and HTML cache logic lives exclusively in the Tent proxy configurat
 
 ## Template Rendering Pattern
 
-Views follow a consistent three-file pattern per resource:
-
-```
-new.html.erb   → magicka_form  → renders _form.html.erb
-edit.html.erb  → magicka_form  → renders _form.html.erb
-show.html.erb  → magicka_display → renders _form.html.erb
-```
-
-`_form.html.erb` uses `form.only(:form)` / `form.only(:display)` to conditionally render editable vs. read-only elements in the same partial.
-
-Frontend SPA pages are rendered in React. Rails views remain in use for server-rendered pages/partials and form/display templates.
+`source/` is a pure JSON API for the React-covered resources (categories, items, kinds, home, index_categories, login) — Rails no longer renders any application page. The old AngularJS + ERB + Magicka shell was removed once the React/Vite frontend reached parity; only the mailer layouts (`views/layouts/mailer.html.erb`/`mailer.text.erb`) remain under `views/`. All frontend SPA pages are rendered in React (`frontend/`).

@@ -8,28 +8,6 @@ describe Admin::UsersController do
   end
 
   describe 'GET new' do
-    render_views
-
-    context 'when requesting html and ajax is true', :cached do
-      before do
-        get :new, params: { format: :html, ajax: true }
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/new') }
-    end
-
-    context 'when requesting html and ajax is false' do
-      before do
-        get :new
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/new') }
-    end
-
     context 'when requesting json', :not_cached do
       let(:expected_object) { User.new }
 
@@ -48,8 +26,6 @@ describe Admin::UsersController do
   describe 'GET index' do
     let(:users_count) { 1 }
     let(:parameters) { {} }
-
-    render_views
 
     before { create_list(:user, users_count) }
 
@@ -124,26 +100,6 @@ describe Admin::UsersController do
           expect(response.headers['per_page']).to eq(10)
         end
       end
-    end
-
-    context 'when requesting html and ajax is true', :cached do
-      before do
-        get :index, params: { format: :html, ajax: true }
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/index') }
-    end
-
-    context 'when requesting html and ajax is false' do
-      before do
-        get :index
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/index') }
     end
   end
 
@@ -233,30 +189,8 @@ describe Admin::UsersController do
   end
 
   describe 'GET show' do
-    render_views
-
     let(:user)    { create(:user) }
     let(:user_id) { user.id }
-
-    context 'when requesting html and ajax is true', :cached do
-      before do
-        get :show, params: { format: :html, ajax: true, id: user_id }
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/show') }
-    end
-
-    context 'when requesting html and ajax is false' do
-      before do
-        get :show, params: { id: user_id }
-      end
-
-      it { expect(response).to be_successful }
-
-      it { expect(response).to render_template('admin/users/show') }
-    end
 
     context 'when requesting json', :not_cached do
       let(:expected_object) { user }
