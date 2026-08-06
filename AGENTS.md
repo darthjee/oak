@@ -352,6 +352,7 @@ All project documentation lives under [`docs/agents/`](docs/agents/):
 | [HOW_TO_USE_NAVI](docs/agents/external/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
 | [HOW_TO_USE_DARTHJEE-TENT](docs/agents/external/HOW_TO_USE_DARTHJEE-TENT.md) | Full reference for the darthjee/tent reverse proxy: Docker setup, rule/matcher/middleware configuration, cache modes, and frontend dev-mode flip. |
 | [Front-End](docs/agents/frontend.md) | React + Vite front-end architecture, component pattern (component / controller / helper), Docker setup, and proxy modes. |
+| [CI Working Directory Audit](docs/agents/ci-working-directory-audit.md) | Runbook and baseline for auditing CircleCI job `working_directory` collisions against their Docker image's baked-in content. |
 
 ### Issues (`docs/agents/issues/`)
 
