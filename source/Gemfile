@@ -5,7 +5,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.3.1'
 
-gem 'importmap-rails'
 gem 'jbuilder'
 gem 'mysql2'
 gem 'observer', '>= 0.1.2'
@@ -13,9 +12,6 @@ gem 'puma', '>= 7.2.0'
 gem 'rails', '~> 7.2.x'
 gem 'rake', '>= 13.2.1'
 gem 'sidekiq', '~> 7.0'
-gem 'stimulus-rails'
-gem 'turbolinks', '>= 5.2.1'
-gem 'turbo-rails'
 
 gem 'bootsnap', require: false
 gem 'docile', '>= 1.4.1'
