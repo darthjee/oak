@@ -1,4 +1,4 @@
-FROM darthjee/production_oak-base:0.1.0 as base
+FROM darthjee/production_oak-base:0.1.1 as base
 
 ####################################
 
@@ -14,13 +14,8 @@ RUN rm /home/app/app/config/credentials.yml.enc -f
 RUN rm /home/app/app/public/assets/* -rf
 RUN rm /home/app/app/spec -rf
 RUN EDITOR=none rails credentials:edit
-RUN yarn install
-RUN RAILS_ENV=production rails assets:precompile
-RUN rm /home/app/app/assets -rf
-RUN rm /home/app/app/vendor/assets -rf
 RUN rm /home/app/app/log/* -f
 RUN rm /home/app/app/tmp/* -rf
-RUN rm /home/app/app/node_modules -rf
 
 ##################################
 

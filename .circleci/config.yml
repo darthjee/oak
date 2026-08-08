@@ -131,9 +131,6 @@ jobs:
           name: Bundle Install
           command: cd source && bundle install
       - run:
-          name: Yarn Install
-          command: cd source && yarn install
-      - run:
           name: Wait for database
           command: cd source && scripts/wait_for_db.sh
       - run:
