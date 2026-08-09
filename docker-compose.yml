@@ -166,10 +166,11 @@ services:
   oak_prod_navi:
     image: darthjee/navi-hey:1.6.0
     volumes:
-      - .circleci/:/home/node/app
+      - ./navi/:/home/node/app
     command: navi-hey --config navi_config.yaml
     environment:
       - OAK_PRODUCTION_URL=$OAK_PRODUCTION_URL
       - NAVI_PORT=3000
+      - OAK_NAVI_NAMESPACE=$OAK_NAVI_NAMESPACE
     ports:
       - 0.0.0.0:3100:3000

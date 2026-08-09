@@ -1,0 +1,5 @@
+namespace: $OAK_NAVI_NAMESPACE
+clients:
+  default:
+    base_url: $OAK_PRODUCTION_URL
+    timeout: 20000

@@ -53,6 +53,6 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 docker run --rm \
   -p "$PORT:3000" \
   -e OAK_PRODUCTION_URL="$OAK_PRODUCTION_URL" \
-  -v "$PROJECT_ROOT/.circleci:/home/node/app/.circleci" \
+  -v "$PROJECT_ROOT/navi:/home/node/app" \
   darthjee/navi-hey:latest \
-  navi-hey --config .circleci/navi_config.yaml
+  navi-hey --config navi_config.yaml
