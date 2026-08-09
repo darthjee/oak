@@ -33,15 +33,6 @@ When a task spans multiple agents:
 
 ## Documentation (`docs/agents/`)
 
-| File | Contents |
-|------|----------|
-| [Folder Structure](../../docs/agents/folder-structure.md) | Top-level directory layout and the role of each folder. |
-| [Architecture](../../docs/agents/architecture.md) | Infrastructure, source layout, request routing, gems, and template patterns. |
-| [Contributing](../../docs/agents/contributing.md) | Commit guidelines, PR template, definition of done, and CI checks. |
-| [Flow](../../docs/agents/flow.md) | Main runtime flow of the application. |
-| [Routes](../../docs/agents/routes.md) | Full list of resource and utility routes, with descriptions. |
-| [Front-End](../../docs/agents/frontend.md) | React + Vite front-end architecture, component pattern, Docker setup, and proxy modes. |
-| [Plans](../../docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
-| [Issues](../../docs/agents/issues/) | Detailed specs for open issues. |
+See [`docs/agents/summary.md`](../../docs/agents/summary.md) for an index of every doc with a short description and a link.
 
 Keep documentation up to date after any architectural change. When a new agent is created or its scope changes, update this file and `AGENTS.md`.

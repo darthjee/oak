@@ -1,22 +1,16 @@
-# Routes
-
-Routes fall into two categories: **resource routes** used by SPA pages (HTML redirect + `.json` data endpoints), and **utility routes** that are pure API endpoints called by the frontend in the background (no HTML template flow).
-
----
-
-## Resource Routes
+# Resource Routes
 
 These routes participate in the SPA flow. An HTML GET request redirects to `/#/<path>`; the React frontend then fetches `/<path>.json` for data loading.
 
 All resource controllers include `OnePageApplication` (directly or via `UserRequired`).
 
-### Home
+## Home
 
 | Method | Path | Controller#Action | Description |
 |--------|------|-------------------|-------------|
 | GET | `/` | `home#show` | Renders the SPA shell — the only route that returns the full layout with all JS/CSS assets. |
 
-### Categories
+## Categories
 
 | Method | Path | Controller#Action | Description |
 |--------|------|-------------------|-------------|
@@ -27,7 +21,7 @@ All resource controllers include `OnePageApplication` (directly or via `UserRequ
 | GET | `/categories/:slug/edit` | `categories#edit` | Edit category form. |
 | PATCH/PUT | `/categories/:slug` | `categories#update` | Updates a category. |
 
-### Items
+## Items
 
 Items are always nested under a category.
 
@@ -40,7 +34,7 @@ Items are always nested under a category.
 | GET | `/categories/:category_slug/items/:id/edit` | `items#edit` | Edit item form. |
 | PATCH/PUT | `/categories/:category_slug/items/:id` | `items#update` | Updates an item. |
 
-### Kinds
+## Kinds
 
 | Method | Path | Controller#Action | Description |
 |--------|------|-------------------|-------------|
@@ -49,7 +43,7 @@ Items are always nested under a category.
 | POST | `/kinds` | `kinds#create` | Creates a new kind. |
 | GET | `/kinds/:slug` | `kinds#show` | Kind detail page. |
 
-### Admin — Users
+## Admin — Users
 
 Full user management, restricted to admins.
 
@@ -63,46 +57,6 @@ Full user management, restricted to admins.
 | PATCH/PUT | `/admin/users/:id` | `admin/users#update` | Updates a user. |
 | DELETE | `/admin/users/:id` | `admin/users#destroy` | Deletes a user. |
 
-### Forbidden
+## Forbidden
 
 `GET /forbidden` no longer exists as a Rails route — `static#forbidden` and its route were removed. `UserRequired` still redirects a non-logged user to the SPA hash target `/#/forbidden` when a protected action is accessed, but React has no page there yet (tracked in [#226](https://github.com/darthjee/oak/issues/226)).
-
----
-
-## Utility Routes
-
-These routes are **API-only**: they return JSON (or perform an action) and are called directly by frontend clients/controllers — never navigated to as pages.
-
-### Session
-
-| Method | Path | Controller#Action | Description |
-|--------|------|-------------------|-------------|
-| POST | `/users/login` | `login#create` | Authenticates the user with `login` + `password` params. Returns the session as JSON. |
-| GET | `/users/login` | `login#check` | Returns the current session as JSON. Used to check whether the user is still logged in. |
-| DELETE | `/users/logoff` | `login#logoff` | Destroys the current session. |
-
-### User Navigation Data
-
-| Method | Path | Controller#Action | Description |
-|--------|------|-------------------|-------------|
-| GET | `/user/categories` | `user/categories#index` | Returns the list of categories the logged user is subscribed to. Loaded on **every page** to build the category menu in the header. Returns all categories for anonymous users. |
-
-### Form Support
-
-| Method | Path | Controller#Action | Description |
-|--------|------|-------------------|-------------|
-| GET | `/categories/:category_slug/kinds` | `category/kinds#index` | Returns the kinds associated with a category as JSON. Used to populate the kind `ng_select` dropdown in the item form. |
-
-### Subscriptions
-
-| Method | Path | Controller#Action | Description |
-|--------|------|-------------------|-------------|
-| POST | `/categories/:category_slug/subscriptions` | `subscriptions#create` | Subscribes the logged user to a category. Idempotent — returns `200 OK` if already subscribed, `201 Created` if newly subscribed. |
-
----
-
-## Disabled / Pending Cleanup
-
-| Path | Notes |
-|------|-------|
-| `GET /users` | Should be disabled. User management is handled by `/admin/users`. Pending removal. |

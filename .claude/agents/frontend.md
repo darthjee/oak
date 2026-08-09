@@ -31,7 +31,7 @@ docker-compose run --rm oak_fe npm run lint
 
 ## Conventions
 
-- See [docs/agents/frontend.md](../../docs/agents/frontend.md) for the component/controller/helper pattern, routing utilities, and proxy modes.
+- See [docs/agents/frontend/index.md](../../docs/agents/frontend/index.md) for the component/controller/helper pattern, routing utilities, and proxy modes.
 - Every non-trivial component is split into Component (state/wiring) / Controller (logic, no JSX) / Helper (static JSX factories, no state).
 - All public classes/methods/exported functions need JSDoc (description, `@param`, `@returns`).
-- See [docs/agents/contributing.md](../../docs/agents/contributing.md) for commit/PR rules shared across the project.
+- See [docs/agents/contributing/index.md](../../docs/agents/contributing/index.md) for commit/PR rules shared across the project.
