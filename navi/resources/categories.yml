@@ -1,24 +1,5 @@
-web:
-  port: $NAVI_PORT
-workers:
-  quantity: 5
-  retry_cooldown: 10000
-  sleep: 500
-  max-retries: 50
-
-failure:
-  threshold: 0.0
-
-clients:
-  default:
-    base_url: $OAK_PRODUCTION_URL
-    timeout: 20000
-
+namespace: $OAK_NAVI_NAMESPACE
 resources:
-  user_navigation:
-    - url: /user/categories.json
-      status: 200
-
   categories:
     - url: /categories.json
       status: 200
@@ -65,26 +46,4 @@ resources:
 
   category_item:
     - url: /categories/{:category_slug}/items/{:id}.json
-      status: 200
-
-  kinds:
-    - url: /kinds.json
-      status: 200
-      paginated_actions:
-        - resource: paginated_kinds
-          pagination:
-            - pages: headers['pages']
-            - page_key: page
-            - zero_indexed: false
-
-  paginated_kinds:
-    - url: /kinds.json?page={:page}
-      status: 200
-      actions:
-        - resource: kind
-          parameters:
-            slug: parsedBody.slug
-
-  kind:
-    - url: /kinds/{:slug}.json
       status: 200

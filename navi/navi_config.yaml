@@ -1,0 +1,16 @@
+web:
+  port: $NAVI_PORT
+workers:
+  quantity: 5
+  retry_cooldown: 10000
+  sleep: 500
+  max-retries: 50
+
+failure:
+  threshold: 0.0
+
+include:
+  - resources/categories.yml
+  - resources/kinds.yml
+  - resources/user_navigation.yml
+  - resources/clients.yml
