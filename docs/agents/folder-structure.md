@@ -1,11 +1,13 @@
 # Folder Structure
 
+Top-level directory layout of the repository and the role of each folder, down to the first level inside `source/`, `frontend/`, `dockerfiles/`, `docker_volumes/`, and `docs/agents/`.
+
 ## Project Root
 
 | Directory / File | Description |
 |-----------------|-------------|
 | `source/` | Main Rails application source code. |
-| `frontend/` | React + Vite SPA front-end, served via the Tent proxy. See [frontend.md](frontend.md). |
+| `frontend/` | React + Vite SPA front-end, served via the Tent proxy. See [frontend/index.md](frontend/index.md). |
 | `dockerfiles/` | Dockerfiles for each service image (development, production, CI). |
 | `docker_volumes/` | Persistent Docker volume mount points (database data, proxy cache/config, compiled front-end assets). |
 | `dev_public_files/` | Public static assets (images, photos, snaps) mounted into the app container during development. |

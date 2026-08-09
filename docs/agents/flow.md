@@ -1,5 +1,7 @@
 # Flow
 
+Main runtime flow of the application: the three ways a user can arrive at the SPA, how a page load resolves its JSON data, and the auxiliary non-SPA routes, with two complete worked examples.
+
 ## Entry Points
 
 A user can arrive at the application through three entry points:

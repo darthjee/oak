@@ -11,7 +11,7 @@ Oak is a web application catalog to showcase different types of items, including
 
 ## Architecture and Tech Stack
 
-See [architecture.md](docs/agents/architecture.md) for the full details on backend, frontend, and main libraries.
+See [architecture/index.md](docs/agents/architecture/index.md) for the full details on backend, frontend, and main libraries.
 
 ## Request Flow
 
@@ -19,11 +19,11 @@ See [flow.md](docs/agents/flow.md) for the full details on navigation pattern an
 
 ## Routes
 
-See [routes.md](docs/agents/routes.md) for the full list of resource and utility routes.
+See [routes/index.md](docs/agents/routes/index.md) for the full list of resource and utility routes.
 
 ## Contributing
 
-See [contributing.md](docs/agents/contributing.md) for the full details on language standards, best practices, and code guidelines.
+See [contributing/index.md](docs/agents/contributing/index.md) for the full details on language standards, best practices, and code guidelines.
 
 ## Sinclair Usage
 
@@ -78,7 +78,7 @@ end
 
 ## Frontend Patterns
 
-`source/` is a pure JSON API — it no longer renders any application page. The frontend is a separate React + Vite SPA in `frontend/`. See [frontend.md](docs/agents/frontend.md) for its component pattern, routing, and Docker/proxy setup.
+`source/` is a pure JSON API — it no longer renders any application page. The frontend is a separate React + Vite SPA in `frontend/`. See [frontend/index.md](docs/agents/frontend/index.md) for its component pattern, routing, and Docker/proxy setup.
 
 - Routes defined with anchors (`#/path`)
 - Data loaded via `.json` endpoints served by `source/`
@@ -245,20 +245,7 @@ Refer to [azeroth-usage.md](docs/agents/external/azeroth-usage.md) for the full 
 
 ## Documentation
 
-All project documentation lives under [`docs/agents/`](docs/agents/):
-
-| File | Contents |
-|------|----------|
-| [Folder Structure](docs/agents/folder-structure.md) | Top-level directory layout and the role of each folder. |
-| [Architecture](docs/agents/architecture.md) | Infrastructure, source layout, request routing, gems, and template patterns. |
-| [Contributing](docs/agents/contributing.md) | Commit guidelines, PR template, definition of done, and CI checks. |
-| [Flow](docs/agents/flow.md) | Main runtime flow of the application. |
-| [Routes](docs/agents/routes.md) | Full list of resource and utility routes, with descriptions. |
-| [Plans](docs/agents/plans/) | Implementation plans for ongoing or upcoming features. |
-| [Issues](docs/agents/issues/) | Detailed specs for open issues. |
-| [HOW_TO_USE_NAVI](docs/agents/external/HOW_TO_USE_NAVI.md) | Steps for cache warm-up after a release; used to populate `.circleci/config.yml`. |
-| [HOW_TO_USE_DARTHJEE-TENT](docs/agents/external/HOW_TO_USE_DARTHJEE-TENT.md) | Full reference for the darthjee/tent reverse proxy: Docker setup, rule/matcher/middleware configuration, cache modes, and frontend dev-mode flip. |
-| [Front-End](docs/agents/frontend.md) | React + Vite front-end architecture, component pattern (component / controller / helper), Docker setup, and proxy modes. |
+All project documentation lives under [`docs/agents/`](docs/agents/). See [`docs/agents/summary.md`](docs/agents/summary.md) for an index of every doc with a short description and a link.
 
 ### Issues (`docs/agents/issues/`)
 
