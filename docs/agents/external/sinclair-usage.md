@@ -1,6 +1,6 @@
 # Sinclair – Usage Guide for Dependent Projects
 
-This document describes how to use the **sinclair** gem in your project.
+Sinclair is a dynamic method builder gem, also used for configuration objects, option/parameter objects, and plain Ruby models with keyword initializers. This document describes how to use the **sinclair** gem in your project.
 Copy this file into your project's `.github/` directory so that GitHub Copilot
 is aware of the patterns and conventions Sinclair provides.
 

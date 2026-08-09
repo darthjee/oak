@@ -1,5 +1,7 @@
 # Using the Jace Gem
 
+Jace is a Ruby gem for building internal, event-driven logic within a single application (register handlers for named events, trigger them, run `before`/main/`after` in order) — not for distributed messaging. This guide covers installation, registry usage, and event triggering.
+
 ## What is Jace?
 
 **Jace** is a Ruby gem for event-driven development **within a single application**.
