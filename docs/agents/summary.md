@@ -12,6 +12,11 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Routes](routes/index.md) | How resource vs. utility routes are categorized; links to the full route tables. |
 | [Routes — Resource Routes](routes/resource-routes.md) | Full table of SPA resource routes: Home, Categories, Items, Kinds, Admin — Users, Forbidden. |
 | [Routes — Utility Routes](routes/utility-routes.md) | Full table of API-only utility routes: Session, User Navigation Data, Form Support, Subscriptions, Disabled/Pending Cleanup. |
+| [Photo Upload](photo_upload/index.md) | Overview of the Init/Submit/Finalize HTTP photo upload flow and proxy/backend/frontend ownership; links to contracts, data model, proxy/auth, and edge-case detail pages. |
+| [Photo Upload — Contracts](photo_upload/contracts.md) | Concrete routes and request/response shapes for Init, Submit, and the shared status-gate/Finalize endpoint. |
+| [Photo Upload — Data Model & Migration](photo_upload/data-model-and-migration.md) | The `ready` column, its two-step migration rollout, and `CreateItemPhotosJob`/controller filtering changes. |
+| [Photo Upload — Proxy & Auth](photo_upload/proxy-and-auth.md) | The Tent extension mechanism, the new `proxy/` folder's agent ownership, session-cookie reuse, and upload validation. |
+| [Photo Upload — Edge Cases & Coexistence](photo_upload/edge-cases-and-coexistence.md) | Abandoned-upload/duplicate handling, and how the new flow coexists with the existing scan-job ingestion. |
 | [Front-End](frontend/index.md) | Runtime boot flow, directory structure, and Pages vs. Elements; links to the component pattern, dev workflow, and linting pages. |
 | [Front-End — Component Pattern](frontend/component-pattern.md) | Component/Controller/Helper architecture, adding a new page or element, and routing utilities. |
 | [Front-End — Dev Workflow](frontend/dev-workflow.md) | Running locally, building for production, tests/lint commands, Docker setup, and proxy modes. |
