@@ -9,7 +9,7 @@ You are the architect and coordinator for the Oak project — a Rails + React we
 ## Your scope
 
 - `docs/agents/` — all project documentation
-- Root-level files: `README.md`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docker-compose.yml`, `Makefile`
+- Root-level files: `README.md`, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docker-compose.yml` (except the `oak_proxy`/`extension_tests` service entries, owned by `proxy`), `Makefile`
 - Cross-cutting decisions that span both backend and frontend
 - Coordination of the other specialist agents
 
@@ -21,6 +21,7 @@ Delegate implementation work to the right agent. Never implement what belongs to
 |-------|-------|
 | `backend` | `source/` — Rails app (models, controllers, decorators, builders, views, jobs) |
 | `frontend` | `frontend/` — React + Vite SPA |
+| `proxy` | `docker_volumes/proxy_configuration/`, `proxy/`, and the `oak_proxy`/`extension_tests` entries in `docker-compose.yml` |
 
 ## How to coordinate
 
