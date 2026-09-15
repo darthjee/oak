@@ -5,6 +5,10 @@ import CategoryItemLinksEditor from '../../elements/CategoryItemLinksEditor.jsx'
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
 import LabeledInput from '../../elements/LabeledInput.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
+import PhotosCarousel from '../../elements/PhotosCarousel.jsx';
+
+/** File extensions accepted by the photo upload input, matching the backend/proxy allow-list. */
+const ALLOWED_PHOTO_EXTENSIONS = '.jpg,.jpeg,.png';
 
 /**
  * Renders the category item edit page HTML for different states.
@@ -42,6 +46,11 @@ export default class CategoryItemEditHelper {
    * @param {Function} onSave callback()
    * @param {string|null} [cancelHref] optional href for the cancel/back button;
    *   defaults to the item show page URL derived from item data
+   * @param {boolean} [uploading] whether a photo upload is currently in progress
+   * @param {string|null} [uploadError] photo upload error message, when present
+   * @param {File|null} [selectedFile] file currently selected for upload
+   * @param {Function|null} [onSelectFile] callback(file) invoked when the file input changes
+   * @param {Function|null} [onUploadPhoto] callback(file) invoked when the upload button is clicked
    * @returns {JSX.Element} category item edit content
    */
   static render(
@@ -53,7 +62,12 @@ export default class CategoryItemEditHelper {
     onRemoveLink,
     onAddLink,
     onSave,
-    cancelHref = null
+    cancelHref = null,
+    uploading = false,
+    uploadError = null,
+    selectedFile = null,
+    onSelectFile = null,
+    onUploadPhoto = null
   ) {
     return (
       <div className='container mt-4'>
@@ -66,6 +80,8 @@ export default class CategoryItemEditHelper {
           onLinkChange={onLinkChange}
           onRemoveLink={onRemoveLink}
         />
+
+        {this.#renderPhotoSection(item, uploading, uploadError, selectedFile, onSelectFile, onUploadPhoto)}
       </div>
     );
   }
@@ -107,6 +123,34 @@ export default class CategoryItemEditHelper {
           onChange={this.#buildFieldChangeHandler(onFieldChange, 'description')}
         />
       </CategoryItemInfoCard>
+    );
+  }
+
+  static #renderPhotoSection(item, uploading, uploadError, selectedFile, onSelectFile, onUploadPhoto) {
+    if (!item.id) {
+      return null;
+    }
+
+    const onFileInputChange = (event) => onSelectFile?.(event.target.files[0] || null);
+    const onUploadClick = () => onUploadPhoto?.(selectedFile);
+
+    return (
+      <div className='mb-4'>
+        <h5>Photos</h5>
+        {uploadError && <ErrorContainer error={uploadError} />}
+        <div className='d-flex align-items-center mb-3'>
+          <input
+            accept={ALLOWED_PHOTO_EXTENSIONS}
+            className='form-control me-2'
+            onChange={onFileInputChange}
+            type='file'
+          />
+          <button className='btn btn-primary' disabled={uploading} onClick={onUploadClick} type='button'>
+            {uploading ? 'Uploading...' : 'Upload'}
+          </button>
+        </div>
+        <PhotosCarousel photos={item.photos} name={item.name} />
+      </div>
     );
   }
 

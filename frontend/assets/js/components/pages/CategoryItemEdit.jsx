@@ -13,9 +13,22 @@ export default function CategoryItemEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const controller = useMemo(
-    () => new CategoryItemEditController(setItem, setKinds, setLoading, setSaving, setError),
+    () => new CategoryItemEditController(
+      setItem,
+      setKinds,
+      setLoading,
+      setSaving,
+      setError,
+      null,
+      null,
+      setUploading,
+      setUploadError
+    ),
     []
   );
 
@@ -68,6 +81,10 @@ export default function CategoryItemEdit() {
     controller.save(item);
   };
 
+  const onSelectFile = (file) => setSelectedFile(file);
+
+  const onUploadPhoto = (file) => controller.uploadPhoto(item, file);
+
   return CategoryItemEditHelper.render(
     item,
     kinds,
@@ -76,6 +93,12 @@ export default function CategoryItemEdit() {
     onLinkChange,
     onRemoveLink,
     onAddLink,
-    onSave
+    onSave,
+    null,
+    uploading,
+    uploadError,
+    selectedFile,
+    onSelectFile,
+    onUploadPhoto
   );
 }
