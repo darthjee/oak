@@ -81,4 +81,37 @@ RSpec.describe Oak::Kind do
       end
     end
   end
+
+  describe 'associations' do
+    subject(:kind) { create(:oak_kind, name:) }
+
+    describe '#main_photo' do
+      context 'when there are no items' do
+        it 'returns nil' do
+          expect(kind.main_photo).to be_nil
+        end
+      end
+
+      context 'when there are items with photos' do
+        let!(:item_with_photo) { create(:oak_item, kind:) }
+        let!(:main_photo) { create(:oak_photo, item: item_with_photo) }
+
+        it 'returns the main photo of the first item' do
+          expect(kind.main_photo).to eq(main_photo)
+        end
+      end
+
+      context 'when the only photo is not ready' do
+        let!(:item_with_photo) { create(:oak_item, kind:) }
+
+        before do
+          create(:oak_photo, item: item_with_photo, ready: false)
+        end
+
+        it 'returns nil' do
+          expect(kind.main_photo).to be_nil
+        end
+      end
+    end
+  end
 end

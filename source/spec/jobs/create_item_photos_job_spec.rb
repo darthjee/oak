@@ -36,6 +36,12 @@ RSpec.describe CreateItemPhotosJob do
 
         expect(item.photos.pluck(:file_name)).to match_array(files)
       end
+
+      it 'creates photos as ready' do
+        perform
+
+        expect(item.photos.pluck(:ready)).to all(be(true))
+      end
     end
 
     context 'when the item does not exist' do

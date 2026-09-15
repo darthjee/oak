@@ -11,6 +11,10 @@ module Oak
       expose :kind, decorator: Oak::Kind::Decorator
       expose :photos, decorator: Oak::Photo::Decorator
       expose :links, decorator: Oak::Link::Decorator
+
+      def photos
+        object.photos.select(&:ready?)
+      end
     end
   end
 end

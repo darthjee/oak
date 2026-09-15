@@ -10,7 +10,7 @@ module Oak
     has_many :links,  class_name: 'Oak::Link',  dependent: :destroy
 
     # Defines a main photo as the first photo based on the default scope of photos
-    has_one :main_photo, class_name: 'Oak::Photo'
+    has_one :main_photo, -> { where(ready: true) }, class_name: 'Oak::Photo', inverse_of: :item
     has_one :main_link, class_name: 'Oak::Link'
 
     validates :name, presence: true, length: { maximum: 100 }
