@@ -5,5 +5,6 @@ FactoryBot.define do
     association :item, factory: :oak_item
 
     file_name { "photo_#{SecureRandom.hex(4)}.jpg" }
+    ready { true }
   end
 end
