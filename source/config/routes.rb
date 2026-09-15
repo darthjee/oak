@@ -23,7 +23,9 @@ Rails.application.routes.draw do
   get '/categories', to: 'index_categories#index', as: :index_categories
 
   resources :categories, only: %i[new create show edit update], param: :slug do
-    resources :items, only: %i[index show new create edit update]
+    resources :items, only: %i[index show new create edit update] do
+      resources :photos, only: %i[create update], controller: 'items/photos'
+    end
     resources :subscriptions, only: %i[create]
     resources :kinds, only: %i[index], controller: 'category/kinds'
   end
