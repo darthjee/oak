@@ -36,13 +36,20 @@ conditional in `Oak::Photo::Decorator` avoids exposing URLs that would
 
 ## Submit (proxy-owned, not a Rails route)
 
-`POST /uploads/photos/:id/submit`, `multipart/form-data`, single field
-`file`.
+`POST /uploads/categories/:category_slug/items/:item_id/photos/:id/submit`,
+`multipart/form-data`, single field `file`. The URL mirrors the status-gate
+route's nested segments (`category_slug`/`item_id`/`id`) rather than just the
+photo `:id`, since the custom Tent handler builds the backend PATCH URL below
+straight from these path segments — it has no way to look up an item/category
+from a bare photo id (the proxy container doesn't share the Rails process or
+its DB). The frontend already has `category_slug`/`item_id` in context when
+building this URL (it's on the item's edit page), so this adds no round trip.
 
 The custom Tent handler (see [Proxy & Auth](proxy-and-auth.md) for the
 extension mechanism this runs on):
 
-1. Validates extension + size (reject before any backend call or disk
+1. Parses the `category_slug`/`item_id`/`id` segments from the Submit URL
+   and validates extension + size (reject before any backend call or disk
    write).
 2. Calls the status-gate endpoint with `{ status: "uploading" }` (`Cookie`
    header forwarded) — this is the pre-write authorization gate. Backend
