@@ -1,4 +1,5 @@
 import GenericClient from '../../../client/GenericClient.js';
+import PhotoUploadClient from '../../../client/PhotoUploadClient.js';
 import BasePageController from './BasePageController.js';
 import Router from '../../../utils/Router.js';
 
@@ -30,8 +31,22 @@ export default class CategoryItemEditController extends BasePageController {
    * @param {Function} setError state setter for error message
    * @param {GenericClient|null} [client] optional client instance
    * @param {Object|null} [locationTarget] optional location target used for redirects
+   * @param {Function|null} [setUploading] state setter for photo upload status
+   * @param {Function|null} [setUploadError] state setter for photo upload error message
+   * @param {PhotoUploadClient|null} [uploadClient] optional photo upload client instance
    */
-  constructor(setItem, setKinds, setLoading, setSaving, setError, client = null, locationTarget = null) {
+  constructor(
+    setItem,
+    setKinds,
+    setLoading,
+    setSaving,
+    setError,
+    client = null,
+    locationTarget = null,
+    setUploading = null,
+    setUploadError = null,
+    uploadClient = null
+  ) {
     super();
     this.setItem = setItem;
     this.setKinds = setKinds;
@@ -40,6 +55,9 @@ export default class CategoryItemEditController extends BasePageController {
     this.setError = setError;
     this.client = client ?? new GenericClient();
     this.locationTarget = locationTarget ?? (typeof window === 'undefined' ? { hash: '' } : window.location);
+    this.setUploading = setUploading;
+    this.setUploadError = setUploadError;
+    this.uploadClient = uploadClient ?? new PhotoUploadClient();
   }
 
   /**
@@ -87,6 +105,38 @@ export default class CategoryItemEditController extends BasePageController {
       })
       .finally(() => {
         this.setSaving(false);
+      });
+  }
+
+  /**
+   * Uploads a photo file for the current item and refetches the item on success so the
+   * newly-uploaded (already-ready) photo appears without a full page reload.
+   *
+   * @param {Object} item item being edited
+   * @param {File} file file selected for upload
+   * @returns {Promise<void>} upload promise
+   */
+  uploadPhoto(item, file) {
+    const { slug, id } = getCategoryItemEditParamsFromHash(this.client.currentHash());
+
+    if (!slug || !id || !file) {
+      this.setUploadError('Unable to upload photo.');
+      return Promise.reject(new Error('Unable to upload photo.'));
+    }
+
+    this.setUploading(true);
+    this.setUploadError(null);
+
+    return this.uploadClient.upload(slug, id, file)
+      .then(() => this.#fetchItem(slug, id))
+      .then((refetchedItem) => {
+        this.setItem(this.#normalizeItem(refetchedItem));
+      })
+      .catch(() => {
+        this.setUploadError('Unable to upload photo.');
+      })
+      .finally(() => {
+        this.setUploading(false);
       });
   }
 
