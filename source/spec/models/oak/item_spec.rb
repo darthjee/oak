@@ -289,6 +289,28 @@ RSpec.describe Oak::Item do
           expect(item.main_photo).to eq(main_photo)
         end
       end
+
+      context 'when the only photo is not ready' do
+        before do
+          create(:oak_photo, item:, ready: false)
+        end
+
+        it 'returns nil' do
+          expect(item.main_photo).to be_nil
+        end
+      end
+
+      context 'when the lowest order photo is not ready' do
+        let!(:main_photo) { create(:oak_photo, item:, order: 2) }
+
+        before do
+          create(:oak_photo, item:, order: 1, ready: false)
+        end
+
+        it 'skips the not-ready photo' do
+          expect(item.main_photo).to eq(main_photo)
+        end
+      end
     end
   end
 end

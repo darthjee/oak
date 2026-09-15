@@ -66,6 +66,36 @@ RSpec.describe Oak::Item::ShowDecorator do
       end
     end
 
+    context 'when the item has a not-ready photo' do
+      subject(:decorator) { described_class.new(item) }
+
+      let(:item) { create(:oak_item, name:, category:, kind:, description:) }
+      let(:category) { create(:oak_category) }
+      let(:kind) { create(:oak_kind) }
+      let(:links) { [] }
+      let!(:ready_photo) { create(:oak_photo, item:, ready: true) }
+      let(:expected) do
+        {
+          id: item.id,
+          name:,
+          description:,
+          visible: item.visible,
+          category: category_json,
+          kind: kind_json,
+          photos: [Oak::Photo::Decorator.new(ready_photo).as_json],
+          links: []
+        }.stringify_keys
+      end
+
+      before do
+        create(:oak_photo, item:, ready: false)
+      end
+
+      it 'excludes the not-ready photo' do
+        expect(decorator.as_json).to eq(expected)
+      end
+    end
+
     context 'when the item is invalid' do
       let(:name) { '' }
       let(:errors) { { name: ["can't be blank"] } }

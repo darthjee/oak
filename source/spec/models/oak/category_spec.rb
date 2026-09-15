@@ -142,6 +142,18 @@ RSpec.describe Oak::Category do
           expect(category.main_photo).to eq(main_photo)
         end
       end
+
+      context 'when the only photo is not ready' do
+        let!(:item_with_photo) { create(:oak_item, category:) }
+
+        before do
+          create(:oak_photo, item: item_with_photo, ready: false)
+        end
+
+        it 'returns nil' do
+          expect(category.main_photo).to be_nil
+        end
+      end
     end
   end
 end
