@@ -9,7 +9,7 @@ differs (Rails backend, no separate "image vs. file" type split needed):
 | Step | Endpoint | Owner | Purpose |
 |---|---|---|---|
 | 1. Init | `POST .../photos.json` | frontend → backend | Allocates the `Oak::Photo` record (`ready: false`), returns an id the frontend uses to build the Submit URL. |
-| 2. Submit (multipart) | `POST /uploads/photos/:id/submit` | Tent proxy | Receives the binary `multipart/form-data` payload, writes it to storage directly (without proxying the raw stream through the backend's request thread), then calls step 3 itself. |
+| 2. Submit (multipart) | `POST /uploads/categories/:category_slug/items/:item_id/photos/:id/submit` | Tent proxy | Receives the binary `multipart/form-data` payload, writes it to storage directly (without proxying the raw stream through the backend's request thread), then calls step 3 itself. |
 | 3. Finalize | `PATCH .../photos/:id.json` | **Tent proxy** (not frontend) | Marks the photo as `ready` for display, once Submit has landed the file. |
 
 **The Tent proxy owns the Finalize/ready transition, not the frontend** —
