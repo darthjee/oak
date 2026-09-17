@@ -4,5 +4,16 @@
       "Codacy"
     ]
   },
-  "version": "0.9.3"
+  "version": "0.9.3",
+  "git": {
+    "email": "darthjee+{agent}@gmail.com",
+    "omit_model_coauthor": true,
+    "merge_body_mode": "coauthors",
+    "agents": {
+      "architect": "darthjee+architect@gmail.com",
+      "backend": "darthjee+backend@gmail.com",
+      "frontend": "darthjee+frontend@gmail.com",
+      "proxy": "darthjee+infra@gmail.com"
+    }
+  }
 }
