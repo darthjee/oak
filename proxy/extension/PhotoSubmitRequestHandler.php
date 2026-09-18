@@ -54,6 +54,9 @@ class PhotoSubmitRequestHandler extends RequestHandler
     /** @var HttpClientInterface Client used for the outbound status-gate calls. */
     private HttpClientInterface $httpClient;
 
+    /** @var PhotoPathGuard Guards the write destination against path traversal/escapes. */
+    private PhotoPathGuard $pathGuard;
+
     /**
      * @param string                   $host               Backend base URL.
      * @param string                   $photosPath         Local filesystem base path for photos.
@@ -73,6 +76,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
         $this->maxUploadSizeBytes = $maxUploadSizeBytes;
         $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
         $this->httpClient = $httpClient ?? new CurlHttpClient();
+        $this->pathGuard = new PhotoPathGuard();
     }
 
     /**
@@ -142,7 +146,9 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return $this->errorResponse(502, 'Invalid response from backend');
         }
 
-        $this->writeFile($file['tmp_name'], $filePath);
+        if (!$this->writeFile($file['tmp_name'], $filePath)) {
+            return $this->errorResponse(502, 'Failed to store uploaded file');
+        }
 
         $finalizeResponse = $this->callGate($gateUrl, 'ready', $cookie);
 
@@ -272,11 +278,15 @@ class PhotoSubmitRequestHandler extends RequestHandler
      * Writes the uploaded file to `<photosPath>/<filePath>`, creating any
      * intermediate directories as needed.
      *
+     * The resolved destination is routed through `PhotoPathGuard` after the
+     * directory is created, so a `..` segment or symlink escape in
+     * `filePath` is rejected instead of writing outside `photosPath`.
+     *
      * @param string $tmpName  The uploaded file's temporary path.
      * @param string $filePath The destination path, relative to photosPath.
-     * @return void
+     * @return boolean True on success, false if the write was rejected/failed.
      */
-    private function writeFile(string $tmpName, string $filePath): void
+    private function writeFile(string $tmpName, string $filePath): bool
     {
         $destination = $this->photosPath . '/' . ltrim($filePath, '/');
         $dir = dirname($destination);
@@ -285,11 +295,17 @@ class PhotoSubmitRequestHandler extends RequestHandler
             mkdir($dir, 0775, true);
         }
 
-        if (is_uploaded_file($tmpName)) {
-            move_uploaded_file($tmpName, $destination);
-        } else {
-            rename($tmpName, $destination);
+        $safeDestination = $this->pathGuard->resolve($this->photosPath, $filePath);
+
+        if ($safeDestination === null) {
+            return false;
         }
+
+        if (is_uploaded_file($tmpName)) {
+            return move_uploaded_file($tmpName, $safeDestination);
+        }
+
+        return rename($tmpName, $safeDestination);
     }
 
     /**
