@@ -19,10 +19,6 @@ RSpec.describe Items::PhotosController do
     end
 
     context 'when the user owns the item' do
-      let(:expected_response) do
-        { 'id' => Oak::Photo.last.id, 'file_name' => 'cat.jpg', 'ready' => false }
-      end
-
       it 'creates a new Oak::Photo' do
         expect { post :create, params: parameters }.to change(Oak::Photo, :count).by(1)
       end
@@ -42,7 +38,25 @@ RSpec.describe Items::PhotosController do
       it 'returns the photo without url fields' do
         post :create, params: parameters
 
-        expect(response_json).to eq(expected_response)
+        expect(response_json).to include(
+          'id' => Oak::Photo.last.id,
+          'ready' => false
+        )
+        expect(response_json['file_name']).to match(/\Acat-[0-9a-f-]{36}\.jpg\z/)
+      end
+    end
+
+    context 'when a photo with the same original file_name already exists on the item' do
+      before { create(:oak_photo, item:, file_name: 'cat-existing-uuid.jpg') }
+
+      it 'still creates a new Oak::Photo' do
+        expect { post :create, params: parameters }.to change(Oak::Photo, :count).by(1)
+      end
+
+      it 'returns a successful response' do
+        post :create, params: parameters
+
+        expect(response).to have_http_status(:created)
       end
     end
 
