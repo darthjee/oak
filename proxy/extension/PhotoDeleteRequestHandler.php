@@ -252,6 +252,18 @@ class PhotoDeleteRequestHandler extends RequestHandler
      */
     private function deleteFile(string $filePath): void
     {
+        $destinationDir = dirname(rtrim($this->photosPath, '/') . '/' . ltrim($filePath, '/'));
+
+        if (!is_dir($destinationDir)) {
+            error_log(sprintf(
+                'PhotoDeleteRequestHandler: destination directory for file_path "%s" does not exist, ' .
+                    'treating as already missing',
+                $filePath
+            ));
+
+            return;
+        }
+
         $safeDestination = $this->pathGuard->resolve($this->photosPath, $filePath);
 
         if ($safeDestination === null) {

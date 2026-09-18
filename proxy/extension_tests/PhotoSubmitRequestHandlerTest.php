@@ -2,47 +2,11 @@
 
 namespace Oak\Proxy\Tests;
 
+require_once __DIR__ . '/FakeHttpClient.php';
+
 use Oak\Proxy\PhotoSubmitRequestHandler;
 use PHPUnit\Framework\TestCase;
-use Tent\Http\HttpClientInterface;
 use Tent\Models\ProcessingRequest;
-
-/**
- * Records every outbound call made through it and replays the configured
- * responses in order (one per call). Used as a test double for the
- * PhotoSubmitRequestHandler's outbound status-gate/Finalize calls.
- */
-class FakeHttpClient implements HttpClientInterface
-{
-    /** @var array List of calls made through this client, in order. */
-    public array $calls = [];
-
-    /** @var array Queue of responses to return, one per call. */
-    private array $responses;
-
-    public function __construct(array $responses = [])
-    {
-        $this->responses = $responses;
-    }
-
-    public function request(
-        string $method,
-        string $url,
-        array $headers,
-        ?string $body = null,
-        array $uploadedFiles = [],
-        array $postFields = []
-    ): array {
-        $this->calls[] = [
-            'method' => $method,
-            'url' => $url,
-            'headers' => $headers,
-            'body' => $body
-        ];
-
-        return array_shift($this->responses) ?? ['body' => '', 'httpCode' => 200, 'headers' => []];
-    }
-}
 
 class PhotoSubmitRequestHandlerTest extends TestCase
 {
@@ -136,6 +100,29 @@ class PhotoSubmitRequestHandlerTest extends TestCase
         $writtenPath = $this->photosPath . '/' . $filePath;
         $this->assertFileExists($writtenPath);
         $this->assertSame('some bytes', file_get_contents($writtenPath));
+    }
+
+    public function testPhotoPathGuardAllowsLegitimateDeeplyNestedFilePath(): void
+    {
+        // Regression test for the PhotoPathGuard retrofit: a legitimate,
+        // backend-computed file_path several directories deep must still
+        // resolve within photosPath and be written successfully, not be
+        // rejected as if it were escaping the root.
+        $filePath = 'users/1/items/42/photos/nested/deep/photo.jpg';
+        $httpClient = new FakeHttpClient([
+            ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
+            ['body' => '{}', 'httpCode' => 200, 'headers' => []]
+        ]);
+        $handler = $this->buildHandler($httpClient);
+        $uploadedFile = $this->buildUploadedFile('photo.jpg', 'nested bytes');
+
+        $response = $handler->handleRequest($this->buildRequest($uploadedFile));
+
+        $this->assertSame(200, $response->httpCode());
+
+        $writtenPath = $this->photosPath . '/' . $filePath;
+        $this->assertFileExists($writtenPath);
+        $this->assertSame('nested bytes', file_get_contents($writtenPath));
     }
 
     private function buildHandler(FakeHttpClient $httpClient, int $maxUploadSizeBytes = 1_048_576): PhotoSubmitRequestHandler
