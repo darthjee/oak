@@ -42,6 +42,11 @@ RSpec.describe Items::PhotosController do
           'id' => Oak::Photo.last.id,
           'ready' => false
         )
+      end
+
+      it 'returns a sanitized unique file_name' do
+        post :create, params: parameters
+
         expect(response_json['file_name']).to match(/\Acat-[0-9a-f-]{36}\.jpg\z/)
       end
     end
