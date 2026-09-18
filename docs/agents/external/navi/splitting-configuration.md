@@ -4,7 +4,7 @@ A single monolithic configuration file can become unwieldy for large application
 `resources` and `clients` across multiple files using `include`, and organize them into `namespace`s so
 that names declared in different files don't collide with each other.
 
-### `include`
+## `include`
 
 Add a top-level `include:` key to any config file with a list of other config files to pull in:
 
@@ -26,7 +26,7 @@ include:
 - Only the entry file (the one passed via `--config`) is consulted for `workers`, `web`, `log`, and
   `failure` sections — included files only ever contribute `resources` and `clients`.
 
-### `namespace`
+## `namespace`
 
 Every config file — the entry file or any included file — contributes its `resources` and `clients` to a
 `namespace`, declared with a top-level `namespace:` key:
@@ -47,7 +47,7 @@ together into that one namespace. Declaring the same resource or client name twi
 namespace (whether from the same file or merged in from different files) is a configuration error and
 Navi fails to start.
 
-### Cross-namespace references
+## Cross-namespace references
 
 A resource's `actions[].resource` / `paginated_actions[].resource`, and a `client` reference, may point
 at a resource or client declared in another namespace by adding a `namespace` key next to the reference:
@@ -87,7 +87,7 @@ All of these references — including unresolvable namespaces or names — are v
 loads the configuration, so a bad `include`/`namespace` setup is caught at startup rather than causing a
 request-time failure later.
 
-### Full example
+## Full example
 
 `navi_config.yml` (entry file, no `namespace` declared -> `default`):
 
@@ -137,4 +137,6 @@ resources:
             id: parsedBody.id
 ```
 
-[← Back to How to Use Navi](../HOW_TO_USE_NAVI.md)
+**Related sample:** [Split a large config across files and namespaces](samples/split-config.md)
+
+[← Back to How to Use Navi](../how_to_use_navi.md)
