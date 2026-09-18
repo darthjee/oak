@@ -4,11 +4,11 @@ module Items
   class PhotosController < ApplicationController
     include UserRequired
 
-    protect_from_forgery except: %i[create update]
-    require_user_for :create, :update
+    protect_from_forgery except: %i[create update destroy]
+    require_user_for :create, :update, :destroy, :deletable
 
     resource_for Oak::Photo,
-                 only: %i[create update],
+                 only: %i[create update destroy],
                  decorator: Oak::Photo::UploadDecorator,
                  build_with: :build_photo
 
@@ -28,6 +28,12 @@ module Items
       when 'ready' then finalize
       else head :unprocessable_content
       end
+    end
+
+    def deletable
+      return head :unprocessable_content unless photo.ready?
+
+      render json: { file_path: }, status: :ok
     end
 
     private

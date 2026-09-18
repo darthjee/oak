@@ -155,4 +155,114 @@ RSpec.describe Items::PhotosController do
       end
     end
   end
+
+  describe 'POST #deletable' do
+    let(:photo) { create(:oak_photo, item:, ready: true) }
+    let(:parameters) do
+      { category_slug: category.slug, item_id: item.id, id: photo.id, format: :json }
+    end
+
+    context 'when the photo is ready' do
+      it 'returns a successful response' do
+        post :deletable, params: parameters
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the deterministic file path' do
+        post :deletable, params: parameters
+
+        expect(response_json).to eq('file_path' => "users/#{user.id}/items/#{item.id}/#{photo.file_name}")
+      end
+    end
+
+    context 'when the photo is not ready' do
+      let(:photo) { create(:oak_photo, item:, ready: false) }
+
+      it 'returns an unprocessable entity response' do
+        post :deletable, params: parameters
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context 'when the user does not own the item' do
+      let(:other_user) { create(:user) }
+      let(:item) { create(:oak_item, category:, user: other_user) }
+
+      it 'returns a forbidden response' do
+        post :deletable, params: parameters
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'when the user is not logged in' do
+      let(:session) { nil }
+
+      it 'returns a redirect response' do
+        post :deletable, params: parameters
+
+        expect(response).to have_http_status(:found)
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let(:photo) { create(:oak_photo, item:, ready: true) }
+    let(:parameters) do
+      { category_slug: category.slug, item_id: item.id, id: photo.id, format: :json }
+    end
+
+    context 'when the photo is owned by the user' do
+      it 'returns a successful response' do
+        delete :destroy, params: parameters
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'deletes the photo' do
+        photo
+
+        expect { delete :destroy, params: parameters }.to change(Oak::Photo, :count).by(-1)
+      end
+    end
+
+    context 'when the user does not own the item' do
+      let(:other_user) { create(:user) }
+      let(:item) { create(:oak_item, category:, user: other_user) }
+
+      it 'returns a forbidden response' do
+        delete :destroy, params: parameters
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it 'does not delete the photo' do
+        photo
+
+        expect { delete :destroy, params: parameters }.not_to change(Oak::Photo, :count)
+      end
+    end
+
+    context 'when the photo does not exist' do
+      before { photo.destroy }
+
+      it 'returns a not found response' do
+        delete :destroy, params: parameters
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context 'when the user is not logged in' do
+      let(:session) { nil }
+
+      it 'returns a redirect response' do
+        delete :destroy, params: parameters
+
+        expect(response).to have_http_status(:found)
+      end
+    end
+  end
 end

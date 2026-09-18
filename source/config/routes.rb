@@ -24,7 +24,9 @@ Rails.application.routes.draw do
 
   resources :categories, only: %i[new create show edit update], param: :slug do
     resources :items, only: %i[index show new create edit update] do
-      resources :photos, only: %i[create update], controller: 'items/photos'
+      resources :photos, only: %i[create update destroy], controller: 'items/photos' do
+        member { post :deletable }
+      end
     end
     resources :subscriptions, only: %i[create]
     resources :kinds, only: %i[index], controller: 'category/kinds'
