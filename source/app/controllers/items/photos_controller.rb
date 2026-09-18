@@ -42,7 +42,11 @@ module Items
     end
 
     def build_photo
-      photos.build(photo_params.merge(ready: false))
+      Oak::Photo::CreateBuilder.build(**create_params)
+    end
+
+    def create_params
+      photo_params.to_h.symbolize_keys.merge(scope: photos)
     end
 
     def ensure_owner!
