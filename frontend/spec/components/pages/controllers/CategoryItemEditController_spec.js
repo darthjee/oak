@@ -39,13 +39,31 @@ describe('CategoryItemEditController', function() {
     'setSaving',
     'setError',
     'setUploading',
-    'setUploadError'
+    'setUploadError',
+    'setDeletingPhotoId',
+    'setDeleteErrorByPhotoId'
   );
 
   const buildMockUploadClient = (overrides = {}) => ({
     upload: jasmine.createSpy('upload').and.returnValue(Promise.resolve({ id: 7, file_name: 'photo.png', ready: true })),
+    delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve()),
     ...overrides,
   });
+
+  const buildController = (setters, overrides = {}) => new CategoryItemEditController(
+    setters.setItem,
+    setters.setKinds,
+    setters.setLoading,
+    setters.setSaving,
+    setters.setError,
+    overrides.client || mockClient,
+    overrides.locationTarget || mockLocation,
+    setters.setUploading,
+    setters.setUploadError,
+    overrides.uploadClient || buildMockUploadClient(),
+    setters.setDeletingPhotoId,
+    setters.setDeleteErrorByPhotoId
+  );
 
   beforeEach(function() {
     mockClient = buildMockClient();
@@ -67,69 +85,45 @@ describe('CategoryItemEditController', function() {
   });
 
   it('loads item and kinds in buildEffect', async function() {
-    const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
-    const controller = new CategoryItemEditController(
-      setItem,
-      setKinds,
-      setLoading,
-      setSaving,
-      setError,
-      mockClient,
-      mockLocation
-    );
+    const setters = buildSetters();
+    const controller = buildController(setters);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project/items/35.json');
     expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project/kinds.json');
-    expect(setItem).toHaveBeenCalledWith(jasmine.objectContaining({
+    expect(setters.setItem).toHaveBeenCalledWith(jasmine.objectContaining({
       id: 35,
       kind_slug: 'code',
       links: [],
     }));
-    expect(setKinds).toHaveBeenCalledWith([{ slug: 'code', name: 'Code' }]);
-    expect(setLoading).toHaveBeenCalledWith(false);
-    expect(setError).not.toHaveBeenCalled();
+    expect(setters.setKinds).toHaveBeenCalledWith([{ slug: 'code', name: 'Code' }]);
+    expect(setters.setLoading).toHaveBeenCalledWith(false);
+    expect(setters.setError).not.toHaveBeenCalled();
 
     cleanup();
   });
 
   it('sets error when loading fails', async function() {
-    const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+    const setters = buildSetters();
     mockClient = buildMockClient({
       fetch: jasmine.createSpy('fetch').and.returnValue(Promise.reject(new Error('boom'))),
     });
-    const controller = new CategoryItemEditController(
-      setItem,
-      setKinds,
-      setLoading,
-      setSaving,
-      setError,
-      mockClient,
-      mockLocation
-    );
+    const controller = buildController(setters);
     const cleanup = controller.buildEffect()();
 
     await flushPromises();
 
-    expect(setError).toHaveBeenCalledWith('Unable to load category item edit form.');
-    expect(setLoading).toHaveBeenCalledWith(false);
+    expect(setters.setError).toHaveBeenCalledWith('Unable to load category item edit form.');
+    expect(setters.setLoading).toHaveBeenCalledWith(false);
 
     cleanup();
   });
 
   it('saves payload and redirects to show page', async function() {
-    const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
-    const controller = new CategoryItemEditController(
-      setItem,
-      setKinds,
-      setLoading,
-      setSaving,
-      setError,
-      mockClient,
-      mockLocation
-    );
+    const setters = buildSetters();
+    const controller = buildController(setters);
 
     await controller.save({
       name: 'Oak Updated',
@@ -149,25 +143,17 @@ describe('CategoryItemEditController', function() {
       },
     });
     expect(mockLocation.hash).toBe('#/categories/project/items/35');
-    expect(setSaving).toHaveBeenCalledWith(true);
-    expect(setSaving).toHaveBeenCalledWith(false);
-    expect(setError).toHaveBeenCalledWith(null);
+    expect(setters.setSaving).toHaveBeenCalledWith(true);
+    expect(setters.setSaving).toHaveBeenCalledWith(false);
+    expect(setters.setError).toHaveBeenCalledWith(null);
   });
 
   it('sets error when save fails', async function() {
-    const { setItem, setKinds, setLoading, setSaving, setError } = buildSetters();
+    const setters = buildSetters();
     mockClient = buildMockClient({
       patch: jasmine.createSpy('patch').and.returnValue(Promise.reject(new Error('boom'))),
     });
-    const controller = new CategoryItemEditController(
-      setItem,
-      setKinds,
-      setLoading,
-      setSaving,
-      setError,
-      mockClient,
-      mockLocation
-    );
+    const controller = buildController(setters);
 
     await controller.save({
       name: 'Oak Updated',
@@ -176,92 +162,116 @@ describe('CategoryItemEditController', function() {
       links: [],
     });
 
-    expect(setError).toHaveBeenCalledWith('Unable to save category item.');
-    expect(setSaving).toHaveBeenCalledWith(false);
+    expect(setters.setError).toHaveBeenCalledWith('Unable to save category item.');
+    expect(setters.setSaving).toHaveBeenCalledWith(false);
   });
 
   describe('#uploadPhoto', function() {
     it('uploads the file and refetches the item on success', async function() {
-      const { setItem, setKinds, setLoading, setSaving, setError, setUploading, setUploadError } = buildSetters();
+      const setters = buildSetters();
       const mockUploadClient = buildMockUploadClient();
-      const controller = new CategoryItemEditController(
-        setItem,
-        setKinds,
-        setLoading,
-        setSaving,
-        setError,
-        mockClient,
-        mockLocation,
-        setUploading,
-        setUploadError,
-        mockUploadClient
-      );
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
       const file = new Blob(['data'], { type: 'image/png' });
 
       await controller.uploadPhoto({ id: 35 }, file);
 
       expect(mockUploadClient.upload).toHaveBeenCalledWith('project', '35', file);
       expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project/items/35.json');
-      expect(setItem).toHaveBeenCalledWith(jasmine.objectContaining({
+      expect(setters.setItem).toHaveBeenCalledWith(jasmine.objectContaining({
         id: 35,
         kind_slug: 'code',
         links: [],
       }));
-      expect(setUploading).toHaveBeenCalledWith(true);
-      expect(setUploading).toHaveBeenCalledWith(false);
-      expect(setUploadError).toHaveBeenCalledWith(null);
-      expect(setUploadError).not.toHaveBeenCalledWith('Unable to upload photo.');
+      expect(setters.setUploading).toHaveBeenCalledWith(true);
+      expect(setters.setUploading).toHaveBeenCalledWith(false);
+      expect(setters.setUploadError).toHaveBeenCalledWith(null);
+      expect(setters.setUploadError).not.toHaveBeenCalledWith('Unable to upload photo.');
     });
 
     it('sets upload error when the upload fails', async function() {
-      const { setItem, setKinds, setLoading, setSaving, setError, setUploading, setUploadError } = buildSetters();
+      const setters = buildSetters();
       const mockUploadClient = buildMockUploadClient({
         upload: jasmine.createSpy('upload').and.returnValue(Promise.reject(new Error('boom'))),
       });
-      const controller = new CategoryItemEditController(
-        setItem,
-        setKinds,
-        setLoading,
-        setSaving,
-        setError,
-        mockClient,
-        mockLocation,
-        setUploading,
-        setUploadError,
-        mockUploadClient
-      );
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
       const file = new Blob(['data'], { type: 'image/png' });
 
       await controller.uploadPhoto({ id: 35 }, file);
 
-      expect(setUploadError).toHaveBeenCalledWith('Unable to upload photo.');
-      expect(setUploading).toHaveBeenCalledWith(false);
-      expect(setItem).not.toHaveBeenCalled();
+      expect(setters.setUploadError).toHaveBeenCalledWith('Unable to upload photo.');
+      expect(setters.setUploading).toHaveBeenCalledWith(false);
+      expect(setters.setItem).not.toHaveBeenCalled();
     });
 
     it('sets upload error and rejects when slug/id/file are missing', async function() {
-      const { setItem, setKinds, setLoading, setSaving, setError, setUploading, setUploadError } = buildSetters();
+      const setters = buildSetters();
       const mockUploadClient = buildMockUploadClient();
       mockClient = buildMockClient({
         currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items/35'),
       });
-      const controller = new CategoryItemEditController(
-        setItem,
-        setKinds,
-        setLoading,
-        setSaving,
-        setError,
-        mockClient,
-        mockLocation,
-        setUploading,
-        setUploadError,
-        mockUploadClient
-      );
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
 
       await expectAsync(controller.uploadPhoto({ id: 35 }, null)).toBeRejected();
 
-      expect(setUploadError).toHaveBeenCalledWith('Unable to upload photo.');
+      expect(setters.setUploadError).toHaveBeenCalledWith('Unable to upload photo.');
       expect(mockUploadClient.upload).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('#deletePhoto', function() {
+    it('deletes the photo and refetches the item on success', async function() {
+      const setters = buildSetters();
+      const mockUploadClient = buildMockUploadClient();
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
+
+      await controller.deletePhoto({ id: 35 }, 7);
+
+      expect(mockUploadClient.delete).toHaveBeenCalledWith('project', '35', 7);
+      expect(mockClient.fetch).toHaveBeenCalledWith('/categories/project/items/35.json');
+      expect(setters.setItem).toHaveBeenCalledWith(jasmine.objectContaining({
+        id: 35,
+        kind_slug: 'code',
+        links: [],
+      }));
+      expect(setters.setDeletingPhotoId).toHaveBeenCalledWith(7);
+      expect(setters.setDeletingPhotoId).toHaveBeenCalledWith(null);
+
+      const clearPriorError = setters.setDeleteErrorByPhotoId.calls.first().args[0];
+      expect(clearPriorError({ 7: 'stale error' })).toEqual({});
+    });
+
+    it('sets a per-photo delete error and clears deletingPhotoId when the delete fails', async function() {
+      const setters = buildSetters();
+      const mockUploadClient = buildMockUploadClient({
+        delete: jasmine.createSpy('delete').and.returnValue(Promise.reject(new Error('boom'))),
+      });
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
+
+      await controller.deletePhoto({ id: 35 }, 7);
+
+      expect(setters.setDeletingPhotoId).toHaveBeenCalledWith(7);
+      expect(setters.setDeletingPhotoId).toHaveBeenCalledWith(null);
+      expect(setters.setItem).not.toHaveBeenCalled();
+
+      const applyError = setters.setDeleteErrorByPhotoId.calls.mostRecent().args[0];
+      expect(applyError({})).toEqual({ 7: 'Unable to delete photo.' });
+    });
+
+    it('sets a per-photo delete error and rejects when slug/id/photoId are missing', async function() {
+      const setters = buildSetters();
+      const mockUploadClient = buildMockUploadClient();
+      mockClient = buildMockClient({
+        currentHash: jasmine.createSpy('currentHash').and.returnValue('#/categories/project/items/35'),
+      });
+      const controller = buildController(setters, { uploadClient: mockUploadClient });
+
+      await expectAsync(controller.deletePhoto({ id: 35 }, 7)).toBeRejected();
+
+      expect(mockUploadClient.delete).not.toHaveBeenCalled();
+      expect(setters.setDeletingPhotoId).not.toHaveBeenCalled();
+
+      const applyError = setters.setDeleteErrorByPhotoId.calls.mostRecent().args[0];
+      expect(applyError({})).toEqual({ 7: 'Unable to delete photo.' });
     });
   });
 });

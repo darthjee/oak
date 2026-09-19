@@ -12,9 +12,20 @@ export default function CategoryItem() {
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingPhotoId, setDeletingPhotoId] = useState(null);
+  const [deleteErrorByPhotoId, setDeleteErrorByPhotoId] = useState({});
 
   const controller = useMemo(
-    () => new CategoryItemController(setItem, setLogged, setLoading, setError),
+    () => new CategoryItemController(
+      setItem,
+      setLogged,
+      setLoading,
+      setError,
+      null,
+      null,
+      setDeletingPhotoId,
+      setDeleteErrorByPhotoId
+    ),
     []
   );
 
@@ -32,5 +43,7 @@ export default function CategoryItem() {
     return CategoryItemHelper.renderError(error);
   }
 
-  return CategoryItemHelper.render(item, logged);
+  const onDeletePhoto = (photoId) => controller.deletePhoto(item, photoId);
+
+  return CategoryItemHelper.render(item, logged, onDeletePhoto, deletingPhotoId, deleteErrorByPhotoId);
 }

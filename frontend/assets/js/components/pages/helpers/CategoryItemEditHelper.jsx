@@ -51,6 +51,10 @@ export default class CategoryItemEditHelper {
    * @param {File|null} [selectedFile] file currently selected for upload
    * @param {Function|null} [onSelectFile] callback(file) invoked when the file input changes
    * @param {Function|null} [onUploadPhoto] callback(file) invoked when the upload button is clicked
+   * @param {number|string|null} [deletingPhotoId] id of the photo currently being deleted, if any
+   * @param {Object|null} [deleteErrorByPhotoId] map of photo id to delete error message
+   * @param {Function|null} [onDeletePhoto] callback(photoId) invoked when a photo's delete
+   *   button is confirmed
    * @returns {JSX.Element} category item edit content
    */
   static render(
@@ -67,7 +71,10 @@ export default class CategoryItemEditHelper {
     uploadError = null,
     selectedFile = null,
     onSelectFile = null,
-    onUploadPhoto = null
+    onUploadPhoto = null,
+    deletingPhotoId = null,
+    deleteErrorByPhotoId = null,
+    onDeletePhoto = null
   ) {
     return (
       <div className='container mt-4'>
@@ -81,7 +88,17 @@ export default class CategoryItemEditHelper {
           onRemoveLink={onRemoveLink}
         />
 
-        {this.#renderPhotoSection(item, uploading, uploadError, selectedFile, onSelectFile, onUploadPhoto)}
+        {this.#renderPhotoSection(
+          item,
+          uploading,
+          uploadError,
+          selectedFile,
+          onSelectFile,
+          onUploadPhoto,
+          deletingPhotoId,
+          deleteErrorByPhotoId,
+          onDeletePhoto
+        )}
       </div>
     );
   }
@@ -126,7 +143,17 @@ export default class CategoryItemEditHelper {
     );
   }
 
-  static #renderPhotoSection(item, uploading, uploadError, selectedFile, onSelectFile, onUploadPhoto) {
+  static #renderPhotoSection(
+    item,
+    uploading,
+    uploadError,
+    selectedFile,
+    onSelectFile,
+    onUploadPhoto,
+    deletingPhotoId,
+    deleteErrorByPhotoId,
+    onDeletePhoto
+  ) {
     if (!item.id) {
       return null;
     }
@@ -149,7 +176,13 @@ export default class CategoryItemEditHelper {
             {uploading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
-        <PhotosCarousel photos={item.photos} name={item.name} />
+        <PhotosCarousel
+          deleteErrorByPhotoId={deleteErrorByPhotoId}
+          deletingPhotoId={deletingPhotoId}
+          name={item.name}
+          onDeletePhoto={onDeletePhoto}
+          photos={item.photos}
+        />
       </div>
     );
   }
