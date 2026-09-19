@@ -113,6 +113,48 @@ describe('PhotoUploadClient', function() {
     });
   });
 
+  describe('#delete', function() {
+    it('sends a delete request to the photo path', async function() {
+      stubFetchResponse({ ok: true });
+
+      const client = new PhotoUploadClient();
+      await client.delete('project', 35, 7);
+
+      expect(global.fetch).toHaveBeenCalledWith('/uploads/categories/project/items/35/photos/7', {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+    });
+
+    it('includes X-Skip-Cache when the user is logged in', async function() {
+      stubFetchResponse({ ok: true });
+      setLoggedIn(true);
+
+      const client = new PhotoUploadClient();
+      await client.delete('project', 35, 7);
+
+      expect(global.fetch).toHaveBeenCalledWith('/uploads/categories/project/items/35/photos/7', {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'X-Skip-Cache': '1',
+        },
+      });
+    });
+
+    it('throws on non-ok response', async function() {
+      stubFetchResponse({ ok: false, status: 422 });
+
+      const client = new PhotoUploadClient();
+
+      await expectAsync(client.delete('project', 35, 7)).toBeRejectedWithError(
+        'Request failed for /uploads/categories/project/items/35/photos/7'
+      );
+    });
+  });
+
   describe('#upload', function() {
     it('sequences init then submit, exactly once each, and returns the created photo', async function() {
       const file = new Blob(['data'], { type: 'image/png' });

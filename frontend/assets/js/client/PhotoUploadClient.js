@@ -85,6 +85,31 @@ export default class PhotoUploadClient {
   }
 
   /**
+   * Deletes a previously uploaded photo.
+   *
+   * @param {string} categorySlug slug of the category the item belongs to
+   * @param {number|string} itemId id of the item the photo belongs to
+   * @param {number|string} photoId id of the photo to delete
+   * @returns {Promise<void>} resolves when the delete succeeds
+   * @throws {Error} if the response is not ok
+   */
+  async delete(categorySlug, itemId, photoId) {
+    const path = `/uploads/categories/${categorySlug}/items/${itemId}/photos/${photoId}`;
+
+    const response = await fetch(path, {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        ...this.#skipCacheHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed for ${path}`);
+    }
+  }
+
+  /**
    * Builds the `X-Skip-Cache` header when the user is logged in, so `require_user_for`
    * and ownership checks pass for Init and Submit.
    *
