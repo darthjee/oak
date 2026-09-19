@@ -1,6 +1,35 @@
 import CategoryItemHelper from '../../../../assets/js/components/pages/helpers/CategoryItemHelper.jsx';
+import PhotosCarousel from '../../../../assets/js/components/elements/PhotosCarousel.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
+
+const findElement = (node, matcher) => {
+  if (!node) {
+    return null;
+  }
+
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const match = findElement(child, matcher);
+
+      if (match) {
+        return match;
+      }
+    }
+
+    return null;
+  }
+
+  if (typeof node !== 'object') {
+    return null;
+  }
+
+  if (matcher(node)) {
+    return node;
+  }
+
+  return findElement(node.props?.children, matcher);
+};
 
 describe('CategoryItemHelper', function() {
   const item = {
@@ -71,5 +100,27 @@ describe('CategoryItemHelper', function() {
 
     expect(html).not.toContain('Photos');
     expect(html).not.toContain('carousel');
+  });
+
+  describe('photo delete props', function() {
+    const onDeletePhoto = jasmine.createSpy('onDeletePhoto');
+
+    it('forwards onDeletePhoto/deletingPhotoId/deleteErrorByPhotoId to PhotosCarousel when logged in', function() {
+      const element = CategoryItemHelper.render(item, true, onDeletePhoto, 1, { 1: 'boom' });
+      const carousel = findElement(element, (child) => child.type === PhotosCarousel);
+
+      expect(carousel.props.onDeletePhoto).toBe(onDeletePhoto);
+      expect(carousel.props.deletingPhotoId).toBe(1);
+      expect(carousel.props.deleteErrorByPhotoId).toEqual({ 1: 'boom' });
+    });
+
+    it('does not forward delete props to PhotosCarousel when not logged in', function() {
+      const element = CategoryItemHelper.render(item, false, onDeletePhoto, 1, { 1: 'boom' });
+      const carousel = findElement(element, (child) => child.type === PhotosCarousel);
+
+      expect(carousel.props.onDeletePhoto).toBeUndefined();
+      expect(carousel.props.deletingPhotoId).toBeUndefined();
+      expect(carousel.props.deleteErrorByPhotoId).toBeUndefined();
+    });
   });
 });

@@ -1,4 +1,5 @@
 import GenericClient from '../../../client/GenericClient.js';
+import PhotoUploadClient from '../../../client/PhotoUploadClient.js';
 import BasePageController from './BasePageController.js';
 import Router from '../../../utils/Router.js';
 import { isLoggedIn, subscribe } from '../../../utils/authState.js';
@@ -29,14 +30,31 @@ export default class CategoryItemController extends BasePageController {
    * @param {Function} setLoading state setter for loading status
    * @param {Function} setError state setter for error message
    * @param {GenericClient|null} [client] optional client instance
+   * @param {PhotoUploadClient|null} [uploadClient] optional photo upload client instance
+   * @param {Function|null} [setDeletingPhotoId] state setter for the id of the photo currently
+   *   being deleted
+   * @param {Function|null} [setDeleteErrorByPhotoId] state setter for the per-photo delete
+   *   error map (`{ [photoId]: message }`)
    */
-  constructor(setItem, setLogged, setLoading, setError, client = null) {
+  constructor(
+    setItem,
+    setLogged,
+    setLoading,
+    setError,
+    client = null,
+    uploadClient = null,
+    setDeletingPhotoId = null,
+    setDeleteErrorByPhotoId = null
+  ) {
     super();
     this.setItem = setItem;
     this.setLogged = setLogged;
     this.setLoading = setLoading;
     this.setError = setError;
     this.client = client ?? new GenericClient();
+    this.uploadClient = uploadClient ?? new PhotoUploadClient();
+    this.setDeletingPhotoId = setDeletingPhotoId;
+    this.setDeleteErrorByPhotoId = setDeleteErrorByPhotoId;
   }
 
   /**
@@ -60,6 +78,48 @@ export default class CategoryItemController extends BasePageController {
         unsubscribe();
       };
     };
+  }
+
+  /**
+   * Deletes a photo for the current item and refetches the item on success so the removed
+   * photo disappears without a full page reload.
+   *
+   * @param {Object} item item being displayed
+   * @param {number|string} photoId id of the photo to delete
+   * @returns {Promise<void>} delete promise
+   */
+  deletePhoto(item, photoId) {
+    const { slug, id } = getCategoryItemParamsFromHash(this.client.currentHash());
+
+    if (!slug || !id || !photoId) {
+      this.setDeleteErrorByPhotoId((current) => CategoryItemController.#withPhotoError(current, photoId));
+      return Promise.reject(new Error('Unable to delete photo.'));
+    }
+
+    this.setDeletingPhotoId(photoId);
+    this.setDeleteErrorByPhotoId((current) => CategoryItemController.#withoutPhotoError(current, photoId));
+
+    return this.uploadClient.delete(slug, id, photoId)
+      .then(() => this.#fetchItem(slug, id))
+      .then((refetchedItem) => {
+        this.setItem(refetchedItem);
+      })
+      .catch(() => {
+        this.setDeleteErrorByPhotoId((current) => CategoryItemController.#withPhotoError(current, photoId));
+      })
+      .finally(() => {
+        this.setDeletingPhotoId(null);
+      });
+  }
+
+  static #withPhotoError(current, photoId) {
+    return { ...current, [photoId]: 'Unable to delete photo.' };
+  }
+
+  static #withoutPhotoError(current, photoId) {
+    const next = { ...current };
+    delete next[photoId];
+    return next;
   }
 
   #loadData(safeSet, slug, id) {

@@ -35,15 +35,20 @@ export default class CategoryItemHelper {
    *
    * @param {Object} item item data
    * @param {boolean} logged whether the current user is logged in
+   * @param {Function|null} [onDeletePhoto] callback(photoId) invoked when a photo's delete
+   *   button is confirmed; only meaningful (and only wired to the carousel) when `logged`
+   * @param {number|string|null} [deletingPhotoId] id of the photo currently being deleted,
+   *   if any
+   * @param {Object|null} [deleteErrorByPhotoId] map of photo id to delete error message
    * @returns {JSX.Element} category item content
    */
-  static render(item, logged) {
+  static render(item, logged, onDeletePhoto = null, deletingPhotoId = null, deleteErrorByPhotoId = null) {
     return (
       <div className='container mt-4'>
         {this.#renderActions(item, item.id, logged)}
         {this.#renderInfo(item)}
         {this.#renderLinks(item)}
-        {this.#renderPhotosCarousel(item)}
+        {this.#renderPhotosCarousel(item, logged, onDeletePhoto, deletingPhotoId, deleteErrorByPhotoId)}
       </div>
     );
   }
@@ -74,11 +79,23 @@ export default class CategoryItemHelper {
     return <CategoryItemLinks links={item.links} />;
   }
 
-  static #renderPhotosCarousel(item) {
+  static #renderPhotosCarousel(item, logged, onDeletePhoto, deletingPhotoId, deleteErrorByPhotoId) {
     if (!item.photos || item.photos.length === 0) {
       return null;
     }
 
-    return <PhotosCarousel photos={item.photos} name={item.name} />;
+    if (!logged) {
+      return <PhotosCarousel photos={item.photos} name={item.name} />;
+    }
+
+    return (
+      <PhotosCarousel
+        deleteErrorByPhotoId={deleteErrorByPhotoId}
+        deletingPhotoId={deletingPhotoId}
+        name={item.name}
+        onDeletePhoto={onDeletePhoto}
+        photos={item.photos}
+      />
+    );
   }
 }
