@@ -1,6 +1,8 @@
 import CategoryItemEdit from '../../../assets/js/components/pages/CategoryItemEdit.jsx';
 import CategoryItemEditHelper from '../../../assets/js/components/pages/helpers/CategoryItemEditHelper.jsx';
-import { renderStatic } from '../../support/factories.js';
+import PhotosCarousel from '../../../assets/js/components/elements/PhotosCarousel.jsx';
+import PhotoCarouselItem from '../../../assets/js/components/elements/PhotoCarouselItem.jsx';
+import { preserveGlobals, renderStatic } from '../../support/factories.js';
 import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
 
 const findElement = (node, matcher) => {
@@ -47,22 +49,42 @@ describe('CategoryItemEdit', function() {
     const kinds = [{ slug: 'code', name: 'Code' }];
     const noop = () => {};
 
-    const renderEdit = (overrides = {}) => CategoryItemEditHelper.render(
-      overrides.item || item,
-      kinds,
-      false,
-      noop,
-      noop,
-      noop,
-      noop,
-      noop,
-      null,
-      overrides.uploading || false,
-      overrides.uploadError || null,
-      overrides.selectedFile || null,
-      overrides.onSelectFile || noop,
-      overrides.onUploadPhoto || noop
-    );
+    const buildProps = (overrides = {}) => ({
+      item,
+      uploading: false,
+      uploadError: null,
+      selectedFile: null,
+      onSelectFile: noop,
+      onUploadPhoto: noop,
+      deletingPhotoId: null,
+      deleteErrorByPhotoId: null,
+      onDeletePhoto: noop,
+      ...overrides,
+    });
+
+    const renderEdit = (overrides = {}) => {
+      const props = buildProps(overrides);
+
+      return CategoryItemEditHelper.render(
+        props.item,
+        kinds,
+        false,
+        noop,
+        noop,
+        noop,
+        noop,
+        noop,
+        null,
+        props.uploading,
+        props.uploadError,
+        props.selectedFile,
+        props.onSelectFile,
+        props.onUploadPhoto,
+        props.deletingPhotoId,
+        props.deleteErrorByPhotoId,
+        props.onDeletePhoto
+      );
+    };
 
     it('renders the upload section when item.id is present', function() {
       const html = renderStatic(renderEdit());
@@ -113,6 +135,91 @@ describe('CategoryItemEdit', function() {
       fileInput.props.onChange({ target: { files: [file] } });
 
       expect(onSelectFile).toHaveBeenCalledWith(file);
+    });
+  });
+
+  describe('photo delete section', function() {
+    const itemWithPhoto = {
+      id: 35,
+      name: 'Oak',
+      description: 'A project item',
+      kind_slug: 'code',
+      category: { slug: 'project', name: 'Project' },
+      links: [],
+      photos: [{ id: 7, photo_url: 'http://example.com/oak.png' }],
+    };
+    const kinds = [{ slug: 'code', name: 'Code' }];
+    const noop = () => {};
+    let restoreGlobals;
+
+    const buildProps = (overrides = {}) => ({
+      item: itemWithPhoto,
+      deletingPhotoId: null,
+      deleteErrorByPhotoId: null,
+      onDeletePhoto: noop,
+      ...overrides,
+    });
+
+    const renderEdit = (overrides = {}) => {
+      const props = buildProps(overrides);
+
+      return CategoryItemEditHelper.render(
+        props.item,
+        kinds,
+        false,
+        noop,
+        noop,
+        noop,
+        noop,
+        noop,
+        null,
+        false,
+        null,
+        null,
+        noop,
+        noop,
+        props.deletingPhotoId,
+        props.deleteErrorByPhotoId,
+        props.onDeletePhoto
+      );
+    };
+
+    beforeEach(function() {
+      restoreGlobals = preserveGlobals('window');
+      global.window = { confirm: jasmine.createSpy('confirm').and.returnValue(true) };
+    });
+
+    afterEach(function() {
+      restoreGlobals();
+    });
+
+    it('calls onDeletePhoto with the photo id once the delete is confirmed', function() {
+      const onDeletePhoto = jasmine.createSpy('onDeletePhoto');
+      const element = renderEdit({ onDeletePhoto });
+      const carouselElement = findElement(element, (child) => child.type === PhotosCarousel);
+      const carouselOutput = PhotosCarousel(carouselElement.props);
+      const itemElement = findElement(carouselOutput, (child) => child.type === PhotoCarouselItem);
+      const itemOutput = PhotoCarouselItem(itemElement.props);
+      const deleteButton = findElement(
+        itemOutput,
+        (child) => child.props?.className === 'btn btn-outline-danger'
+      );
+
+      deleteButton.props.onClick();
+
+      expect(onDeletePhoto).toHaveBeenCalledWith(7);
+    });
+
+    it('disables and relabels the delete button for the photo being deleted', function() {
+      const html = renderStatic(renderEdit({ deletingPhotoId: 7 }));
+
+      expect(html).toContain('Deleting...');
+    });
+
+    it('renders the delete error for the affected photo', function() {
+      const html = renderStatic(renderEdit({ deleteErrorByPhotoId: { 7: 'Unable to delete photo.' } }));
+
+      expect(html).toContain('Error: Unable to delete photo.');
     });
   });
 });

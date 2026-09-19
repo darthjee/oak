@@ -34,6 +34,10 @@ export default class CategoryItemEditController extends BasePageController {
    * @param {Function|null} [setUploading] state setter for photo upload status
    * @param {Function|null} [setUploadError] state setter for photo upload error message
    * @param {PhotoUploadClient|null} [uploadClient] optional photo upload client instance
+   * @param {Function|null} [setDeletingPhotoId] state setter for the id of the photo currently
+   *   being deleted
+   * @param {Function|null} [setDeleteErrorByPhotoId] state setter for the per-photo delete
+   *   error map (`{ [photoId]: message }`)
    */
   constructor(
     setItem,
@@ -45,7 +49,9 @@ export default class CategoryItemEditController extends BasePageController {
     locationTarget = null,
     setUploading = null,
     setUploadError = null,
-    uploadClient = null
+    uploadClient = null,
+    setDeletingPhotoId = null,
+    setDeleteErrorByPhotoId = null
   ) {
     super();
     this.setItem = setItem;
@@ -54,10 +60,33 @@ export default class CategoryItemEditController extends BasePageController {
     this.setSaving = setSaving;
     this.setError = setError;
     this.client = client ?? new GenericClient();
-    this.locationTarget = locationTarget ?? (typeof window === 'undefined' ? { hash: '' } : window.location);
+    this.locationTarget = locationTarget ?? CategoryItemEditController.#defaultLocationTarget();
     this.setUploading = setUploading;
     this.setUploadError = setUploadError;
-    this.uploadClient = uploadClient ?? new PhotoUploadClient();
+    this.uploadClient = CategoryItemEditController.#resolveUploadClient(uploadClient);
+    this.setDeletingPhotoId = setDeletingPhotoId;
+    this.setDeleteErrorByPhotoId = setDeleteErrorByPhotoId;
+  }
+
+  /**
+   * Builds the fallback location target used when none is injected, matching `window.location`
+   * in the browser and a plain object with an empty hash outside of it (e.g. in tests).
+   *
+   * @returns {Object} fallback location target
+   */
+  static #defaultLocationTarget() {
+    return typeof window === 'undefined' ? { hash: '' } : window.location;
+  }
+
+  /**
+   * Resolves the photo upload client to use, defaulting to a new `PhotoUploadClient` instance
+   * when none is injected.
+   *
+   * @param {PhotoUploadClient|null} uploadClient optional injected photo upload client
+   * @returns {PhotoUploadClient} the client to use
+   */
+  static #resolveUploadClient(uploadClient) {
+    return uploadClient ?? new PhotoUploadClient();
   }
 
   /**
@@ -138,6 +167,48 @@ export default class CategoryItemEditController extends BasePageController {
       .finally(() => {
         this.setUploading(false);
       });
+  }
+
+  /**
+   * Deletes a photo for the current item and refetches the item on success so the removed
+   * photo disappears without a full page reload.
+   *
+   * @param {Object} item item being edited
+   * @param {number|string} photoId id of the photo to delete
+   * @returns {Promise<void>} delete promise
+   */
+  deletePhoto(item, photoId) {
+    const { slug, id } = getCategoryItemEditParamsFromHash(this.client.currentHash());
+
+    if (!slug || !id || !photoId) {
+      this.setDeleteErrorByPhotoId((current) => this.#withPhotoError(current, photoId));
+      return Promise.reject(new Error('Unable to delete photo.'));
+    }
+
+    this.setDeletingPhotoId(photoId);
+    this.setDeleteErrorByPhotoId((current) => this.#withoutPhotoError(current, photoId));
+
+    return this.uploadClient.delete(slug, id, photoId)
+      .then(() => this.#fetchItem(slug, id))
+      .then((refetchedItem) => {
+        this.setItem(this.#normalizeItem(refetchedItem));
+      })
+      .catch(() => {
+        this.setDeleteErrorByPhotoId((current) => this.#withPhotoError(current, photoId));
+      })
+      .finally(() => {
+        this.setDeletingPhotoId(null);
+      });
+  }
+
+  #withPhotoError(current, photoId) {
+    return { ...current, [photoId]: 'Unable to delete photo.' };
+  }
+
+  #withoutPhotoError(current, photoId) {
+    const next = { ...current };
+    delete next[photoId];
+    return next;
   }
 
   #loadData(safeSet, slug, id) {

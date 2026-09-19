@@ -1,6 +1,35 @@
 import CategoryItemEditHelper from '../../../../assets/js/components/pages/helpers/CategoryItemEditHelper.jsx';
+import PhotosCarousel from '../../../../assets/js/components/elements/PhotosCarousel.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
+
+const findElement = (node, matcher) => {
+  if (!node) {
+    return null;
+  }
+
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const match = findElement(child, matcher);
+
+      if (match) {
+        return match;
+      }
+    }
+
+    return null;
+  }
+
+  if (typeof node !== 'object') {
+    return null;
+  }
+
+  if (matcher(node)) {
+    return node;
+  }
+
+  return findElement(node.props?.children, matcher);
+};
 
 describe('CategoryItemEditHelper', function() {
   const item = {
@@ -38,5 +67,35 @@ describe('CategoryItemEditHelper', function() {
     expect(html).toContain('Code');
     expect(html).toContain('Links');
     expect(html).toContain('Add link');
+  });
+
+  it('forwards deletingPhotoId/deleteErrorByPhotoId/onDeletePhoto to PhotosCarousel', function() {
+    const onDeletePhoto = jasmine.createSpy('onDeletePhoto');
+    const itemWithPhotos = { ...item, photos: [{ id: 1, photo_url: 'http://example.com/oak.png' }] };
+    const element = CategoryItemEditHelper.render(
+      itemWithPhotos,
+      kinds,
+      false,
+      () => {},
+      () => {},
+      () => {},
+      () => {},
+      () => {},
+      null,
+      false,
+      null,
+      null,
+      () => {},
+      () => {},
+      5,
+      { 1: 'boom' },
+      onDeletePhoto
+    );
+
+    const carousel = findElement(element, (child) => child.type === PhotosCarousel);
+
+    expect(carousel.props.deletingPhotoId).toBe(5);
+    expect(carousel.props.deleteErrorByPhotoId).toEqual({ 1: 'boom' });
+    expect(carousel.props.onDeletePhoto).toBe(onDeletePhoto);
   });
 });
