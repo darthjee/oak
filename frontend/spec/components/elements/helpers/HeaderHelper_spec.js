@@ -48,10 +48,24 @@ describe('HeaderHelper', function() {
     expect(html).toContain('Categories');
   });
 
+  it('renders the Kinds link in loading state', function() {
+    const html = renderToStaticMarkup(HeaderHelper.renderLoading());
+
+    expect(html).toContain('href="/#/kinds"');
+    expect(html).toContain('Kinds');
+  });
+
   it('renders error state', function() {
     const html = renderToStaticMarkup(HeaderHelper.renderError('network failure'));
 
     expect(html).toContain('Navigation unavailable: network failure');
+  });
+
+  it('renders the Kinds link in error state', function() {
+    const html = renderToStaticMarkup(HeaderHelper.renderError('network failure'));
+
+    expect(html).toContain('href="/#/kinds"');
+    expect(html).toContain('Kinds');
   });
 
   it('renders logged out menu', function() {
@@ -77,6 +91,20 @@ describe('HeaderHelper', function() {
     expect(html).toContain('Logoff');
     expect(html).toContain('/#/categories/electronics/items');
     expect(html).toContain('Electronics');
+  });
+
+  it('renders the Kinds link regardless of logged out state', function() {
+    const html = renderToStaticMarkup(HeaderHelper.render(false, [], buildHandlers()));
+
+    expect(html).toContain('href="/#/kinds"');
+    expect(html).toContain('Kinds');
+  });
+
+  it('renders the Kinds link regardless of logged in state', function() {
+    const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+
+    expect(html).toContain('href="/#/kinds"');
+    expect(html).toContain('Kinds');
   });
 
   it('wires the login link and login modal props', function() {
