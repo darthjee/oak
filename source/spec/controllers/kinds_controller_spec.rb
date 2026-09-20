@@ -190,4 +190,124 @@ RSpec.describe KindsController do
       end
     end
   end
+
+  describe 'GET #edit' do
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user:) }
+    let(:kind) { create(:oak_kind) }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
+    context 'when user is logged in' do
+      context 'when format is JSON' do
+        let(:expected) { Oak::Kind::Decorator.new(kind).as_json }
+
+        before do
+          get :edit, params: { slug: kind.slug, format: :json }
+        end
+
+        it 'returns a successful response' do
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'renders the correct JSON using the decorator' do
+          expect(response_json).to eq(expected.stringify_keys)
+        end
+      end
+    end
+
+    context 'when user is not logged in' do
+      let(:session) { nil }
+
+      before do
+        get :edit, params: { slug: kind.slug }
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('/#/forbidden')
+      end
+    end
+  end
+
+  describe 'PATCH #update' do
+    let(:parameters) do
+      { kind: kind_params, slug: kind.slug, format: :json }
+    end
+    let(:kind_params) { { name: 'Updated Name' } }
+    let(:expected) { Oak::Kind::Decorator.new(kind.reload).as_json }
+    let(:user) { create(:user) }
+    let(:session) { create(:session, user:) }
+    let(:kind) { create(:oak_kind, name: 'Old Name') }
+
+    before do
+      cookies.signed[:session] = session.id if session
+    end
+
+    context 'when the request is valid' do
+      it 'updates the kind attributes' do
+        patch :update, params: parameters
+
+        expect(kind.reload.name).to eq('Updated Name')
+      end
+
+      it 'returns a successful response' do
+        patch :update, params: parameters
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns the updated kind as JSON' do
+        patch :update, params: parameters
+
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when the request is invalid' do
+      let(:kind_params) { { name: '' } }
+      let(:expected_kind) { Oak::Kind.new(kind_params) }
+      let(:expected) do
+        Oak::Kind::Decorator.new(expected_kind).tap(&:validate).as_json
+      end
+
+      it 'does not update the kind' do
+        expect { patch :update, params: parameters }
+          .not_to(change { kind.reload.attributes })
+      end
+
+      it 'returns an unprocessable entity response' do
+        patch :update, params: parameters
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it 'returns the decorated kind as JSON' do
+        patch :update, params: parameters
+
+        expect(response_json).to eq(expected.stringify_keys)
+      end
+    end
+
+    context 'when user is not logged in' do
+      let(:session) { nil }
+
+      before do
+        patch :update, params: parameters
+      end
+
+      it 'returns a redirect response' do
+        expect(response).to have_http_status(:found) # HTTP status 302
+      end
+
+      it 'redirects to the correct path' do
+        expect(response).to redirect_to('/#/forbidden')
+      end
+    end
+  end
 end
