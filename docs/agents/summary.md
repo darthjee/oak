@@ -17,10 +17,6 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Photo Upload — Data Model & Migration](photo_upload/data-model-and-migration.md) | The `ready` column, its two-step migration rollout, and `CreateItemPhotosJob`/controller filtering changes. |
 | [Photo Upload — Proxy & Auth](photo_upload/proxy-and-auth.md) | The Tent extension mechanism, the new `proxy/` folder's agent ownership, session-cookie reuse, and upload validation. |
 | [Photo Upload — Edge Cases & Coexistence](photo_upload/edge-cases-and-coexistence.md) | Abandoned-upload/duplicate handling, and how the new flow coexists with the existing scan-job ingestion. |
-| [Kind Pages](specs/kind.md) | Overview of the Kind pages feature (backend edit/update, frontend show/new/edit pages, header nav link) and why it's specified up front; links to backend contracts, frontend pages, and navigation detail pages. |
-| [Kind Pages — Backend Contracts](specs/kind/backend-contracts.md) | The missing `edit`/`update` routes and controller wiring for `Oak::Kind`, strong params, decorator exposure, and concrete request/response shapes including validation failures. |
-| [Kind Pages — Frontend Pages](specs/kind/frontend-pages.md) | The `Kind`/`KindNew`/`KindEdit` page/controller/helper trio, routes, `AppHelper.jsx` wiring, and Jasmine test-coverage expectations. |
-| [Kind Pages — Navigation](specs/kind/navigation.md) | The plain "Kinds" nav link placement in `Header.jsx`/`HeaderHelper.jsx`, right after the "Categories" dropdown. |
 | [Front-End](frontend/index.md) | Runtime boot flow, directory structure, and Pages vs. Elements; links to the component pattern, dev workflow, and linting pages. |
 | [Front-End — Component Pattern](frontend/component-pattern.md) | Component/Controller/Helper architecture, adding a new page or element, and routing utilities. |
 | [Front-End — Dev Workflow](frontend/dev-workflow.md) | Running locally, building for production, tests/lint commands, Docker setup, and proxy modes. |
