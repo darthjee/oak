@@ -94,6 +94,36 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).toBe('kinds');
     });
 
+    it('returns "kindEdit" for kind edit routes', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds/code/edit');
+
+      expect(resolver.getPage()).toBe('kindEdit');
+    });
+
+    it('returns "kindNew" for kind new routes', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds/new');
+
+      expect(resolver.getPage()).toBe('kindNew');
+    });
+
+    it('returns "kind" for kind routes', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds/code?page=2');
+
+      expect(resolver.getPage()).toBe('kind');
+    });
+
+    it('does not let the "/kinds/:slug" wildcard swallow "/kinds/new"', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds/new');
+
+      expect(resolver.getPage()).not.toBe('kind');
+    });
+
+    it('does not let the "/kinds/:slug" wildcard swallow "/kinds/:slug/edit"', function() {
+      const resolver = new HashRouteResolver(() => '#/kinds/some-slug/edit');
+
+      expect(resolver.getPage()).not.toBe('kind');
+    });
+
     it('returns "home" for unrecognized routes', function() {
       const resolver = new HashRouteResolver(() => '#/other');
 

@@ -8,6 +8,9 @@ import CategoryItemEdit from '../pages/CategoryItemEdit.jsx';
 import CategoryItemNew from '../pages/CategoryItemNew.jsx';
 import CategoryItems from '../pages/CategoryItems.jsx';
 import CategoryNew from '../pages/CategoryNew.jsx';
+import Kind from '../pages/Kind.jsx';
+import KindEdit from '../pages/KindEdit.jsx';
+import KindNew from '../pages/KindNew.jsx';
 import Kinds from '../pages/Kinds.jsx';
 
 const PAGES = {
@@ -20,6 +23,9 @@ const PAGES = {
   categoryItems: <CategoryItems />,
   categoryNew: <CategoryNew />,
   home: <Categories />,
+  kind: <Kind />,
+  kindEdit: <KindEdit />,
+  kindNew: <KindNew />,
   kinds: <Kinds />,
 };
 
