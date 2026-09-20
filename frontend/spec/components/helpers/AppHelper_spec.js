@@ -83,6 +83,24 @@ describe('AppHelper', function() {
       expect(html).toContain('Loading kinds...');
     });
 
+    it('renders the Kind component for "kind" page', function() {
+      const html = renderPage('kind');
+
+      expect(html).toContain('Loading kind...');
+    });
+
+    it('renders the KindNew component for "kindNew" page', function() {
+      const html = renderPage('kindNew');
+
+      expect(html).toContain('Loading kind new form...');
+    });
+
+    it('renders the KindEdit component for "kindEdit" page', function() {
+      const html = renderPage('kindEdit');
+
+      expect(html).toContain('Loading kind new form...');
+    });
+
     it('uses the provided hash as the page fragment key', function() {
       const element = AppHelper.render('home', '#/categories?page=2&per_page=10');
 
