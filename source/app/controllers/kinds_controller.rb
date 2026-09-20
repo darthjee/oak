@@ -4,7 +4,7 @@ class KindsController < ApplicationController
   include UserRequired
 
   protect_from_forgery except: %i[index create]
-  require_user_for :new, :create
+  require_user_for :new, :create, :edit, :update
 
   resource_for Oak::Kind,
                only: :index,
@@ -13,7 +13,7 @@ class KindsController < ApplicationController
                per_page: 20
 
   resource_for Oak::Kind,
-               only: %i[new create show],
+               only: %i[new create show edit update],
                decorator: Oak::Kind::Decorator,
                id_key: :slug,
                param_key: :slug,

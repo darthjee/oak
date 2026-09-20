@@ -32,5 +32,5 @@ Rails.application.routes.draw do
     resources :kinds, only: %i[index], controller: 'category/kinds'
   end
 
-  resources :kinds, only: %i[index new create show], param: :slug
+  resources :kinds, only: %i[index new create show edit update], param: :slug
 end
