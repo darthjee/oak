@@ -13,6 +13,7 @@ export default class HeaderHelper {
   static renderLoading() {
     return this.#renderShell(
       this.#renderCategories(false, []),
+      this.#renderKindsLink(),
       <span className='navbar-text text-muted'>Loading navigation...</span>
     );
   }
@@ -26,6 +27,7 @@ export default class HeaderHelper {
   static renderError(error) {
     return this.#renderShell(
       this.#renderCategories(false, []),
+      this.#renderKindsLink(),
       <span className='navbar-text text-danger'>{`Navigation unavailable: ${error}`}</span>
     );
   }
@@ -41,12 +43,13 @@ export default class HeaderHelper {
   static render(logged, categories, handlers) {
     return this.#renderShell(
       this.#renderCategories(logged, categories),
+      this.#renderKindsLink(),
       this.#renderAuth(logged, handlers),
       this.#renderLoginModal(handlers)
     );
   }
 
-  static #renderShell(categoriesMenu, authMenu, modal) {
+  static #renderShell(categoriesMenu, kindsLink, authMenu, modal) {
     return (
       <div className='flex-column align-items-center bg-light border-bottom shadow-sm'>
         <nav className='navbar navbar-expand-sm navbar-light bg-light'>
@@ -64,11 +67,27 @@ export default class HeaderHelper {
           </button>
           <div className='collapse navbar-collapse' id='navbarSupportedContent'>
             {categoriesMenu}
+            {kindsLink}
             {authMenu}
           </div>
         </nav>
         {modal}
       </div>
+    );
+  }
+
+  /**
+   * Renders the always-visible Kinds navigation link.
+   *
+   * @returns {JSX.Element} nav item linking to the kinds list
+   */
+  static #renderKindsLink() {
+    return (
+      <ul className='navbar-nav'>
+        <li className='nav-item p-2'>
+          <a className='nav-link' href='/#/kinds'>Kinds</a>
+        </li>
+      </ul>
     );
   }
 
