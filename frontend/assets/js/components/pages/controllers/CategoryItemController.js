@@ -118,7 +118,7 @@ export default class CategoryItemController extends BasePageController {
 
   static #withoutPhotoError(current, photoId) {
     const next = { ...current };
-    delete next[photoId];
+    Reflect.deleteProperty(next, photoId);
     return next;
   }
 
