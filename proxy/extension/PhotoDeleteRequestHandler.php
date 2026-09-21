@@ -39,17 +39,14 @@ class PhotoDeleteRequestHandler extends RequestHandler
     private const PATH_PATTERN =
         '#^/uploads/categories/(?<category_slug>[^/]+)/items/(?<item_id>\d+)/photos/(?<id>\d+)/?$#';
 
-    /** @var string Backend base URL (e.g. 'http://backend:3000'). */
-    private string $host;
-
     /** @var string Local filesystem base path backing `Settings.photos_path`. */
     private string $photosPath;
 
-    /** @var HttpClientInterface Client used for the outbound backend calls. */
-    private HttpClientInterface $httpClient;
-
     /** @var PhotoPathGuard Guards the unlink target against path traversal/escapes. */
     private PhotoPathGuard $pathGuard;
+
+    /** @var PhotoDeleteBackendGateway Handles the outbound deletable/delete backend calls. */
+    private PhotoDeleteBackendGateway $gateway;
 
     /**
      * @param string                   $host       Backend base URL.
@@ -61,10 +58,9 @@ class PhotoDeleteRequestHandler extends RequestHandler
         string $photosPath,
         ?HttpClientInterface $httpClient = null
     ) {
-        $this->host = rtrim($host, '/');
         $this->photosPath = rtrim($photosPath, '/');
-        $this->httpClient = $httpClient ?? new CurlHttpClient();
         $this->pathGuard = new PhotoPathGuard();
+        $this->gateway = new PhotoDeleteBackendGateway($host, $httpClient ?? new CurlHttpClient());
     }
 
     /**
@@ -103,7 +99,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
 
         $cookie = $this->headerValue($request, 'Cookie');
 
-        $deletableResponse = $this->callBackend('POST', $this->deletableUrl($segments), $cookie);
+        $deletableResponse = $this->gateway->checkDeletable($segments, $cookie);
 
         if ($deletableResponse->isSuccessful() === FALSE) {
             return $deletableResponse;
@@ -117,7 +113,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
 
         $this->deleteFile($filePath);
 
-        $deleteResponse = $this->callBackend('DELETE', $this->deleteUrl($segments), $cookie);
+        $deleteResponse = $this->gateway->deleteRow($segments, $cookie);
 
         if ($deleteResponse->isSuccessful() === FALSE) {
             return $deleteResponse;
@@ -148,62 +144,6 @@ class PhotoDeleteRequestHandler extends RequestHandler
             'item_id' => $matches['item_id'],
             'id' => $matches['id']
         ];
-    }
-
-    /**
-     * Builds the backend's `deletable.json` gate URL for the given path segments.
-     *
-     * @param array $segments Path segments returned by parsePath().
-     * @return string
-     */
-    private function deletableUrl(array $segments): string
-    {
-        return sprintf(
-            '%s/categories/%s/items/%s/photos/%s/deletable.json',
-            $this->host,
-            $segments['category_slug'],
-            $segments['item_id'],
-            $segments['id']
-        );
-    }
-
-    /**
-     * Builds the backend's row-deletion URL for the given path segments.
-     *
-     * @param array $segments Path segments returned by parsePath().
-     * @return string
-     */
-    private function deleteUrl(array $segments): string
-    {
-        return sprintf(
-            '%s/categories/%s/items/%s/photos/%s.json',
-            $this->host,
-            $segments['category_slug'],
-            $segments['item_id'],
-            $segments['id']
-        );
-    }
-
-    /**
-     * Calls a backend endpoint, forwarding the incoming request's `Cookie`
-     * header, if any.
-     *
-     * @param string      $method The HTTP method to use.
-     * @param string      $url    The backend URL to call.
-     * @param string|null $cookie The incoming request's forwarded Cookie header, if any.
-     * @return Response
-     */
-    private function callBackend(string $method, string $url, ?string $cookie): Response
-    {
-        $headers = [];
-
-        if ($cookie !== null) {
-            $headers['Cookie'] = $cookie;
-        }
-
-        $result = $this->httpClient->request($method, $url, $headers);
-
-        return new Response($result);
     }
 
     /**
