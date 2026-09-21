@@ -41,7 +41,7 @@ class PhotoPathGuard
             return null;
         }
 
-        if (!$this->isContained($realDir, $realRoot)) {
+        if ($this->isContained($realDir, $realRoot) === FALSE) {
             return null;
         }
 
