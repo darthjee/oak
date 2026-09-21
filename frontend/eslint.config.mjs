@@ -74,4 +74,15 @@ export default [
       'jsdoc/require-description': 'off',
     },
   },
+  {
+    // `eslint-plugin-security` isn't installed locally: this rule is enforced by Codacy's
+    // hosted analysis only. This inert stub registers the rule name so the justified
+    // `eslint-disable-next-line` comment in jsx-loader.mjs resolves locally instead of
+    // failing lint with "Definition for rule ... was not found"; it never actually runs.
+    files: ['spec/support/jsx-loader.mjs'],
+    plugins: {
+      security: { rules: { 'detect-non-literal-fs-filename': { create: () => ({}) } } },
+    },
+    linterOptions: { reportUnusedDisableDirectives: 'off' },
+  },
 ];
