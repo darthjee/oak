@@ -165,7 +165,7 @@ class PhotoSubmitRequestHandlerTest extends TestCase
 
     private function removeDirRecursive(string $dir): void
     {
-        if (!is_dir($dir)) {
+        if (is_dir($dir) === FALSE) {
             return;
         }
 
@@ -175,7 +175,7 @@ class PhotoSubmitRequestHandlerTest extends TestCase
         );
 
         foreach ($files as $file) {
-            if ($file->isFile() || $file->isLink()) {
+            if ($file->isFile() === TRUE || $file->isLink() === TRUE) {
                 unlink($file->getPathname());
             } else {
                 rmdir($file->getPathname());
