@@ -37,15 +37,14 @@ export default function CategoryItemNew() {
     return CategoryItemEditHelper.renderError('Unable to load category item new form.');
   }
 
-  return CategoryItemEditHelper.render(
-    item,
+  return CategoryItemEditHelper.render(item, {
     kinds,
     saving,
-    (field, value) => controller.onFieldChange(field, value),
-    (index, field, value) => controller.onLinkChange(index, field, value),
-    (index) => controller.onRemoveLink(index),
-    () => controller.onAddLink(),
-    () => controller.save(item),
-    controller.cancelHref(item)
-  );
+    onFieldChange: (field, value) => controller.onFieldChange(field, value),
+    onLinkChange: (index, field, value) => controller.onLinkChange(index, field, value),
+    onRemoveLink: (index) => controller.onRemoveLink(index),
+    onAddLink: () => controller.onAddLink(),
+    onSave: () => controller.save(item),
+    cancelHref: controller.cancelHref(item),
+  });
 }

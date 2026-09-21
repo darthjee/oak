@@ -37,45 +37,43 @@ export default class CategoryItemEditHelper {
    * Renders the fully populated category item edit page.
    *
    * @param {Object} item item data
-   * @param {Array<Object>} kinds kinds options
-   * @param {boolean} saving whether save is currently in progress
-   * @param {Function} onFieldChange callback(field, value)
-   * @param {Function} onLinkChange callback(index, field, value)
-   * @param {Function} onRemoveLink callback(index)
-   * @param {Function} onAddLink callback()
-   * @param {Function} onSave callback()
-   * @param {string|null} [cancelHref] optional href for the cancel/back button;
+   * @param {Object} formState form state and callbacks
+   * @param {Array<Object>} formState.kinds kinds options
+   * @param {boolean} formState.saving whether save is currently in progress
+   * @param {Function} formState.onFieldChange callback(field, value)
+   * @param {Function} formState.onLinkChange callback(index, field, value)
+   * @param {Function} formState.onRemoveLink callback(index)
+   * @param {Function} formState.onAddLink callback()
+   * @param {Function} formState.onSave callback()
+   * @param {string|null} [formState.cancelHref] optional href for the cancel/back button;
    *   defaults to the item show page URL derived from item data
-   * @param {boolean} [uploading] whether a photo upload is currently in progress
-   * @param {string|null} [uploadError] photo upload error message, when present
-   * @param {File|null} [selectedFile] file currently selected for upload
-   * @param {Function|null} [onSelectFile] callback(file) invoked when the file input changes
-   * @param {Function|null} [onUploadPhoto] callback(file) invoked when the upload button is clicked
-   * @param {number|string|null} [deletingPhotoId] id of the photo currently being deleted, if any
-   * @param {Object|null} [deleteErrorByPhotoId] map of photo id to delete error message
-   * @param {Function|null} [onDeletePhoto] callback(photoId) invoked when a photo's delete
-   *   button is confirmed
+   * @param {Object} [photo] photo section state and callbacks
+   * @param {boolean} [photo.uploading] whether a photo upload is currently in progress
+   * @param {string|null} [photo.uploadError] photo upload error message, when present
+   * @param {File|null} [photo.selectedFile] file currently selected for upload
+   * @param {Function|null} [photo.onSelectFile] callback(file) invoked when the file input
+   *   changes
+   * @param {Function|null} [photo.onUploadPhoto] callback(file) invoked when the upload button
+   *   is clicked
+   * @param {number|string|null} [photo.deletingPhotoId] id of the photo currently being
+   *   deleted, if any
+   * @param {Object|null} [photo.deleteErrorByPhotoId] map of photo id to delete error message
+   * @param {Function|null} [photo.onDeletePhoto] callback(photoId) invoked when a photo's
+   *   delete button is confirmed
    * @returns {JSX.Element} category item edit content
    */
-  static render(
-    item,
-    kinds,
-    saving,
-    onFieldChange,
-    onLinkChange,
-    onRemoveLink,
-    onAddLink,
-    onSave,
-    cancelHref = null,
-    uploading = false,
-    uploadError = null,
-    selectedFile = null,
-    onSelectFile = null,
-    onUploadPhoto = null,
-    deletingPhotoId = null,
-    deleteErrorByPhotoId = null,
-    onDeletePhoto = null
-  ) {
+  static render(item, formState, photo = {}) {
+    const {
+      kinds,
+      saving,
+      onFieldChange,
+      onLinkChange,
+      onRemoveLink,
+      onAddLink,
+      onSave,
+      cancelHref = null,
+    } = formState;
+
     return (
       <div className='container mt-4'>
         {this.#renderActions(item, saving, onSave, cancelHref)}
@@ -88,17 +86,7 @@ export default class CategoryItemEditHelper {
           onRemoveLink={onRemoveLink}
         />
 
-        {this.#renderPhotoSection(
-          item,
-          uploading,
-          uploadError,
-          selectedFile,
-          onSelectFile,
-          onUploadPhoto,
-          deletingPhotoId,
-          deleteErrorByPhotoId,
-          onDeletePhoto
-        )}
+        {this.#renderPhotoSection(item, photo)}
       </div>
     );
   }
@@ -143,17 +131,18 @@ export default class CategoryItemEditHelper {
     );
   }
 
-  static #renderPhotoSection(
-    item,
-    uploading,
-    uploadError,
-    selectedFile,
-    onSelectFile,
-    onUploadPhoto,
-    deletingPhotoId,
-    deleteErrorByPhotoId,
-    onDeletePhoto
-  ) {
+  static #renderPhotoSection(item, photo = {}) {
+    const {
+      uploading = false,
+      uploadError = null,
+      selectedFile = null,
+      onSelectFile = null,
+      onUploadPhoto = null,
+      deletingPhotoId = null,
+      deleteErrorByPhotoId = null,
+      onDeletePhoto = null,
+    } = photo;
+
     if (!item.id) {
       return null;
     }

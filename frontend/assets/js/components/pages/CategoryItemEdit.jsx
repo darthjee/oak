@@ -21,18 +21,8 @@ export default function CategoryItemEdit() {
 
   const controller = useMemo(
     () => new CategoryItemEditController(
-      setItem,
-      setKinds,
-      setLoading,
-      setSaving,
-      setError,
-      null,
-      null,
-      setUploading,
-      setUploadError,
-      null,
-      setDeletingPhotoId,
-      setDeleteErrorByPhotoId
+      { setItem, setKinds, setLoading, setSaving, setError },
+      { setUploading, setUploadError, setDeletingPhotoId, setDeleteErrorByPhotoId }
     ),
     []
   );
@@ -94,21 +84,24 @@ export default function CategoryItemEdit() {
 
   return CategoryItemEditHelper.render(
     item,
-    kinds,
-    saving,
-    onFieldChange,
-    onLinkChange,
-    onRemoveLink,
-    onAddLink,
-    onSave,
-    null,
-    uploading,
-    uploadError,
-    selectedFile,
-    onSelectFile,
-    onUploadPhoto,
-    deletingPhotoId,
-    deleteErrorByPhotoId,
-    onDeletePhoto
+    {
+      kinds,
+      saving,
+      onFieldChange,
+      onLinkChange,
+      onRemoveLink,
+      onAddLink,
+      onSave,
+    },
+    {
+      uploading,
+      uploadError,
+      selectedFile,
+      onSelectFile,
+      onUploadPhoto,
+      deletingPhotoId,
+      deleteErrorByPhotoId,
+      onDeletePhoto,
+    }
   );
 }

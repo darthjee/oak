@@ -24,36 +24,39 @@ export default class CategoryItemEditController extends BasePageController {
   /**
    * Creates a new CategoryItemEditController instance.
    *
-   * @param {Function} setItem state setter for item data
-   * @param {Function} setKinds state setter for kinds list
-   * @param {Function} setLoading state setter for loading status
-   * @param {Function} setSaving state setter for saving status
-   * @param {Function} setError state setter for error message
-   * @param {GenericClient|null} [client] optional client instance
-   * @param {Object|null} [locationTarget] optional location target used for redirects
-   * @param {Function|null} [setUploading] state setter for photo upload status
-   * @param {Function|null} [setUploadError] state setter for photo upload error message
-   * @param {PhotoUploadClient|null} [uploadClient] optional photo upload client instance
-   * @param {Function|null} [setDeletingPhotoId] state setter for the id of the photo currently
-   *   being deleted
-   * @param {Function|null} [setDeleteErrorByPhotoId] state setter for the per-photo delete
-   *   error map (`{ [photoId]: message }`)
+   * @param {Object} setters core state setters
+   * @param {Function} setters.setItem state setter for item data
+   * @param {Function} setters.setKinds state setter for kinds list
+   * @param {Function} setters.setLoading state setter for loading status
+   * @param {Function} setters.setSaving state setter for saving status
+   * @param {Function} setters.setError state setter for error message
+   * @param {Object} [photoSetters] photo-upload related state setters
+   * @param {Function|null} [photoSetters.setUploading] state setter for photo upload status
+   * @param {Function|null} [photoSetters.setUploadError] state setter for photo upload error
+   *   message
+   * @param {Function|null} [photoSetters.setDeletingPhotoId] state setter for the id of the
+   *   photo currently being deleted
+   * @param {Function|null} [photoSetters.setDeleteErrorByPhotoId] state setter for the
+   *   per-photo delete error map (`{ [photoId]: message }`)
+   * @param {Object} [dependencies] injectable collaborators
+   * @param {GenericClient|null} [dependencies.client] optional client instance
+   * @param {Object|null} [dependencies.locationTarget] optional location target used for
+   *   redirects
+   * @param {PhotoUploadClient|null} [dependencies.uploadClient] optional photo upload client
+   *   instance
    */
-  constructor(
-    setItem,
-    setKinds,
-    setLoading,
-    setSaving,
-    setError,
-    client = null,
-    locationTarget = null,
-    setUploading = null,
-    setUploadError = null,
-    uploadClient = null,
-    setDeletingPhotoId = null,
-    setDeleteErrorByPhotoId = null
-  ) {
+  constructor(setters, photoSetters = {}, dependencies = {}) {
     super();
+
+    const { setItem, setKinds, setLoading, setSaving, setError } = setters;
+    const {
+      setUploading = null,
+      setUploadError = null,
+      setDeletingPhotoId = null,
+      setDeleteErrorByPhotoId = null,
+    } = photoSetters;
+    const { client = null, locationTarget = null, uploadClient = null } = dependencies;
+
     this.setItem = setItem;
     this.setKinds = setKinds;
     this.setLoading = setLoading;
