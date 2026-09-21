@@ -103,7 +103,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
 
         $deletableResponse = $this->callBackend('POST', $this->deletableUrl($segments), $cookie);
 
-        if (!$deletableResponse->isSuccessful()) {
+        if ($deletableResponse->isSuccessful() === FALSE) {
             return $deletableResponse;
         }
 
@@ -117,7 +117,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
 
         $deleteResponse = $this->callBackend('DELETE', $this->deleteUrl($segments), $cookie);
 
-        if (!$deleteResponse->isSuccessful()) {
+        if ($deleteResponse->isSuccessful() === FALSE) {
             return $deleteResponse;
         }
 
@@ -232,7 +232,11 @@ class PhotoDeleteRequestHandler extends RequestHandler
     {
         $decoded = json_decode($body, true);
 
-        if (!is_array($decoded) || !isset($decoded['file_path']) || !is_string($decoded['file_path'])) {
+        if (
+            is_array($decoded) === FALSE
+            || isset($decoded['file_path']) === FALSE
+            || is_string($decoded['file_path']) === FALSE
+        ) {
             return null;
         }
 
@@ -254,7 +258,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
     {
         $destinationDir = dirname(rtrim($this->photosPath, '/') . '/' . ltrim($filePath, '/'));
 
-        if (!is_dir($destinationDir)) {
+        if (is_dir($destinationDir) === FALSE) {
             error_log(sprintf(
                 'PhotoDeleteRequestHandler: destination directory for file_path "%s" does not exist, ' .
                     'treating as already missing',
@@ -276,7 +280,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
             return;
         }
 
-        if (!file_exists($safeDestination)) {
+        if (file_exists($safeDestination) === FALSE) {
             error_log(sprintf(
                 'PhotoDeleteRequestHandler: file already missing at "%s", skipping unlink',
                 $safeDestination
