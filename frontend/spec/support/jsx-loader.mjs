@@ -49,6 +49,7 @@ export async function load(url, context, defaultLoad) {
     return defaultLoad(url, context, defaultLoad);
   }
 
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- url originates from this loader's own resolve() hook or Node's static import resolution during test runs; never derived from external/user input
   const source = await readFile(new URL(url), 'utf8');
   const result = await transform(source, {
     loader: 'jsx',
