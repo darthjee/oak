@@ -178,7 +178,7 @@ class PhotoDeleteRequestHandlerTest extends TestCase
         $destination = $this->photosPath . '/' . $filePath;
         $dir = dirname($destination);
 
-        if (!is_dir($dir)) {
+        if (is_dir($dir) === false) {
             mkdir($dir, 0775, true);
         }
 
@@ -197,7 +197,7 @@ class PhotoDeleteRequestHandlerTest extends TestCase
         );
 
         foreach ($files as $file) {
-            if ($file->isFile() || $file->isLink()) {
+            if ($file->isFile() === true || $file->isLink() === true) {
                 unlink($file->getPathname());
             } else {
                 rmdir($file->getPathname());
