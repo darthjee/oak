@@ -3,12 +3,12 @@
 namespace Oak\Proxy\Tests;
 
 require_once __DIR__ . '/FakeHttpClient.php';
+require_once __DIR__ . '/PhotoRequestHandlerTestCase.php';
 
 use Oak\Proxy\PhotoDeleteRequestHandler;
-use PHPUnit\Framework\TestCase;
 use Tent\Models\ProcessingRequest;
 
-class PhotoDeleteRequestHandlerTest extends TestCase
+class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
 {
     private const DELETE_PATH = '/uploads/categories/miniatures/items/42/photos/7';
 
@@ -16,21 +16,9 @@ class PhotoDeleteRequestHandlerTest extends TestCase
 
     private const DESTROY_URL = 'http://backend:3000/categories/miniatures/items/42/photos/7.json';
 
-    private string $photosPath;
-
-    protected function setUp(): void
+    protected function tempDirPrefix(): string
     {
-        parent::setUp();
-
-        $this->photosPath = sys_get_temp_dir() . '/photo_delete_test_' . uniqid();
-        mkdir($this->photosPath, 0775, true);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->removeDirRecursive($this->photosPath);
-
-        parent::tearDown();
+        return 'photo_delete_test_';
     }
 
     public function testHappyPathDeletesFileThenBackendRow(): void
@@ -183,27 +171,5 @@ class PhotoDeleteRequestHandlerTest extends TestCase
         }
 
         file_put_contents($destination, $contents);
-    }
-
-    private function removeDirRecursive(string $dir): void
-    {
-        if (!is_dir($dir)) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($files as $file) {
-            if ($file->isFile() === true || $file->isLink() === true) {
-                unlink($file->getPathname());
-            } else {
-                rmdir($file->getPathname());
-            }
-        }
-
-        rmdir($dir);
     }
 }
