@@ -2,6 +2,7 @@ import CategoryItemEditHelper from '../../../../assets/js/components/pages/helpe
 import PhotosCarousel from '../../../../assets/js/components/elements/PhotosCarousel.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
+import { noop } from '../../../support/noop.js';
 
 const findElement = (node, matcher) => {
   if (!node) {
@@ -49,11 +50,11 @@ describe('CategoryItemEditHelper', function() {
       CategoryItemEditHelper.render(item, {
         kinds,
         saving: false,
-        onFieldChange: () => {},
-        onLinkChange: () => {},
-        onRemoveLink: () => {},
-        onAddLink: () => {},
-        onSave: () => {},
+        onFieldChange: noop,
+        onLinkChange: noop,
+        onRemoveLink: noop,
+        onAddLink: noop,
+        onSave: noop,
       })
     );
 
@@ -76,18 +77,18 @@ describe('CategoryItemEditHelper', function() {
       {
         kinds,
         saving: false,
-        onFieldChange: () => {},
-        onLinkChange: () => {},
-        onRemoveLink: () => {},
-        onAddLink: () => {},
-        onSave: () => {},
+        onFieldChange: noop,
+        onLinkChange: noop,
+        onRemoveLink: noop,
+        onAddLink: noop,
+        onSave: noop,
       },
       {
         uploading: false,
         uploadError: null,
         selectedFile: null,
-        onSelectFile: () => {},
-        onUploadPhoto: () => {},
+        onSelectFile: noop,
+        onUploadPhoto: noop,
         deletingPhotoId: 5,
         deleteErrorByPhotoId: { 1: 'boom' },
         onDeletePhoto,

@@ -4,6 +4,7 @@ import PhotosCarousel from '../../../assets/js/components/elements/PhotosCarouse
 import PhotoCarouselItem from '../../../assets/js/components/elements/PhotoCarouselItem.jsx';
 import { preserveGlobals, renderStatic } from '../../support/factories.js';
 import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
+import { noop } from '../../support/noop.js';
 
 const findElement = (node, matcher) => {
   if (!node) {
@@ -47,7 +48,6 @@ describe('CategoryItemEdit', function() {
       photos: [],
     };
     const kinds = [{ slug: 'code', name: 'Code' }];
-    const noop = () => {};
 
     const buildProps = (overrides = {}) => ({
       item,
@@ -152,7 +152,6 @@ describe('CategoryItemEdit', function() {
       photos: [{ id: 7, photo_url: 'http://example.com/oak.png' }],
     };
     const kinds = [{ slug: 'code', name: 'Code' }];
-    const noop = () => {};
     let restoreGlobals;
 
     const buildProps = (overrides = {}) => ({

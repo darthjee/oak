@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import PhotoCarouselItem from '../../../assets/js/components/elements/PhotoCarouselItem.jsx';
 import { preserveGlobals } from '../../support/factories.js';
+import { noop } from '../../support/noop.js';
 
 const findElement = (node, matcher) => {
   if (!node) {
@@ -121,7 +122,7 @@ describe('PhotoCarouselItem', function() {
         PhotoCarouselItem({
           photo: { id: 1, photo_url: 'http://example.com/oak.png' },
           name: 'Oak',
-          onDelete: () => {},
+          onDelete: noop,
           deleting: true,
         })
       );
@@ -135,7 +136,7 @@ describe('PhotoCarouselItem', function() {
         PhotoCarouselItem({
           photo: { id: 1, photo_url: 'http://example.com/oak.png' },
           name: 'Oak',
-          onDelete: () => {},
+          onDelete: noop,
           error: 'Delete failed',
         })
       );

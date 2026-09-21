@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryKindsEditorListHelper from '../../../../assets/js/components/elements/helpers/CategoryKindsEditorListHelper.jsx';
+import { noop } from '../../../support/noop.js';
 
 describe('CategoryKindsEditorListHelper', function() {
   describe('.renderKinds', function() {
@@ -7,7 +8,7 @@ describe('CategoryKindsEditorListHelper', function() {
       const html = renderToStaticMarkup(
         CategoryKindsEditorListHelper.renderKinds(
           [{ slug: 'code', name: 'Code' }, { slug: 'hardware', name: 'Hardware' }],
-          () => {}
+          noop
         )
       );
 
@@ -18,7 +19,7 @@ describe('CategoryKindsEditorListHelper', function() {
 
     it('renders empty message when no kinds are selected', function() {
       const html = renderToStaticMarkup(
-        CategoryKindsEditorListHelper.renderKinds([], () => {})
+        CategoryKindsEditorListHelper.renderKinds([], noop)
       );
 
       expect(html).toContain('No kinds selected.');

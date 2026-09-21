@@ -6,6 +6,7 @@ import {
   preserveGlobals,
   stubFetch,
 } from '../../../support/factories.js';
+import { noop } from '../../../support/noop.js';
 
 describe('HeaderController', function() {
   let restoreGlobals;
@@ -98,7 +99,7 @@ describe('HeaderController', function() {
     setLoggedIn(true);
     const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
-    stubFetch(() => new Promise(() => {}));
+    stubFetch(() => new Promise(noop));
 
     const controller = new HeaderController(setLogged, setCategories, setLoading, setError);
     const cleanup = controller.buildEffect()();
@@ -169,7 +170,7 @@ describe('HeaderController', function() {
 
     stubFetch((url) => {
       if (url === '/users/login.json') {
-        return new Promise(() => {});
+        return new Promise(noop);
       }
 
       if (url === '/user/categories.json') {

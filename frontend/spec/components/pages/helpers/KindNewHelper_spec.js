@@ -2,6 +2,7 @@ import KindNewHelper from '../../../../assets/js/components/pages/helpers/KindNe
 import LabeledInput from '../../../../assets/js/components/elements/LabeledInput.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
+import { noop } from '../../../support/noop.js';
 
 const findElement = (node, matcher) => {
   if (!node) {
@@ -38,7 +39,7 @@ describe('KindNewHelper', function() {
 
   it('renders form fields and actions', function() {
     const html = renderStatic(
-      KindNewHelper.render(kind, false, () => {}, () => {})
+      KindNewHelper.render(kind, false, noop, noop)
     );
 
     expect(html).toContain('/#/kinds');
@@ -49,7 +50,7 @@ describe('KindNewHelper', function() {
   });
 
   it('reflects the kind name in the name input', function() {
-    const element = KindNewHelper.render(kind, false, () => {}, () => {});
+    const element = KindNewHelper.render(kind, false, noop, noop);
     const input = findElement(element, (child) => child.type === LabeledInput);
 
     expect(input.props.value).toBe('Code');
@@ -57,7 +58,7 @@ describe('KindNewHelper', function() {
 
   it('fires onFieldChange("name", value) when the name input changes', function() {
     const onFieldChange = jasmine.createSpy('onFieldChange');
-    const element = KindNewHelper.render(kind, false, onFieldChange, () => {});
+    const element = KindNewHelper.render(kind, false, onFieldChange, noop);
     const input = findElement(element, (child) => child.type === LabeledInput);
 
     input.props.onChange({ target: { value: 'Updated' } });
@@ -67,7 +68,7 @@ describe('KindNewHelper', function() {
 
   it('disables the Save button while saving', function() {
     const html = renderStatic(
-      KindNewHelper.render(kind, true, () => {}, () => {})
+      KindNewHelper.render(kind, true, noop, noop)
     );
 
     expect(html).toContain('disabled');
@@ -76,7 +77,7 @@ describe('KindNewHelper', function() {
 
   it('enables the Save button and shows Save when not saving', function() {
     const html = renderStatic(
-      KindNewHelper.render(kind, false, () => {}, () => {})
+      KindNewHelper.render(kind, false, noop, noop)
     );
 
     expect(html).not.toContain('disabled');

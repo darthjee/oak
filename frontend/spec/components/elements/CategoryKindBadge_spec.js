@@ -1,18 +1,19 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryKindBadge from '../../../assets/js/components/elements/CategoryKindBadge.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryKindBadge', function() {
   const kind = { slug: 'code', name: 'Code' };
 
   it('renders the kind name', function() {
-    const html = renderToStaticMarkup(CategoryKindBadge({ kind, onRemove: () => {} }));
+    const html = renderToStaticMarkup(CategoryKindBadge({ kind, onRemove: noop }));
 
     expect(html).toContain('Code');
     expect(html).toContain('badge');
   });
 
   it('renders a remove button when onRemove is provided', function() {
-    const html = renderToStaticMarkup(CategoryKindBadge({ kind, onRemove: () => {} }));
+    const html = renderToStaticMarkup(CategoryKindBadge({ kind, onRemove: noop }));
 
     expect(html).toContain('x');
     expect(html).toContain('btn-danger');

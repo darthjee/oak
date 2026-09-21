@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CollectionSelect from '../../../assets/js/components/elements/CollectionSelect.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CollectionSelect', function() {
   const collection = [
@@ -14,7 +15,7 @@ describe('CollectionSelect', function() {
         keyColumn: 'slug',
         labelColumn: 'name',
         selectedValue: '',
-        onChange: () => {},
+        onChange: noop,
       })
     );
 
@@ -32,7 +33,7 @@ describe('CollectionSelect', function() {
         keyColumn: 'slug',
         labelColumn: 'name',
         selectedValue: '',
-        onChange: () => {},
+        onChange: noop,
         placeholder: '-- Pick one --',
       })
     );
@@ -48,7 +49,7 @@ describe('CollectionSelect', function() {
         keyColumn: 'slug',
         labelColumn: 'name',
         selectedValue: '',
-        onChange: () => {},
+        onChange: noop,
       })
     );
 
@@ -62,7 +63,7 @@ describe('CollectionSelect', function() {
         keyColumn: 'slug',
         labelColumn: 'name',
         selectedValue: 'hardware',
-        onChange: () => {},
+        onChange: noop,
       })
     );
 
@@ -76,7 +77,7 @@ describe('CollectionSelect', function() {
         keyColumn: 'slug',
         labelColumn: 'name',
         selectedValue: '',
-        onChange: () => {},
+        onChange: noop,
         id: 'my-select',
         className: 'custom-class',
       })

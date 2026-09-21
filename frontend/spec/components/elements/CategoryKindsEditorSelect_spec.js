@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryKindsEditorSelect from '../../../assets/js/components/elements/CategoryKindsEditorSelect.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryKindsEditorSelect', function() {
   const kinds = [{ slug: 'code', name: 'Code' }, { slug: 'hardware', name: 'Hardware' }];
@@ -9,8 +10,8 @@ describe('CategoryKindsEditorSelect', function() {
       CategoryKindsEditorSelect({
         kinds,
         selectedSlug: '',
-        onSelectChange: () => {},
-        onAddKind: () => {},
+        onSelectChange: noop,
+        onAddKind: noop,
       })
     );
 
@@ -25,8 +26,8 @@ describe('CategoryKindsEditorSelect', function() {
       CategoryKindsEditorSelect({
         kinds,
         selectedSlug: '',
-        onSelectChange: () => {},
-        onAddKind: () => {},
+        onSelectChange: noop,
+        onAddKind: noop,
       })
     );
 

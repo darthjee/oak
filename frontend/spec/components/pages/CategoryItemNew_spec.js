@@ -2,6 +2,7 @@ import CategoryItemNew from '../../../assets/js/components/pages/CategoryItemNew
 import CategoryItemEditHelper from '../../../assets/js/components/pages/helpers/CategoryItemEditHelper.jsx';
 import { renderStatic } from '../../support/factories.js';
 import { itRendersPageLoadingState } from '../../support/shared_examples/pageExamples.js';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryItemNew', function() {
   itRendersPageLoadingState(CategoryItemNew, 'Loading category item edit...');
@@ -14,7 +15,6 @@ describe('CategoryItemNew', function() {
       category: { slug: 'project', name: 'Project' },
       links: [],
     };
-    const noop = () => {};
     const html = renderStatic(
       CategoryItemEditHelper.render(item, {
         kinds: [],

@@ -1,15 +1,16 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import React from 'react';
 import CategoryItemLinksEditor from '../../../assets/js/components/elements/CategoryItemLinksEditor.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryItemLinksEditor', function() {
   it('renders editable rows and action buttons', function() {
     const html = renderToStaticMarkup(
       <CategoryItemLinksEditor
         links={[{ id: 1, text: 'GitHub', url: 'https://github.com/darthjee/oak' }]}
-        onAddLink={() => {}}
-        onLinkChange={() => {}}
-        onRemoveLink={() => {}}
+        onAddLink={noop}
+        onLinkChange={noop}
+        onRemoveLink={noop}
       />
     );
 
