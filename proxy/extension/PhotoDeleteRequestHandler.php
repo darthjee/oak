@@ -48,6 +48,9 @@ class PhotoDeleteRequestHandler extends RequestHandler
     /** @var PhotoDeleteBackendGateway Handles the outbound deletable/delete backend calls. */
     private PhotoDeleteBackendGateway $gateway;
 
+    /** @var PhotoFileDeleter Deletes the photo file from disk. */
+    private PhotoFileDeleter $fileDeleter;
+
     /**
      * @param string                   $host       Backend base URL.
      * @param string                   $photosPath Local filesystem base path for photos.
@@ -61,6 +64,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
         $this->photosPath = rtrim($photosPath, '/');
         $this->pathGuard = new PhotoPathGuard();
         $this->gateway = new PhotoDeleteBackendGateway($host, $httpClient ?? new CurlHttpClient());
+        $this->fileDeleter = new PhotoFileDeleter($this->photosPath, $this->pathGuard);
     }
 
     /**
@@ -111,7 +115,7 @@ class PhotoDeleteRequestHandler extends RequestHandler
             return $this->errorResponse(502, 'Invalid response from backend');
         }
 
-        $this->deleteFile($filePath);
+        $this->fileDeleter->delete($filePath);
 
         $deleteResponse = $this->gateway->deleteRow($segments, $cookie);
 
@@ -144,54 +148,5 @@ class PhotoDeleteRequestHandler extends RequestHandler
             'item_id' => $matches['item_id'],
             'id' => $matches['id']
         ];
-    }
-
-    /**
-     * Deletes `<photosPath>/<filePath>` from disk, if it exists.
-     *
-     * Does not create any directories — unlike Submit's write path, the
-     * destination directory is expected to already exist for a `ready`
-     * photo. A missing file (or a path the guard rejects as unsafe) is
-     * logged and treated as a harmless no-op, never an error.
-     *
-     * @param string $filePath The file path to delete, relative to photosPath.
-     * @return void
-     */
-    private function deleteFile(string $filePath): void
-    {
-        $destinationDir = dirname(rtrim($this->photosPath, '/') . '/' . ltrim($filePath, '/'));
-
-        if (is_dir($destinationDir) === FALSE) {
-            error_log(sprintf(
-                'PhotoDeleteRequestHandler: destination directory for file_path "%s" does not exist, ' .
-                    'treating as already missing',
-                $filePath
-            ));
-
-            return;
-        }
-
-        $safeDestination = $this->pathGuard->resolve($this->photosPath, $filePath);
-
-        if ($safeDestination === null) {
-            error_log(sprintf(
-                'PhotoDeleteRequestHandler: rejected unsafe file_path "%s" under photosPath "%s"',
-                $filePath,
-                $this->photosPath
-            ));
-
-            return;
-        }
-
-        if (file_exists($safeDestination) === FALSE) {
-            error_log(sprintf(
-                'PhotoDeleteRequestHandler: file already missing at "%s", skipping unlink',
-                $safeDestination
-            ));
-
-            return;
-        }
-
-        unlink($safeDestination);
     }
 }
