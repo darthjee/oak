@@ -27,7 +27,7 @@ export default class Route {
       this.#paramNames.push(name);
       return '([^/]+)';
     });
-    // eslint-disable-next-line security-node/non-literal-reg-expr -- pattern is always a static, developer-authored route definition (see HashRouteResolver.js); never derived from user input
+    // eslint-disable-next-line security-node/non-literal-reg-expr, security/detect-non-literal-regexp -- pattern is always a static, developer-authored route definition (see HashRouteResolver.js); never derived from user input
     this.#regex = new RegExp(`^${pattern}/?$`);
     this.#page = page;
   }
