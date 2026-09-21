@@ -119,16 +119,10 @@ class PhotoSubmitRequestHandler extends RequestHandler
 
         $file = $request->uploadedFiles()['file'] ?? null;
 
-        if ($file === FALSE || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-            return $this->errorResponse(400, 'Missing or invalid file upload');
-        }
+        $uploadError = $this->validateUpload($file);
 
-        if ($this->hasAllowedExtension($file['name'] ?? '') === FALSE) {
-            return $this->errorResponse(415, 'Unsupported file extension');
-        }
-
-        if ($this->maxUploadSizeBytes > 0 && ($file['size'] ?? 0) > $this->maxUploadSizeBytes) {
-            return $this->errorResponse(413, 'File exceeds maximum allowed size');
+        if ($uploadError !== null) {
+            return $uploadError;
         }
 
         $cookie = $this->headerValue($request, 'Cookie');
@@ -162,6 +156,30 @@ class PhotoSubmitRequestHandler extends RequestHandler
             'headers' => [],
             'request' => $request
         ]);
+    }
+
+    /**
+     * Validates the uploaded file: presence/upload error, extension, then size.
+     *
+     * @param array|false|null $file The `'file'` entry from `$request->uploadedFiles()`.
+     * @return Response|null The appropriate error Response on the first failing
+     *   check, or null when the file passes every check.
+     */
+    private function validateUpload($file): ?Response
+    {
+        if ($file === FALSE || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return $this->errorResponse(400, 'Missing or invalid file upload');
+        }
+
+        if ($this->hasAllowedExtension($file['name'] ?? '') === FALSE) {
+            return $this->errorResponse(415, 'Unsupported file extension');
+        }
+
+        if ($this->maxUploadSizeBytes > 0 && ($file['size'] ?? 0) > $this->maxUploadSizeBytes) {
+            return $this->errorResponse(413, 'File exceeds maximum allowed size');
+        }
+
+        return null;
     }
 
     /**
