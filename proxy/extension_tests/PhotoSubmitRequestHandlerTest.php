@@ -3,30 +3,18 @@
 namespace Oak\Proxy\Tests;
 
 require_once __DIR__ . '/FakeHttpClient.php';
+require_once __DIR__ . '/PhotoRequestHandlerTestCase.php';
 
 use Oak\Proxy\PhotoSubmitRequestHandler;
-use PHPUnit\Framework\TestCase;
 use Tent\Models\ProcessingRequest;
 
-class PhotoSubmitRequestHandlerTest extends TestCase
+class PhotoSubmitRequestHandlerTest extends PhotoRequestHandlerTestCase
 {
     private const SUBMIT_PATH = '/uploads/categories/miniatures/items/42/photos/7/submit';
 
-    private string $photosPath;
-
-    protected function setUp(): void
+    protected function tempDirPrefix(): string
     {
-        parent::setUp();
-
-        $this->photosPath = sys_get_temp_dir() . '/photo_submit_test_' . uniqid();
-        mkdir($this->photosPath, 0775, true);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->removeDirRecursive($this->photosPath);
-
-        parent::tearDown();
+        return 'photo_submit_test_';
     }
 
     public function testRejectsDisallowedExtensionWithoutCallingBackendOrWriting(): void
@@ -161,27 +149,5 @@ class PhotoSubmitRequestHandlerTest extends TestCase
             'uploadedFiles' => ['file' => $uploadedFile],
             'postFields' => []
         ]);
-    }
-
-    private function removeDirRecursive(string $dir): void
-    {
-        if (is_dir($dir) === FALSE) {
-            return;
-        }
-
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($files as $file) {
-            if ($file->isFile() === TRUE || $file->isLink() === TRUE) {
-                unlink($file->getPathname());
-            } else {
-                rmdir($file->getPathname());
-            }
-        }
-
-        rmdir($dir);
     }
 }
