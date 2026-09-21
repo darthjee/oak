@@ -20,6 +20,7 @@ export async function resolve(specifier, context, defaultResolve) {
     const candidates = [`${base.href}.jsx`, `${base.href}.js`];
 
     for (const candidate of candidates) {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- candidate originates from this loader's own resolve() hook (relative specifier + parentURL), never from external/user input
       if (existsSync(fileURLToPath(candidate))) {
         return { url: candidate, shortCircuit: true };
       }
