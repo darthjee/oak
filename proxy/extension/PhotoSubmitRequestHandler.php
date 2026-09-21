@@ -119,11 +119,11 @@ class PhotoSubmitRequestHandler extends RequestHandler
 
         $file = $request->uploadedFiles()['file'] ?? null;
 
-        if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        if ($file === FALSE || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             return $this->errorResponse(400, 'Missing or invalid file upload');
         }
 
-        if (!$this->hasAllowedExtension($file['name'] ?? '')) {
+        if ($this->hasAllowedExtension($file['name'] ?? '') === FALSE) {
             return $this->errorResponse(415, 'Unsupported file extension');
         }
 
@@ -136,7 +136,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
 
         $gateResponse = $this->callGate($gateUrl, 'uploading', $cookie);
 
-        if (!$gateResponse->isSuccessful()) {
+        if ($gateResponse->isSuccessful() === FALSE) {
             return $gateResponse;
         }
 
@@ -146,13 +146,13 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return $this->errorResponse(502, 'Invalid response from backend');
         }
 
-        if (!$this->writeFile($file['tmp_name'], $filePath)) {
+        if ($this->writeFile($file['tmp_name'], $filePath) === FALSE) {
             return $this->errorResponse(502, 'Failed to store uploaded file');
         }
 
         $finalizeResponse = $this->callGate($gateUrl, 'ready', $cookie);
 
-        if (!$finalizeResponse->isSuccessful()) {
+        if ($finalizeResponse->isSuccessful() === FALSE) {
             return $finalizeResponse;
         }
 
@@ -267,7 +267,11 @@ class PhotoSubmitRequestHandler extends RequestHandler
     {
         $decoded = json_decode($body, true);
 
-        if (!is_array($decoded) || !isset($decoded['file_path']) || !is_string($decoded['file_path'])) {
+        if (
+            is_array($decoded) === FALSE
+            || isset($decoded['file_path']) === FALSE
+            || is_string($decoded['file_path']) === FALSE
+        ) {
             return null;
         }
 
@@ -291,7 +295,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
         $destination = $this->photosPath . '/' . ltrim($filePath, '/');
         $dir = dirname($destination);
 
-        if (!is_dir($dir)) {
+        if (is_dir($dir) === FALSE) {
             mkdir($dir, 0775, true);
         }
 
@@ -301,7 +305,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return false;
         }
 
-        if (is_uploaded_file($tmpName)) {
+        if (is_uploaded_file($tmpName) === TRUE) {
             return move_uploaded_file($tmpName, $safeDestination);
         }
 
