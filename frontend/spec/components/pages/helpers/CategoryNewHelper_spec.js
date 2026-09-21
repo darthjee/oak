@@ -1,6 +1,7 @@
 import CategoryNewHelper from '../../../../assets/js/components/pages/helpers/CategoryNewHelper.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
+import { noop } from '../../../support/noop.js';
 
 describe('CategoryNewHelper', function() {
   const category = {
@@ -21,10 +22,10 @@ describe('CategoryNewHelper', function() {
         category,
         allKinds,
         false,
-        () => {},
-        () => {},
-        () => {},
-        () => {}
+        noop,
+        noop,
+        noop,
+        noop
       )
     );
 
@@ -44,10 +45,10 @@ describe('CategoryNewHelper', function() {
         category,
         allKinds,
         false,
-        () => {},
-        () => {},
-        () => {},
-        () => {}
+        noop,
+        noop,
+        noop,
+        noop
       )
     );
 
@@ -61,10 +62,10 @@ describe('CategoryNewHelper', function() {
         { ...category, kinds: [] },
         allKinds,
         false,
-        () => {},
-        () => {},
-        () => {},
-        () => {}
+        noop,
+        noop,
+        noop,
+        noop
       )
     );
 
@@ -77,10 +78,10 @@ describe('CategoryNewHelper', function() {
         category,
         allKinds,
         true,
-        () => {},
-        () => {},
-        () => {},
-        () => {}
+        noop,
+        noop,
+        noop,
+        noop
       )
     );
 

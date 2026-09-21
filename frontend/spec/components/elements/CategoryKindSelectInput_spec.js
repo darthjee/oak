@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryKindSelectInput from '../../../assets/js/components/elements/CategoryKindSelectInput.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryKindSelectInput', function() {
   const kinds = [{ slug: 'code', name: 'Code' }, { slug: 'hardware', name: 'Hardware' }];
@@ -9,8 +10,8 @@ describe('CategoryKindSelectInput', function() {
       CategoryKindSelectInput({
         kinds,
         selectedSlug: '',
-        onSelectChange: () => {},
-        onAddKind: () => {},
+        onSelectChange: noop,
+        onAddKind: noop,
       })
     );
 
@@ -25,8 +26,8 @@ describe('CategoryKindSelectInput', function() {
       CategoryKindSelectInput({
         kinds,
         selectedSlug: '',
-        onSelectChange: () => {},
-        onAddKind: () => {},
+        onSelectChange: noop,
+        onAddKind: noop,
       })
     );
 
@@ -39,8 +40,8 @@ describe('CategoryKindSelectInput', function() {
       CategoryKindSelectInput({
         kinds,
         selectedSlug: 'code',
-        onSelectChange: () => {},
-        onAddKind: () => {},
+        onSelectChange: noop,
+        onAddKind: noop,
       })
     );
 

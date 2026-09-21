@@ -1,12 +1,13 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import CategoryKindsEditorList from '../../../assets/js/components/elements/CategoryKindsEditorList.jsx';
+import { noop } from '../../support/noop.js';
 
 describe('CategoryKindsEditorList', function() {
   it('renders selected kinds as removable badges', function() {
     const html = renderToStaticMarkup(
       CategoryKindsEditorList({
         kinds: [{ slug: 'code', name: 'Code' }, { slug: 'hardware', name: 'Hardware' }],
-        onRemoveKind: () => {},
+        onRemoveKind: noop,
       })
     );
 
@@ -18,7 +19,7 @@ describe('CategoryKindsEditorList', function() {
 
   it('renders empty message when no kinds are selected', function() {
     const html = renderToStaticMarkup(
-      CategoryKindsEditorList({ kinds: [], onRemoveKind: () => {} })
+      CategoryKindsEditorList({ kinds: [], onRemoveKind: noop })
     );
 
     expect(html).toContain('No kinds selected.');

@@ -86,8 +86,10 @@ export default class HeaderController {
     return this.client.checkLogin()
       .then((response) => this.#parseLoginResponse(response))
       .then((session) => this.#setLoggedFromSession(safeSet, session))
-      .catch(() => {});
+      .catch(this.#ignoreError);
   }
+
+  #ignoreError() {}
 
   #fetchCategories(safeSet) {
     return this.client.fetchCategories()
