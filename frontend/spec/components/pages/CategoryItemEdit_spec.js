@@ -67,22 +67,25 @@ describe('CategoryItemEdit', function() {
 
       return CategoryItemEditHelper.render(
         props.item,
-        kinds,
-        false,
-        noop,
-        noop,
-        noop,
-        noop,
-        noop,
-        null,
-        props.uploading,
-        props.uploadError,
-        props.selectedFile,
-        props.onSelectFile,
-        props.onUploadPhoto,
-        props.deletingPhotoId,
-        props.deleteErrorByPhotoId,
-        props.onDeletePhoto
+        {
+          kinds,
+          saving: false,
+          onFieldChange: noop,
+          onLinkChange: noop,
+          onRemoveLink: noop,
+          onAddLink: noop,
+          onSave: noop,
+        },
+        {
+          uploading: props.uploading,
+          uploadError: props.uploadError,
+          selectedFile: props.selectedFile,
+          onSelectFile: props.onSelectFile,
+          onUploadPhoto: props.onUploadPhoto,
+          deletingPhotoId: props.deletingPhotoId,
+          deleteErrorByPhotoId: props.deleteErrorByPhotoId,
+          onDeletePhoto: props.onDeletePhoto,
+        }
       );
     };
 
@@ -165,22 +168,25 @@ describe('CategoryItemEdit', function() {
 
       return CategoryItemEditHelper.render(
         props.item,
-        kinds,
-        false,
-        noop,
-        noop,
-        noop,
-        noop,
-        noop,
-        null,
-        false,
-        null,
-        null,
-        noop,
-        noop,
-        props.deletingPhotoId,
-        props.deleteErrorByPhotoId,
-        props.onDeletePhoto
+        {
+          kinds,
+          saving: false,
+          onFieldChange: noop,
+          onLinkChange: noop,
+          onRemoveLink: noop,
+          onAddLink: noop,
+          onSave: noop,
+        },
+        {
+          uploading: false,
+          uploadError: null,
+          selectedFile: null,
+          onSelectFile: noop,
+          onUploadPhoto: noop,
+          deletingPhotoId: props.deletingPhotoId,
+          deleteErrorByPhotoId: props.deleteErrorByPhotoId,
+          onDeletePhoto: props.onDeletePhoto,
+        }
       );
     };
 

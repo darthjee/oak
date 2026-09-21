@@ -46,16 +46,15 @@ describe('CategoryItemEditHelper', function() {
 
   it('renders edit form fields, links editor and actions', function() {
     const html = renderStatic(
-      CategoryItemEditHelper.render(
-        item,
+      CategoryItemEditHelper.render(item, {
         kinds,
-        false,
-        () => {},
-        () => {},
-        () => {},
-        () => {},
-        () => {}
-      )
+        saving: false,
+        onFieldChange: () => {},
+        onLinkChange: () => {},
+        onRemoveLink: () => {},
+        onAddLink: () => {},
+        onSave: () => {},
+      })
     );
 
     expect(html).toContain('/#/categories/project/items/35');
@@ -74,22 +73,25 @@ describe('CategoryItemEditHelper', function() {
     const itemWithPhotos = { ...item, photos: [{ id: 1, photo_url: 'http://example.com/oak.png' }] };
     const element = CategoryItemEditHelper.render(
       itemWithPhotos,
-      kinds,
-      false,
-      () => {},
-      () => {},
-      () => {},
-      () => {},
-      () => {},
-      null,
-      false,
-      null,
-      null,
-      () => {},
-      () => {},
-      5,
-      { 1: 'boom' },
-      onDeletePhoto
+      {
+        kinds,
+        saving: false,
+        onFieldChange: () => {},
+        onLinkChange: () => {},
+        onRemoveLink: () => {},
+        onAddLink: () => {},
+        onSave: () => {},
+      },
+      {
+        uploading: false,
+        uploadError: null,
+        selectedFile: null,
+        onSelectFile: () => {},
+        onUploadPhoto: () => {},
+        deletingPhotoId: 5,
+        deleteErrorByPhotoId: { 1: 'boom' },
+        onDeletePhoto,
+      }
     );
 
     const carousel = findElement(element, (child) => child.type === PhotosCarousel);

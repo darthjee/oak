@@ -51,18 +51,24 @@ describe('CategoryItemEditController', function() {
   });
 
   const buildController = (setters, overrides = {}) => new CategoryItemEditController(
-    setters.setItem,
-    setters.setKinds,
-    setters.setLoading,
-    setters.setSaving,
-    setters.setError,
-    overrides.client || mockClient,
-    overrides.locationTarget || mockLocation,
-    setters.setUploading,
-    setters.setUploadError,
-    overrides.uploadClient || buildMockUploadClient(),
-    setters.setDeletingPhotoId,
-    setters.setDeleteErrorByPhotoId
+    {
+      setItem: setters.setItem,
+      setKinds: setters.setKinds,
+      setLoading: setters.setLoading,
+      setSaving: setters.setSaving,
+      setError: setters.setError,
+    },
+    {
+      setUploading: setters.setUploading,
+      setUploadError: setters.setUploadError,
+      setDeletingPhotoId: setters.setDeletingPhotoId,
+      setDeleteErrorByPhotoId: setters.setDeleteErrorByPhotoId,
+    },
+    {
+      client: overrides.client || mockClient,
+      locationTarget: overrides.locationTarget || mockLocation,
+      uploadClient: overrides.uploadClient || buildMockUploadClient(),
+    }
   );
 
   beforeEach(function() {

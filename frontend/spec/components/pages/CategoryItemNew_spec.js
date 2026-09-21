@@ -16,7 +16,16 @@ describe('CategoryItemNew', function() {
     };
     const noop = () => {};
     const html = renderStatic(
-      CategoryItemEditHelper.render(item, [], false, noop, noop, noop, noop, noop, '/#/categories/project/items')
+      CategoryItemEditHelper.render(item, {
+        kinds: [],
+        saving: false,
+        onFieldChange: noop,
+        onLinkChange: noop,
+        onRemoveLink: noop,
+        onAddLink: noop,
+        onSave: noop,
+        cancelHref: '/#/categories/project/items',
+      })
     );
 
     expect(html).not.toContain('type="file"');
