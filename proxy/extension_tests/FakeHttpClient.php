@@ -35,7 +35,9 @@ class FakeHttpClient implements HttpClientInterface
             'method' => $method,
             'url' => $url,
             'headers' => $headers,
-            'body' => $body
+            'body' => $body,
+            'uploadedFiles' => $uploadedFiles,
+            'postFields' => $postFields
         ];
 
         return array_shift($this->responses) ?? ['body' => '', 'httpCode' => 200, 'headers' => []];
