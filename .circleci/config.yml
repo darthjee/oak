@@ -257,12 +257,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Link extension and extension_tests into the Tent test layout
+          name: Link extension, extension_tests and prod_configuration into the Tent test layout
           command: |
             rm -rf /home/app/app/source/extension /home/app/app/source/tests/extension
+            rm -rf /home/app/app/source/prod_configuration
             mkdir -p /home/app/app/source/tests
             cp -r proxy/extension /home/app/app/source/extension
             cp -r proxy/extension_tests /home/app/app/source/tests/extension
+            cp -r proxy/prod_configuration /home/app/app/source/prod_configuration
       - run:
           name: PHPUnit
           working_directory: /home/app/app

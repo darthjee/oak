@@ -142,6 +142,7 @@ services:
     volumes:
       - ./proxy/extension/:/var/www/html/extension/
       - ./proxy/extension_tests/:/var/www/html/tests/extension/
+      - ./proxy/prod_configuration/:/var/www/html/prod_configuration/
 
   #################### PROD CONTAINERS ####################
 
