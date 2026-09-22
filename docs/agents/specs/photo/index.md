@@ -78,7 +78,8 @@ Every sub-issue must keep this true.
 | Issue | Owner | What | Depends on |
 | --- | --- | --- | --- |
 | #329 | architect | This guide | none |
-| #330 | proxy / architect | Versioned prod proxy config (`locals.php`, submit and delete rules); `upload_proxy_files` deploys it and `proxy/extension/` | none |
+| #339 | proxy | Commit the current prod proxy config to `proxy/prod_configuration/` with a server-only `locals.php`; `upload_proxy_files` deploys it | none |
+| #330 | proxy / architect | Add submit and delete rules and new locals to `proxy/prod_configuration/`; `upload_proxy_files` also deploys `proxy/extension/` | #339 |
 | #331 | architect | CircleCI `link_photos` job; `release` requires it | ships with #330 |
 | #332 | proxy | Static `/photos` and `/snaps` rules with `Cache-Control` | #330, #331 |
 | #333 | backend / proxy | Align settings, jobs, dev proxy config and mounts with the layout | none |
