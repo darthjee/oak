@@ -282,8 +282,11 @@ jobs:
           name: Upload proxy files
           command: SOURCE=/var/www/html/ deploy_frontend.sh upload
       - run:
-          name: Copy configuration files
-          command: TARGET=configuration/ deploy_frontend.sh copy_files
+          name: Upload proxy configuration
+          command: SOURCE=proxy/prod_configuration/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration/ deploy_frontend.sh upload
+      - run:
+          name: Setup locals
+          command: TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files
   release:
     docker:
       - image: darthjee/vite_oak-base:0.0.1
