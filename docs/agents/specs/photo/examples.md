@@ -106,8 +106,8 @@ The delete rule is the same shape, with `PhotoDeleteRequestHandler`, no
           name: Upload prod configuration
           command: SOURCE=/home/app/app/proxy/prod_configuration/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration/ deploy_frontend.sh upload
       - run:
-          name: Carry locals.php forward
-          command: TARGET=configuration/locals.php deploy_frontend.sh copy_files
+          name: Setup locals
+          command: TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files
       - run:
           name: Upload extension
           command: SOURCE=/home/app/app/proxy/extension/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/extension/ deploy_frontend.sh upload

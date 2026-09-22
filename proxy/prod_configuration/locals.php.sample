@@ -1,0 +1,4 @@
+<?php
+
+$backendHost = 'https://oak-api.ffavs.net/';
+$staticRoot = '/home/darthjee_oak/oak.ffavs.net';

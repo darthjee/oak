@@ -1,9 +1,9 @@
 # Deployment and Photo Folder Linking
 
 Target CircleCI changes that ship the prod proxy config and extension, and
-link the persistent photo folders into each release. `upload_proxy_files`
-belongs to #330, `link_photos` to #331. These are
-proposals, not the current state.
+link the persistent photo folders into each release. The extension upload
+in `upload_proxy_files` belongs to #330, `link_photos` to #331. Except for
+the "Current state" section, these are proposals.
 
 ## Why
 
@@ -18,27 +18,26 @@ in `$REMOTE_HOME/photos`, and be linked in on every release.
   1. `deploy_frontend.sh generate_key_file`
   2. `SOURCE=/var/www/html/ deploy_frontend.sh upload` (Tent's own files,
      including an empty `extension/loader.php`)
-  3. `TARGET=configuration/ deploy_frontend.sh copy_files` (copies the whole
-     live `configuration/` forward)
+  3. `SOURCE=proxy/prod_configuration/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration/ deploy_frontend.sh upload`
+     (the committed prod config, #339)
+  4. `TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files`
+     (carries only the server-only `locals.php` forward from the live release)
 - `proxy/extension/` is never uploaded.
 - `release` requires `build-and-release`, `upload_proxy_files`,
   `upload_fe_files` and the image releases.
 
 ## `upload_proxy_files`
 
-After the Tent upload, also:
+The prod config upload and the `locals.php` carry-forward are already in
+place (#339). #330 only adds:
 
-1. Upload `proxy/prod_configuration/` into `configuration/` of the release
-   temp dir.
-2. Copy only `configuration/locals.php` forward from the live release, since
-   the rest now comes from git.
-3. Upload `proxy/extension/` into `extension/`. It must run **after** the
+1. Upload `proxy/extension/` into `extension/`. It must run **after** the
    Tent upload, which ships an empty `extension/loader.php` that would
    otherwise win.
 
-These can be steps of one job or separate jobs (Majora uses
-`copy_proxy_configuration` and `upload_extension`, both requiring
-`upload_proxy_files`). Either way, `release` must require all of them.
+This can be a step of the same job or a separate job (Majora uses
+`upload_extension`, requiring `upload_proxy_files`). Either way, `release`
+must require it.
 
 ## `link_photos`
 
@@ -76,8 +75,10 @@ One-time server setup, before the first release with `link_photos`:
 mkdir -p $REMOTE_HOME/photos/{origin,photos,snaps}
 ```
 
-Also put the real `locals.php` into the live `configuration/` once, so the
-first deploy has something to copy forward.
+The real `locals.php` must already be in the live `configuration/` (the #339
+bootstrap, see [Infrastructure](../../architecture/infrastructure.md#production-proxy-configuration)).
+Add the new #330 variables (`$storageRoot`, `$maxUploadSizeBytes`) to it
+before tagging the #330 release.
 
 ## On-disk layout (prod, target)
 

@@ -1,8 +1,8 @@
 # Proxy Rules
 
 Target Tent configuration for production photo upload and serving
-(sub-issues #330, #332 and #335). Everything here is a proposal for those
-sub-issues, not the current state. See the [guide index](index.md) for the path decision.
+(sub-issues #330, #332 and #335). Except for the "Current state" section,
+everything here is a proposal for those sub-issues. See the [guide index](index.md) for the path decision.
 
 ## Current state
 
@@ -12,39 +12,48 @@ sub-issues, not the current state. See the [guide index](index.md) for the path 
 - `uploads.php` and `deletes.php` route to `Oak\Proxy\PhotoSubmitRequestHandler`
   and `Oak\Proxy\PhotoDeleteRequestHandler` with
   `photosPath => '/tmp/photos'` and host `http://backend:3000`.
-- Prod config: only on the server, in `configuration/`, copied forward on
-  each deploy. It has no upload, delete or photo rules.
+- Prod config: committed in `proxy/prod_configuration/` (#339).
+  `configure.php` requires `locals.php` first, then `rules/frontend.php`,
+  `backend.php` and `redirects.php`. The rules read `$backendHost` and
+  `$staticRoot` from `locals.php`, which is gitignored and exists only on the
+  server. `upload_proxy_files` uploads the folder on every tag and carries
+  `locals.php` forward (see [Deployment](deployment.md)). It has no upload,
+  delete or photo rules yet.
+- `proxy/extension_tests/ProdConfigurationRoutingTest.php` covers the prod
+  rule order with inline locals.
+- See [Infrastructure](../../architecture/infrastructure.md#production-proxy-configuration)
+  for the `locals.php` bootstrap and update rules.
 
 ## Versioned prod config
 
-Add a versioned prod config next to the extension, e.g.
-`proxy/prod_configuration/`:
+#330 and later **add** to the existing `proxy/prod_configuration/`:
 
 ```text
 proxy/prod_configuration/
-├── configure.php          # loads locals.php, then the rules
-├── locals.php.sample      # committed; documents every variable
+├── configure.php          # exists; add the new requires in rule order
+├── locals.php.sample      # exists; add every new variable
 └── rules/
-    ├── frontend.php
-    ├── photos.php         # static /photos and /snaps (#332)
-    ├── uploads.php
-    ├── deletes.php
-    ├── backend.php
-    └── redirects.php
+    ├── frontend.php       # exists
+    ├── photos.php         # new: static /photos and /snaps (#332)
+    ├── uploads.php        # new (#330)
+    ├── deletes.php        # new (#330)
+    ├── backend.php        # exists
+    └── redirects.php      # exists
 ```
 
-The real `locals.php` holds server values and stays on the server only. Add
-it to `.gitignore`. CircleCI carries it forward from the live release (see
-[Deployment](deployment.md)).
+The real `locals.php` holds server values and stays on the server only. It
+is already gitignored and carried forward by CircleCI. Every new variable
+must be added to `locals.php.sample` in the same PR **and** to the live
+`locals.php` before tagging.
 
 ### `locals.php` variables
 
-| Variable | Meaning |
-| --- | --- |
-| `$backendHost` | Rails backend URL (the Render service) |
-| `$storageRoot` | Persistent photo root, with `origin/`, `photos/`, `snaps/` |
-| `$staticRoot` | Root for the static photo rules (the release directory) |
-| `$maxUploadSizeBytes` | Max accepted upload size, passed to the submit handler |
+| Variable | Meaning | Status |
+| --- | --- | --- |
+| `$backendHost` | Rails backend URL | exists (#339) |
+| `$staticRoot` | Release directory; the frontend is served from `$staticRoot . '/static'`, the static photo rules from `$staticRoot` | exists (#339) |
+| `$storageRoot` | Persistent photo root, with `origin/`, `photos/`, `snaps/` | new (#330) |
+| `$maxUploadSizeBytes` | Max accepted upload size, passed to the submit handler | new (#330) |
 
 See [examples.md](examples.md#localsphpsample) for the sample file.
 
