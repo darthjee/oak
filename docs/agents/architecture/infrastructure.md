@@ -2,7 +2,7 @@
 
 The Docker service topology (proxy, Rails app, database, queue, background jobs, photo serving) and how frontend-serving requests get routed through the reverse proxy to Rails.
 
-## Infrastructure
+## Service Topology
 
 ```
 Browser
