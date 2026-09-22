@@ -17,6 +17,12 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Photo Upload — Data Model & Migration](photo_upload/data-model-and-migration.md) | The `ready` column, its two-step migration rollout, and `CreateItemPhotosJob`/controller filtering changes. |
 | [Photo Upload — Proxy & Auth](photo_upload/proxy-and-auth.md) | The Tent extension mechanism, the new `proxy/` folder's agent ownership, session-cookie reuse, and upload validation. |
 | [Photo Upload — Edge Cases & Coexistence](photo_upload/edge-cases-and-coexistence.md) | Abandoned-upload/duplicate handling, and how the new flow coexists with the existing scan-job ingestion. |
+| [Photo in Production — Guide](specs/photo/index.md) | Temporary (#328): storage layout (`origin/`, `photos/`, `snaps/`), the path decision and serving invariant, and the #330–#337 sub-issue map. |
+| [Photo in Production — Proxy Rules](specs/photo/proxy-rules.md) | Temporary (#328): versioned prod Tent config, `locals.php` variables, rule order, static `/photos` and `/snaps` rules, dev vs prod values. |
+| [Photo in Production — Deployment](specs/photo/deployment.md) | Temporary (#328): CircleCI `upload_proxy_files` changes, the `link_photos` job, env vars and the on-disk release layout. |
+| [Photo in Production — Resizing](specs/photo/resizing.md) | Temporary (#328): GD resizing on submit (origin, photos, snaps), shrink-only fit, failure handling, delete of all three files, and specs. |
+| [Photo in Production — Rollout](specs/photo/rollout.md) | Temporary (#328): ship order, the #251 file migration, the `OAK_PHOTOS_SERVER_URL` switch and the prod checklist. |
+| [Photo in Production — Examples](specs/photo/examples.md) | Temporary (#328): proposed PHP rules, `locals.php.sample` and CircleCI job snippets for the guide pages. |
 | [Front-End](frontend/index.md) | Runtime boot flow, directory structure, and Pages vs. Elements; links to the component pattern, dev workflow, and linting pages. |
 | [Front-End — Component Pattern](frontend/component-pattern.md) | Component/Controller/Helper architecture, adding a new page or element, and routing utilities. |
 | [Front-End — Dev Workflow](frontend/dev-workflow.md) | Running locally, building for production, tests/lint commands, Docker setup, and proxy modes. |
