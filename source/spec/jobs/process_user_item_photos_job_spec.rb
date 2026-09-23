@@ -9,7 +9,7 @@ RSpec.describe ProcessUserItemPhotosJob do
     let(:worker) { described_class.new }
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
-    let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/items") }
+    let(:items_folder_path) { File.join(photo_path, "origin/users/#{user.id}/items") }
     let(:item_ids) { %w[1 2 3] }
 
     before do
@@ -45,8 +45,18 @@ RSpec.describe ProcessUserItemPhotosJob do
       end
     end
 
+    context 'when the item folders are outside the origin folder' do
+      let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/items") }
+
+      it 'does not call CreateItemPhotosJob' do
+        perform
+
+        expect(CreateItemPhotosJob).not_to have_received(:perform_async)
+      end
+    end
+
     context 'when the items folder does not exist' do
-      let(:items_folder_path) { File.join(photo_path, "users/#{user.id}/non_existent_items") }
+      let(:items_folder_path) { File.join(photo_path, "origin/users/#{user.id}/non_existent_items") }
 
       it 'does not call CreateItemPhotosJob' do
         perform

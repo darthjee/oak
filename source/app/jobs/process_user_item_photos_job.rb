@@ -23,7 +23,7 @@ class ProcessUserItemPhotosJob
   end
 
   def items_folder_path
-    @items_folder_path ||= File.join(Settings.photos_path, "users/#{user_id}/items")
+    @items_folder_path ||= File.join(Settings.photos_path, "origin/users/#{user_id}/items")
   end
 
   def directories_in(path)
