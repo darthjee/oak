@@ -2,8 +2,8 @@
 
 Target CircleCI changes that ship the prod proxy config and extension, and
 link the persistent photo folders into each release. The extension upload
-in `upload_proxy_files` belongs to #330, `link_photos` to #331. Except for
-the "Current state" section, these are proposals.
+in `upload_proxy_files` (#330) is done and described in "Current state";
+`link_photos` (#331) is still a proposal.
 
 ## Why
 
@@ -22,22 +22,19 @@ in `$REMOTE_HOME/photos`, and be linked in on every release.
      (the committed prod config, #339)
   4. `TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files`
      (carries only the server-only `locals.php` forward from the live release)
-- `proxy/extension/` is never uploaded.
+  5. `SOURCE=proxy/extension/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/extension/ deploy_frontend.sh upload`
+     (#330: the real `loader.php` and `Oak\Proxy\*` handlers overwrite the
+     empty `extension/loader.php` from step 2)
 - `release` requires `build-and-release`, `upload_proxy_files`,
   `upload_fe_files` and the image releases.
 
 ## `upload_proxy_files`
 
-The prod config upload and the `locals.php` carry-forward are already in
-place (#339). #330 only adds:
-
-1. Upload `proxy/extension/` into `extension/`. It must run **after** the
-   Tent upload, which ships an empty `extension/loader.php` that would
-   otherwise win.
-
-This can be a step of the same job or a separate job (Majora uses
-`upload_extension`, requiring `upload_proxy_files`). Either way, `release`
-must require it.
+Done. The prod config upload and the `locals.php` carry-forward came in
+#339; #330 added the `proxy/extension/` upload as the last step of the same
+job (step 5 above). It runs **after** the Tent upload, which ships an empty
+`extension/loader.php` that would otherwise win. `release` already requires
+`upload_proxy_files`, so no workflow change was needed.
 
 ## `link_photos`
 
@@ -77,8 +74,15 @@ mkdir -p $REMOTE_HOME/photos/{origin,photos,snaps}
 
 The real `locals.php` must already be in the live `configuration/` (the #339
 bootstrap, see [Infrastructure](../../architecture/infrastructure.md#production-proxy-configuration)).
-Add the new #330 variables (`$storageRoot`, `$maxUploadSizeBytes`) to it
-before tagging the #330 release.
+Before tagging the #330 release:
+
+- add `$storageRoot` (e.g. `$REMOTE_HOME/photos`) and
+  `$maxUploadSizeBytes = 10 * 1024 * 1024` to the live
+  `configuration/locals.php` — a missing variable breaks every request, not
+  only uploads;
+- create `$REMOTE_HOME/photos/origin`;
+- check the server's PHP `upload_max_filesize` and `post_max_size` are at
+  least 10 MB.
 
 ## On-disk layout (prod, target)
 
