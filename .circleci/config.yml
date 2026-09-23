@@ -234,16 +234,16 @@ jobs:
           command: yarn install
       - run:
           name: Build assets
-          command: deploy_frontend.sh build
+          command: bin/deploy_frontend.sh build
       - run:
           name: Generate key file
-          command: deploy_frontend.sh generate_key_file
+          command: bin/deploy_frontend.sh generate_key_file
       - run:
           name: Generate folder
-          command: SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/static/ deploy_frontend.sh generate_folder
+          command: DEPLOY_PATH=static/ bin/deploy_frontend.sh generate_folder
       - run:
           name: Upload assets
-          command: SOURCE=dist/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/static/ deploy_frontend.sh upload
+          command: SOURCE=dist/ DEPLOY_PATH=static/ bin/deploy_frontend.sh upload
   build-and-release:
     machine: true
     steps:
@@ -277,19 +277,19 @@ jobs:
       - checkout
       - run:
           name: Generate key file
-          command: deploy_frontend.sh generate_key_file
+          command: bin/deploy_frontend.sh generate_key_file
       - run:
           name: Upload proxy files
-          command: SOURCE=/var/www/html/ deploy_frontend.sh upload
+          command: SOURCE=/var/www/html/ bin/deploy_frontend.sh upload
       - run:
           name: Upload proxy configuration
-          command: SOURCE=proxy/prod_configuration/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration/ deploy_frontend.sh upload
+          command: SOURCE=proxy/prod_configuration/ DEPLOY_PATH=configuration/ bin/deploy_frontend.sh upload
       - run:
           name: Setup locals
-          command: TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files
+          command: TARGET=configuration/locals.php DEPLOY_PATH=configuration bin/deploy_frontend.sh copy_files
       - run:
           name: Upload proxy extension
-          command: SOURCE=proxy/extension/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/extension/ deploy_frontend.sh upload
+          command: SOURCE=proxy/extension/ DEPLOY_PATH=extension/ bin/deploy_frontend.sh upload
   release:
     docker:
       - image: darthjee/vite_oak-base:0.0.1
@@ -297,10 +297,10 @@ jobs:
       - checkout
       - run:
           name: Generate key file
-          command: deploy_frontend.sh generate_key_file
+          command: bin/deploy_frontend.sh generate_key_file
       - run:
           name: Release assets
-          command: deploy_frontend.sh release
+          command: bin/deploy_frontend.sh release
   warm-up-cache:
     docker:
       - image: darthjee/navi-hey-client:latest
