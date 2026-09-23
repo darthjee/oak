@@ -6,3 +6,4 @@ require_once __DIR__ . '/PhotoDeleteBackendGateway.php';
 require_once __DIR__ . '/PhotoFileDeleter.php';
 require_once __DIR__ . '/PhotoSubmitRequestHandler.php';
 require_once __DIR__ . '/PhotoDeleteRequestHandler.php';
+require_once __DIR__ . '/CacheControlMiddleware.php';
