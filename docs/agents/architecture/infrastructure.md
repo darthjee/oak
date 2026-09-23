@@ -48,16 +48,28 @@ proxy/prod_configuration/
 ├── locals.php.sample      # committed; documents every variable
 └── rules/
     ├── frontend.php       # GET / and GET /assets* from $staticRoot . '/static'
+    ├── uploads.php        # POST .../photos/:id/submit -> PhotoSubmitRequestHandler
+    ├── deletes.php        # DELETE .../photos/:id -> PhotoDeleteRequestHandler
     ├── backend.php        # *.json proxied to $backendHost
     └── redirects.php      # GET /<path> -> /#/<path>, loaded last
 ```
 
 - **Deploy:** on every tag, the CircleCI job `upload_proxy_files` uploads
   `proxy/prod_configuration/` into the release's `configuration/` folder, then
-  copies only `configuration/locals.php` forward from the live release.
+  copies only `configuration/locals.php` forward from the live release. It
+  then uploads `proxy/extension/` into the release's `extension/` folder,
+  overwriting the empty `extension/loader.php` shipped with the Tent files, so
+  the `Oak\Proxy\*` handlers used by `uploads.php`/`deletes.php` are loaded.
 - **`locals.php` is server-only.** It holds the host-specific values
-  (`$backendHost`, `$staticRoot`), is gitignored
+  (`$backendHost`, `$staticRoot`, `$storageRoot`, `$maxUploadSizeBytes`), is
+  gitignored
   (`proxy/prod_configuration/locals.php`) and is never uploaded by CI.
+- **Photo storage:** `$storageRoot` is the persistent photo root (holding
+  `origin/`, `photos/` and `snaps/`), outside the release directory. The
+  upload/delete handlers use `$storageRoot . '/origin'` as their
+  `photosPath` until #335 adds a `storageRoot` handler option.
+  `$maxUploadSizeBytes` is 10 MB in production; PHP's `upload_max_filesize`
+  and `post_max_size` on the server must be at least that.
 - **One-time bootstrap:** before the first tag that uses this flow, create
   `$SSH_REMOTE_DIR/configuration/locals.php` on the server by hand from
   `locals.php.sample`. CI does not create it, and without it the

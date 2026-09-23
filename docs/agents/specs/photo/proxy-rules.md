@@ -1,8 +1,9 @@
 # Proxy Rules
 
 Target Tent configuration for production photo upload and serving
-(sub-issues #330, #332 and #335). Except for the "Current state" section,
-everything here is a proposal for those sub-issues. See the [guide index](index.md) for the path decision.
+(sub-issues #330, #332 and #335). #330 is done and described in "Current
+state"; the static photo rules (#332) and the `storageRoot` option (#335)
+are still proposals. See the [guide index](index.md) for the path decision.
 
 ## Current state
 
@@ -12,21 +13,27 @@ everything here is a proposal for those sub-issues. See the [guide index](index.
 - `uploads.php` and `deletes.php` route to `Oak\Proxy\PhotoSubmitRequestHandler`
   and `Oak\Proxy\PhotoDeleteRequestHandler` with
   `photosPath => '/tmp/photos'` and host `http://backend:3000`.
-- Prod config: committed in `proxy/prod_configuration/` (#339).
+- Prod config: committed in `proxy/prod_configuration/` (#339, #330).
   `configure.php` requires `locals.php` first, then `rules/frontend.php`,
-  `backend.php` and `redirects.php`. The rules read `$backendHost` and
-  `$staticRoot` from `locals.php`, which is gitignored and exists only on the
-  server. `upload_proxy_files` uploads the folder on every tag and carries
-  `locals.php` forward (see [Deployment](deployment.md)). It has no upload,
-  delete or photo rules yet.
+  `uploads.php`, `deletes.php`, `backend.php` and `redirects.php`. The rules
+  read `$backendHost`, `$staticRoot`, `$storageRoot` and `$maxUploadSizeBytes`
+  from `locals.php`, which is gitignored and exists only on the server.
+  `upload_proxy_files` uploads the folder on every tag, carries `locals.php`
+  forward and uploads `proxy/extension/` (see [Deployment](deployment.md)).
+  It has no static photo rules yet (#332).
+- Prod `uploads.php` and `deletes.php` (#330) use the dev regex matchers and
+  handler classes with `host => $backendHost` and
+  `photosPath => $storageRoot . '/origin'`; the submit rule also passes
+  `maxUploadSizeBytes => $maxUploadSizeBytes` (10 MB in prod).
 - `proxy/extension_tests/ProdConfigurationRoutingTest.php` covers the prod
-  rule order with inline locals.
+  rule order (including the upload and delete rules and their handler
+  options) with inline locals.
 - See [Infrastructure](../../architecture/infrastructure.md#production-proxy-configuration)
   for the `locals.php` bootstrap and update rules.
 
 ## Versioned prod config
 
-#330 and later **add** to the existing `proxy/prod_configuration/`:
+Current layout plus the #332 addition:
 
 ```text
 proxy/prod_configuration/
@@ -35,8 +42,8 @@ proxy/prod_configuration/
 └── rules/
     ├── frontend.php       # exists
     ├── photos.php         # new: static /photos and /snaps (#332)
-    ├── uploads.php        # new (#330)
-    ├── deletes.php        # new (#330)
+    ├── uploads.php        # exists (#330)
+    ├── deletes.php        # exists (#330)
     ├── backend.php        # exists
     └── redirects.php      # exists
 ```
@@ -52,8 +59,8 @@ must be added to `locals.php.sample` in the same PR **and** to the live
 | --- | --- | --- |
 | `$backendHost` | Rails backend URL | exists (#339) |
 | `$staticRoot` | Release directory; the frontend is served from `$staticRoot . '/static'`, the static photo rules from `$staticRoot` | exists (#339) |
-| `$storageRoot` | Persistent photo root, with `origin/`, `photos/`, `snaps/` | new (#330) |
-| `$maxUploadSizeBytes` | Max accepted upload size, passed to the submit handler | new (#330) |
+| `$storageRoot` | Persistent photo root, with `origin/`, `photos/`, `snaps/` | exists (#330) |
+| `$maxUploadSizeBytes` | Max accepted upload size, passed to the submit handler (10 MB) | exists (#330) |
 
 See [examples.md](examples.md#localsphpsample) for the sample file.
 
@@ -88,11 +95,13 @@ See [examples.md](examples.md#static-photo-rules).
 
 ## Upload and delete rules
 
+Implemented in #330 (see "Current state"); #335 is still a proposal.
+
 - Reuse the dev regex matchers and handler classes as they are:
   - `POST #^/uploads/categories/[^/]+/items/\d+/photos/\d+/submit/?$#`
   - `DELETE #^/uploads/categories/[^/]+/items/\d+/photos/\d+/?$#`
 - `host` becomes `$backendHost`.
-- **#330 (interim):** `photosPath => $storageRoot . '/origin'`. The handlers
+- **#330 (current):** `photosPath => $storageRoot . '/origin'`. The handlers
   still write `<photosPath>/<file_path>` with no prefix, so originals land in
   `origin/` and never inside the release directory.
 - **#335 (target):** the option becomes `storageRoot => $storageRoot`, and

@@ -2,6 +2,8 @@
 
 namespace Oak\Proxy\Tests;
 
+use Oak\Proxy\PhotoDeleteRequestHandler;
+use Oak\Proxy\PhotoSubmitRequestHandler;
 use PHPUnit\Framework\TestCase;
 use Tent\Configuration;
 use Tent\Middlewares\RedirectMiddleware;
@@ -24,6 +26,10 @@ class ProdConfigurationRoutingTest extends TestCase
 {
     private const BACKEND_HOST = 'https://oak-api.example.test/';
     private const STATIC_ROOT = '/tmp/oak-prod-config-test';
+    private const STORAGE_ROOT = '/tmp/oak-prod-config-test-photos';
+    private const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
+    private const SUBMIT_PATH = '/uploads/categories/project/items/132/photos/549/submit';
+    private const DELETE_PATH = '/uploads/categories/project/items/132/photos/549';
 
     protected function setUp(): void
     {
@@ -49,9 +55,9 @@ class ProdConfigurationRoutingTest extends TestCase
 
         $rules = Configuration::getRules();
 
-        // Rule order: 0 assets, 1 index, 2 backend (*.json), 3 redirects, 4 Tent's missing fallback
-        // (which has no matchers, so it never reports a match).
-        $this->assertCount(5, $rules);
+        // Rule order: 0 assets, 1 index, 2 uploads, 3 deletes, 4 backend (*.json), 5 redirects,
+        // 6 Tent's missing fallback (which has no matchers, so it never reports a match).
+        $this->assertCount(7, $rules);
 
         $assetsIndex = $this->matchingRuleIndex('GET', '/assets/index.js');
         $this->assertSame(0, $assetsIndex);
@@ -62,13 +68,25 @@ class ProdConfigurationRoutingTest extends TestCase
         $this->assertStaticHandler($rules[$rootIndex]->handler());
         $this->assertHasMiddleware($rules[$rootIndex]->handler(), SetPathMiddleware::class);
 
+        $submitIndex = $this->matchingRuleIndex('POST', self::SUBMIT_PATH);
+        $this->assertSame(2, $submitIndex);
+        $this->assertSubmitHandler($rules[$submitIndex]->handler());
+        $this->assertSame(2, $this->matchingRuleIndex('POST', self::SUBMIT_PATH . '/'));
+
+        $deleteIndex = $this->matchingRuleIndex('DELETE', self::DELETE_PATH);
+        $this->assertSame(3, $deleteIndex);
+        $this->assertDeleteHandler($rules[$deleteIndex]->handler());
+
+        // A GET on the submit path is not an upload: it falls through to redirects.
+        $this->assertSame(5, $this->matchingRuleIndex('GET', self::SUBMIT_PATH));
+
         $jsonIndex = $this->matchingRuleIndex('GET', '/categories.json');
-        $this->assertSame(2, $jsonIndex);
+        $this->assertSame(4, $jsonIndex);
         $this->assertProxyHandler($rules[$jsonIndex]->handler());
         $this->assertNotHasMiddleware($rules[$jsonIndex]->handler(), RedirectMiddleware::class);
 
         $redirectIndex = $this->matchingRuleIndex('GET', '/categories/1');
-        $this->assertSame(3, $redirectIndex);
+        $this->assertSame(5, $redirectIndex);
         $this->assertProxyHandler($rules[$redirectIndex]->handler());
         $this->assertHasMiddleware($rules[$redirectIndex]->handler(), RedirectMiddleware::class);
 
@@ -81,10 +99,14 @@ class ProdConfigurationRoutingTest extends TestCase
         // Stand-ins for the server-only locals.php, consumed by the rule files.
         $backendHost = self::BACKEND_HOST;
         $staticRoot = self::STATIC_ROOT;
+        $storageRoot = self::STORAGE_ROOT;
+        $maxUploadSizeBytes = self::MAX_UPLOAD_SIZE_BYTES;
 
         $configDir = dirname(__DIR__, 2) . '/prod_configuration';
 
         require $configDir . '/rules/frontend.php';
+        require $configDir . '/rules/uploads.php';
+        require $configDir . '/rules/deletes.php';
         require $configDir . '/rules/backend.php';
         require $configDir . '/rules/redirects.php';
     }
@@ -116,6 +138,25 @@ class ProdConfigurationRoutingTest extends TestCase
 
         $server = $this->readProperty($handler, 'server', ProxyRequestHandler::class);
         $this->assertSame(rtrim(self::BACKEND_HOST, '/'), rtrim($server->baseUrl(), '/'));
+    }
+
+    private function assertSubmitHandler(RequestHandler $handler): void
+    {
+        $this->assertInstanceOf(PhotoSubmitRequestHandler::class, $handler);
+
+        $this->assertSame(self::STORAGE_ROOT . '/origin', $this->readProperty($handler, 'photosPath'));
+        $this->assertSame(rtrim(self::BACKEND_HOST, '/'), $this->readProperty($handler, 'host'));
+        $this->assertSame(self::MAX_UPLOAD_SIZE_BYTES, $this->readProperty($handler, 'maxUploadSizeBytes'));
+    }
+
+    private function assertDeleteHandler(RequestHandler $handler): void
+    {
+        $this->assertInstanceOf(PhotoDeleteRequestHandler::class, $handler);
+
+        $this->assertSame(self::STORAGE_ROOT . '/origin', $this->readProperty($handler, 'photosPath'));
+
+        $gateway = $this->readProperty($handler, 'gateway');
+        $this->assertSame(rtrim(self::BACKEND_HOST, '/'), rtrim($this->readProperty($gateway, 'host'), '/'));
     }
 
     private function assertHasMiddleware(RequestHandler $handler, string $class): void
