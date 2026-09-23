@@ -37,7 +37,7 @@ All jobs must switch together, since they must agree on the temp dir.
 - `upload_fe_files` (`darthjee/vite_oak-base`): `bin/deploy_frontend.sh build`,
   `generate_key_file`, `DEPLOY_PATH=static/ ... generate_folder`, then
   `SOURCE=dist/ DEPLOY_PATH=static/ bin/deploy_frontend.sh upload`.
-- `upload_proxy_files` (`darthjee/tent:0.10.4`):
+- `upload_proxy_files` (`darthjee/tent:1.0.0`):
   1. `bin/deploy_frontend.sh generate_key_file`
   2. `SOURCE=/var/www/html/ bin/deploy_frontend.sh upload` (Tent's own files,
      including an empty `extension/loader.php`)
@@ -48,7 +48,7 @@ All jobs must switch together, since they must agree on the temp dir.
   5. `SOURCE=proxy/extension/ DEPLOY_PATH=extension/ bin/deploy_frontend.sh upload`
      (#330: the real `loader.php` and `Oak\Proxy\*` handlers overwrite the
      empty `extension/loader.php` from step 2)
-- `link_photos` (`darthjee/tent:0.10.4`): see below.
+- `link_photos` (`darthjee/tent:1.0.0`): see below.
 - `release` (`darthjee/vite_oak-base`): `bin/deploy_frontend.sh generate_key_file`,
   then `bin/deploy_frontend.sh release`. It requires `build-and-release`,
   `upload_proxy_files`, `upload_fe_files`, `link_photos` and the image

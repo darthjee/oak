@@ -94,7 +94,7 @@ frontend → photos/snaps static → uploads → deletes → backend → redirec
   Dev uses `location => '/tmp/photos'`.
 - `Oak\Proxy\CacheControlMiddleware` (`proxy/extension/`, ported from
   Majora, spec in `proxy/extension_tests/`) sets
-  `Cache-Control: max-age=604800` (7 days). Tent 0.10.4 has no response-side
+  `Cache-Control: max-age=604800` (7 days). Tent 1.0.0 still has no response-side
   cache-control middleware.
 - The header is set on **2xx responses only**. Snaps are generated after the
   upload, so an early `GET /snaps/...` returns 404; a cached 404 would hide

@@ -95,7 +95,7 @@ The delete rule is the same shape, with `PhotoDeleteRequestHandler`, no
 ```yaml
   upload_proxy_files:
     docker:
-      - image: darthjee/tent:0.10.4
+      - image: darthjee/tent:1.0.0
     working_directory: /home/app/app
     steps:
       - checkout
@@ -121,7 +121,7 @@ The delete rule is the same shape, with `PhotoDeleteRequestHandler`, no
 ```yaml
   link_photos:
     docker:
-      - image: darthjee/tent:0.10.4
+      - image: darthjee/tent:1.0.0
     working_directory: /home/app/app
     steps:
       - checkout
