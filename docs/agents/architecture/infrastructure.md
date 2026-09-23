@@ -60,6 +60,13 @@ proxy/prod_configuration/
   then uploads `proxy/extension/` into the release's `extension/` folder,
   overwriting the empty `extension/loader.php` shipped with the Tent files, so
   the `Oak\Proxy\*` handlers used by `uploads.php`/`deletes.php` are loaded.
+  Every deploy job calls the repo's `bin/deploy_frontend.sh` (copied from
+  Majora), not the image script. All jobs build into the same per-workflow
+  temp dir, `${SSH_REMOTE_TEMP_DIR}-$CIRCLE_WORKFLOW_WORKSPACE_ID`, and give
+  subpaths with `DEPLOY_PATH`. The tag-only `link_photos` job links
+  `$REMOTE_HOME/photos/photos` and `$REMOTE_HOME/photos/snaps` (inside
+  `$storageRoot`) into each release as `photos` and `snaps` with `ln -sfn`,
+  which is safe to re-run. `release` requires it.
 - **`locals.php` is server-only.** It holds the host-specific values
   (`$backendHost`, `$staticRoot`, `$storageRoot`, `$maxUploadSizeBytes`), is
   gitignored
@@ -73,7 +80,10 @@ proxy/prod_configuration/
 - **One-time bootstrap:** before the first tag that uses this flow, create
   `$SSH_REMOTE_DIR/configuration/locals.php` on the server by hand from
   `locals.php.sample`. CI does not create it, and without it the
-  `copy_files` step fails.
+  `copy_files` step fails. Also set the CircleCI project env var
+  `REMOTE_HOME` to a literal absolute path (it is expanded on the CI side, so
+  not `~`) and run `mkdir -p $REMOTE_HOME/photos/{origin,photos,snaps}` on the
+  server; otherwise `link_photos` creates dangling links.
 - **New variables:** when a rule needs a new variable, add it to
   `locals.php.sample` in the same PR **and** to the live `locals.php` on the
   server before tagging the release.

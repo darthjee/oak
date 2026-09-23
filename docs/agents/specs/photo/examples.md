@@ -1,7 +1,8 @@
 # Examples
 
-PHP and CircleCI snippets for the production photo guide (#328). They are
-proposals for sub-issues #330–#332; adjust names and values when you
+PHP and CircleCI snippets for the production photo guide (#328). The
+CircleCI jobs (#330, #331) match `.circleci/config.yml`; the rest are
+proposals for the remaining sub-issues; adjust names and values when you
 implement them.
 
 ## `locals.php.sample`
@@ -98,23 +99,20 @@ The delete rule is the same shape, with `PhotoDeleteRequestHandler`, no
       - checkout
       - run:
           name: Generate key file
-          command: deploy_frontend.sh generate_key_file
+          command: bin/deploy_frontend.sh generate_key_file
       - run:
-          name: Upload Tent files
-          command: SOURCE=/var/www/html/ deploy_frontend.sh upload
+          name: Upload proxy files
+          command: SOURCE=/var/www/html/ bin/deploy_frontend.sh upload
       - run:
-          name: Upload prod configuration
-          command: SOURCE=/home/app/app/proxy/prod_configuration/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration/ deploy_frontend.sh upload
+          name: Upload proxy configuration
+          command: SOURCE=proxy/prod_configuration/ DEPLOY_PATH=configuration/ bin/deploy_frontend.sh upload
       - run:
           name: Setup locals
-          command: TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files
+          command: TARGET=configuration/locals.php DEPLOY_PATH=configuration bin/deploy_frontend.sh copy_files
       - run:
-          name: Upload extension
-          command: SOURCE=/home/app/app/proxy/extension/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/extension/ deploy_frontend.sh upload
+          name: Upload proxy extension
+          command: SOURCE=proxy/extension/ DEPLOY_PATH=extension/ bin/deploy_frontend.sh upload
 ```
-
-Check how `upload` and `copy_files` build the remote path in the image's
-`deploy_frontend.sh` before relying on these variable overrides.
 
 ## `link_photos` job
 
@@ -122,29 +120,38 @@ Check how `upload` and `copy_files` build the remote path in the image's
   link_photos:
     docker:
       - image: darthjee/tent:0.10.4
+    working_directory: /home/app/app
     steps:
+      - checkout
       - run:
           name: Generate key file
-          command: deploy_frontend.sh generate_key_file
+          command: bin/deploy_frontend.sh generate_key_file
+      - run:
+          name: Generate folder
+          command: bin/deploy_frontend.sh generate_folder
       - run:
           name: Link photos
-          command: SOURCE=$REMOTE_HOME/photos/photos TARGET=$SSH_REMOTE_TEMP_DIR/photos deploy_frontend.sh link
+          command: SOURCE=$REMOTE_HOME/photos/photos DEPLOY_PATH=photos bin/deploy_frontend.sh link
       - run:
           name: Link snaps
-          command: SOURCE=$REMOTE_HOME/photos/snaps TARGET=$SSH_REMOTE_TEMP_DIR/snaps deploy_frontend.sh link
+          command: SOURCE=$REMOTE_HOME/photos/snaps DEPLOY_PATH=snaps bin/deploy_frontend.sh link
 ```
 
-## Workflow changes
+## Workflow
 
 ```yaml
       - link_photos:
-          requires: [upload_proxy_files]
-          filters: # same tag-only filters as upload_proxy_files
+          requires: [test, checks, jasmine, frontend-checks]
+          filters:
+            tags:
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
       - release:
           requires:
             - build-and-release
             - upload_proxy_files
-            - link_photos
             - upload_fe_files
+            - link_photos
             # ... image releases unchanged
 ```
