@@ -34,8 +34,10 @@ require_once __DIR__ . '/rules/redirects.php';
 
 ## Static photo rules
 
-`CacheControlMiddleware` is not built into Tent; see
-[Proxy Rules](proxy-rules.md#static-photo-rules).
+`Oak\Proxy\CacheControlMiddleware` lives in `proxy/extension/` (it is not
+built into Tent) and only sets the header on 2xx responses; see
+[Proxy Rules](proxy-rules.md#static-photo-rules). Dev uses
+`location => '/tmp/photos'`.
 
 ```php
 <?php
@@ -53,7 +55,7 @@ foreach (['/photos', '/snaps'] as $prefix) {
         ],
         'middlewares' => [
             [
-                'class'         => 'Tent\\Middlewares\\CacheControlMiddleware',
+                'class'         => 'Oak\\Proxy\\CacheControlMiddleware',
                 'maxAgeSeconds' => 60 * 60 * 24 * 7
             ]
         ]

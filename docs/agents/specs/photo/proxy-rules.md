@@ -1,47 +1,53 @@
 # Proxy Rules
 
 Target Tent configuration for production photo upload and serving
-(sub-issues #330, #332 and #335). #330 is done and described in "Current
-state"; the static photo rules (#332) and the `storageRoot` option (#335)
-are still proposals. See the [guide index](index.md) for the path decision.
+(sub-issues #330, #332 and #335). #330 and #332 are done and described in
+"Current state"; the `storageRoot` option (#335) is still a proposal. See
+the [guide index](index.md) for the path decision.
 
 ## Current state
 
 - Dev config: `docker_volumes/proxy_configuration/`. `configure.php` loads
-  `rules/frontend.php`, `backend.php`, `uploads.php`, `deletes.php` and
-  `redirects.php`, in that order.
+  `rules/frontend.php`, `photos.php`, `backend.php`, `uploads.php`,
+  `deletes.php` and `redirects.php`, in that order.
+- Dev `photos.php` (#332) serves `GET /photos/...` and `GET /snaps/...` from
+  `/tmp/photos` (the `./dev_public_files` mount) with
+  `Oak\Proxy\CacheControlMiddleware`.
 - `uploads.php` and `deletes.php` route to `Oak\Proxy\PhotoSubmitRequestHandler`
   and `Oak\Proxy\PhotoDeleteRequestHandler` with
   `photosPath => '/tmp/photos'` and host `http://backend:3000`.
 - Prod config: committed in `proxy/prod_configuration/` (#339, #330).
   `configure.php` requires `locals.php` first, then `rules/frontend.php`,
-  `uploads.php`, `deletes.php`, `backend.php` and `redirects.php`. The rules
-  read `$backendHost`, `$staticRoot`, `$storageRoot` and `$maxUploadSizeBytes`
-  from `locals.php`, which is gitignored and exists only on the server.
+  `photos.php`, `uploads.php`, `deletes.php`, `backend.php` and
+  `redirects.php`. The rules read `$backendHost`, `$staticRoot`,
+  `$storageRoot` and `$maxUploadSizeBytes` from `locals.php`, which is
+  gitignored and exists only on the server.
   `upload_proxy_files` uploads the folder on every tag, carries `locals.php`
   forward and uploads `proxy/extension/` (see [Deployment](deployment.md)).
-  It has no static photo rules yet (#332).
+- Prod `photos.php` (#332) serves `GET /photos/...` and `GET /snaps/...` from
+  `$staticRoot` (the release dir, with `photos` and `snaps` symlinks) with
+  `Oak\Proxy\CacheControlMiddleware`.
 - Prod `uploads.php` and `deletes.php` (#330) use the dev regex matchers and
   handler classes with `host => $backendHost` and
   `photosPath => $storageRoot . '/origin'`; the submit rule also passes
   `maxUploadSizeBytes => $maxUploadSizeBytes` (10 MB in prod).
 - `proxy/extension_tests/ProdConfigurationRoutingTest.php` covers the prod
-  rule order (including the upload and delete rules and their handler
-  options) with inline locals.
+  rule order (including the static photo rules, the upload and delete rules
+  and their handler options) with inline locals.
 - See [Infrastructure](../../architecture/infrastructure.md#production-proxy-configuration)
   for the `locals.php` bootstrap and update rules.
 
 ## Versioned prod config
 
-Current layout plus the #332 addition:
+Current layout:
 
 ```text
 proxy/prod_configuration/
-├── configure.php          # exists; add the new requires in rule order
-├── locals.php.sample      # exists; add every new variable
+├── configure.php          # requires the rules in rule order
+├── locals.php.sample      # add every new variable
 └── rules/
     ├── frontend.php       # exists
-    ├── photos.php         # new: static /photos and /snaps (#332)
+    ├── photos.php         # exists: static /photos and /snaps (#332)
     ├── uploads.php        # exists (#330)
     ├── deletes.php        # exists (#330)
     ├── backend.php        # exists
@@ -75,21 +81,26 @@ frontend → photos/snaps static → uploads → deletes → backend → redirec
   302 to `/#/photos/...`.
 - Uploads and deletes come before `backend.php` and `redirects.php` so the
   custom handlers get the request first.
-- Dev keeps its current order for now. #333 can align it.
+- Dev inserts `photos.php` right after `frontend.php`, before the redirect
+  catch-all; the rest of the dev order is unchanged. #333 can align it
+  fully with prod.
 
 ## Static photo rules
 
 - Two rules: `GET /photos` and `GET /snaps`, `begins_with`, `type => static`,
   `location => $staticRoot`.
-- Add a `Cache-Control: max-age=604800` header (7 days).
-- **Tent has no built-in `CacheControlMiddleware`.** Majora ships its own in
-  `proxy/extension/lib/middlewares/`. #332 must port it into Oak's
-  `proxy/extension/` (with a tent-test spec and a `loader.php` entry), or use
-  a built-in if the Tent version in use has one.
-- The 7-day cache is safe only while a new upload never reuses a path. The
-  file name comes from the backend. If a re-upload can keep the same name,
-  clients may see the old image for up to 7 days. #332 should confirm names
-  are unique per upload, or use a shorter max-age.
+  Dev uses `location => '/tmp/photos'`.
+- `Oak\Proxy\CacheControlMiddleware` (`proxy/extension/`, ported from
+  Majora, spec in `proxy/extension_tests/`) sets
+  `Cache-Control: max-age=604800` (7 days). Tent 0.10.4 has no response-side
+  cache-control middleware.
+- The header is set on **2xx responses only**. Snaps are generated after the
+  upload, so an early `GET /snaps/...` returns 404; a cached 404 would hide
+  the snap for the whole max-age. Non-2xx responses are returned unchanged.
+- A missing file under `/photos` or `/snaps` returns Tent's 404 (no
+  `max-age`); it does not fall through to the redirect rule.
+- The 7-day cache is safe because a path is never reused: file names include
+  a UUID (`Oak::Photo::CreateBuilder#unique_file_name`).
 
 See [examples.md](examples.md#static-photo-rules).
 
@@ -119,6 +130,6 @@ See [examples.md](examples.md#upload-rule).
 | Config folder | `docker_volumes/proxy_configuration/` (mounted) | `proxy/prod_configuration/` (uploaded to `configuration/`) |
 | Backend host | `http://backend:3000` | `$backendHost` |
 | Storage root | `/tmp/photos` (mount of `dev_public_files`) | `$REMOTE_HOME/photos` |
-| Static root | `/tmp/photos` or a mount of `dev_public_files` | release dir, with `photos` and `snaps` symlinks |
+| Static root | `/tmp/photos` (mount of `dev_public_files`) | release dir, with `photos` and `snaps` symlinks |
 | Max upload size | `OAK_PHOTO_MAX_UPLOAD_SIZE_BYTES` env | `$maxUploadSizeBytes` |
 | Extension | `./proxy/extension/` mount | uploaded to `extension/` |
