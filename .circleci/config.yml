@@ -261,7 +261,7 @@ jobs:
           command: scripts/deploy.sh deploy
   proxy-tests:
     docker:
-      - image: darthjee/tent-test:0.10.4
+      - image: darthjee/tent-test:1.0.0
     steps:
       - checkout
       - run:
@@ -279,7 +279,7 @@ jobs:
           command: vendor/bin/phpunit
   upload_proxy_files:
     docker:
-      - image: darthjee/tent:0.10.4
+      - image: darthjee/tent:1.0.0
     working_directory: /home/app/app
     steps:
       - checkout
@@ -300,7 +300,7 @@ jobs:
           command: SOURCE=proxy/extension/ DEPLOY_PATH=extension/ bin/deploy_frontend.sh upload
   link_photos:
     docker:
-      - image: darthjee/tent:0.10.4
+      - image: darthjee/tent:1.0.0
     working_directory: /home/app/app
     steps:
       - checkout
