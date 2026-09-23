@@ -69,11 +69,19 @@ workflows:
               only: /\d+\.\d+\.\d+/
             branches:
               ignore: /.*/
+      - link_photos:
+          requires: [test, checks, jasmine, frontend-checks]
+          filters:
+            tags:
+              only: /\d+\.\d+\.\d+/
+            branches:
+              ignore: /.*/
       - release:
           requires:
             - build-and-release
             - upload_proxy_files
             - upload_fe_files
+            - link_photos
             - release-oak-base
             - release-oak-base-arm64
             - release-circleci_oak-base
@@ -290,6 +298,24 @@ jobs:
       - run:
           name: Upload proxy extension
           command: SOURCE=proxy/extension/ DEPLOY_PATH=extension/ bin/deploy_frontend.sh upload
+  link_photos:
+    docker:
+      - image: darthjee/tent:0.10.4
+    working_directory: /home/app/app
+    steps:
+      - checkout
+      - run:
+          name: Generate key file
+          command: bin/deploy_frontend.sh generate_key_file
+      - run:
+          name: Generate folder
+          command: bin/deploy_frontend.sh generate_folder
+      - run:
+          name: Link photos
+          command: SOURCE=$REMOTE_HOME/photos/photos DEPLOY_PATH=photos bin/deploy_frontend.sh link
+      - run:
+          name: Link snaps
+          command: SOURCE=$REMOTE_HOME/photos/snaps DEPLOY_PATH=snaps bin/deploy_frontend.sh link
   release:
     docker:
       - image: darthjee/vite_oak-base:0.0.1
