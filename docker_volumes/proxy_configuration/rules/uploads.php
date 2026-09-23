@@ -13,7 +13,8 @@ Configuration::buildRule([
     'handler' => [
         'class'              => 'Oak\Proxy\PhotoSubmitRequestHandler',
         'host'               => 'http://backend:3000',
-        'photosPath'         => '/tmp/photos',
+        // #335 switches this to a `storageRoot` handler option.
+        'photosPath'         => '/tmp/photos/origin',
         'maxUploadSizeBytes' => (int) getenv('OAK_PHOTO_MAX_UPLOAD_SIZE_BYTES')
     ],
     'matchers' => [

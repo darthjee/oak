@@ -15,7 +15,9 @@ the [guide index](index.md) for the path decision.
   `Oak\Proxy\CacheControlMiddleware`.
 - `uploads.php` and `deletes.php` route to `Oak\Proxy\PhotoSubmitRequestHandler`
   and `Oak\Proxy\PhotoDeleteRequestHandler` with
-  `photosPath => '/tmp/photos'` and host `http://backend:3000`.
+  `photosPath => '/tmp/photos/origin'` (#333, matching prod's #330 interim;
+  originals land in `dev_public_files/origin/`) and host
+  `http://backend:3000`.
 - Prod config: committed in `proxy/prod_configuration/` (#339, #330).
   `configure.php` requires `locals.php` first, then `rules/frontend.php`,
   `photos.php`, `uploads.php`, `deletes.php`, `backend.php` and

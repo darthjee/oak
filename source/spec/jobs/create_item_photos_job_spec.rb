@@ -10,7 +10,7 @@ RSpec.describe CreateItemPhotosJob do
     let(:item) { create(:oak_item, user:) }
     let(:user) { create(:user) }
     let(:photo_path) { "/tmp/photos_#{SecureRandom.hex(10)}" }
-    let(:folder_path) { File.join(photo_path, "users/#{user.id}/items/#{item.id}") }
+    let(:folder_path) { File.join(photo_path, "origin/users/#{user.id}/items/#{item.id}") }
     let(:files) { %w[photo1.jpg photo2.jpeg photo3.png] }
 
     before do
@@ -65,6 +65,19 @@ RSpec.describe CreateItemPhotosJob do
     end
 
     context 'when the folder does not exist' do
+      it 'does not create any photos' do
+        expect { perform }.not_to change(Oak::Photo, :count)
+      end
+    end
+
+    context 'when the files are outside the origin folder' do
+      let(:legacy_folder_path) { File.join(photo_path, "users/#{user.id}/items/#{item.id}") }
+
+      before do
+        FileUtils.mkdir_p(legacy_folder_path)
+        files.each { |file| FileUtils.touch(File.join(legacy_folder_path, file)) }
+      end
+
       it 'does not create any photos' do
         expect { perform }.not_to change(Oak::Photo, :count)
       end
