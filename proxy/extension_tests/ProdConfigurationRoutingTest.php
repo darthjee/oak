@@ -2,6 +2,7 @@
 
 namespace Oak\Proxy\Tests;
 
+use Oak\Proxy\CacheControlMiddleware;
 use Oak\Proxy\PhotoDeleteRequestHandler;
 use Oak\Proxy\PhotoSubmitRequestHandler;
 use PHPUnit\Framework\TestCase;
@@ -30,6 +31,8 @@ class ProdConfigurationRoutingTest extends TestCase
     private const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024;
     private const SUBMIT_PATH = '/uploads/categories/project/items/132/photos/549/submit';
     private const DELETE_PATH = '/uploads/categories/project/items/132/photos/549';
+    private const PHOTO_PATH = '/photos/users/1/items/2/a.jpg';
+    private const SNAP_PATH = '/snaps/users/1/items/2/a.jpg';
 
     protected function setUp(): void
     {
@@ -55,9 +58,10 @@ class ProdConfigurationRoutingTest extends TestCase
 
         $rules = Configuration::getRules();
 
-        // Rule order: 0 assets, 1 index, 2 uploads, 3 deletes, 4 backend (*.json), 5 redirects,
-        // 6 Tent's missing fallback (which has no matchers, so it never reports a match).
-        $this->assertCount(7, $rules);
+        // Rule order: 0 assets, 1 index, 2 photos, 3 snaps, 4 uploads, 5 deletes,
+        // 6 backend (*.json), 7 redirects, 8 Tent's missing fallback (which has
+        // no matchers, so it never reports a match).
+        $this->assertCount(9, $rules);
 
         $assetsIndex = $this->matchingRuleIndex('GET', '/assets/index.js');
         $this->assertSame(0, $assetsIndex);
@@ -68,25 +72,41 @@ class ProdConfigurationRoutingTest extends TestCase
         $this->assertStaticHandler($rules[$rootIndex]->handler());
         $this->assertHasMiddleware($rules[$rootIndex]->handler(), SetPathMiddleware::class);
 
+        $photoIndex = $this->matchingRuleIndex('GET', self::PHOTO_PATH);
+        $this->assertSame(2, $photoIndex);
+        $this->assertStaticHandler($rules[$photoIndex]->handler(), self::STATIC_ROOT);
+        $this->assertHasMiddleware($rules[$photoIndex]->handler(), CacheControlMiddleware::class);
+
+        $snapIndex = $this->matchingRuleIndex('GET', self::SNAP_PATH);
+        $this->assertSame(3, $snapIndex);
+        $this->assertStaticHandler($rules[$snapIndex]->handler(), self::STATIC_ROOT);
+        $this->assertHasMiddleware($rules[$snapIndex]->handler(), CacheControlMiddleware::class);
+
+        // Only GETs are served statically: other methods on photo paths never hit the photo rules.
+        $this->assertNotContains($this->matchingRuleIndex('POST', self::PHOTO_PATH), [2, 3]);
+        $this->assertNotContains($this->matchingRuleIndex('DELETE', self::PHOTO_PATH), [2, 3]);
+        $this->assertNotContains($this->matchingRuleIndex('POST', self::SNAP_PATH), [2, 3]);
+        $this->assertNotContains($this->matchingRuleIndex('DELETE', self::SNAP_PATH), [2, 3]);
+
         $submitIndex = $this->matchingRuleIndex('POST', self::SUBMIT_PATH);
-        $this->assertSame(2, $submitIndex);
+        $this->assertSame(4, $submitIndex);
         $this->assertSubmitHandler($rules[$submitIndex]->handler());
-        $this->assertSame(2, $this->matchingRuleIndex('POST', self::SUBMIT_PATH . '/'));
+        $this->assertSame(4, $this->matchingRuleIndex('POST', self::SUBMIT_PATH . '/'));
 
         $deleteIndex = $this->matchingRuleIndex('DELETE', self::DELETE_PATH);
-        $this->assertSame(3, $deleteIndex);
+        $this->assertSame(5, $deleteIndex);
         $this->assertDeleteHandler($rules[$deleteIndex]->handler());
 
         // A GET on the submit path is not an upload: it falls through to redirects.
-        $this->assertSame(5, $this->matchingRuleIndex('GET', self::SUBMIT_PATH));
+        $this->assertSame(7, $this->matchingRuleIndex('GET', self::SUBMIT_PATH));
 
         $jsonIndex = $this->matchingRuleIndex('GET', '/categories.json');
-        $this->assertSame(4, $jsonIndex);
+        $this->assertSame(6, $jsonIndex);
         $this->assertProxyHandler($rules[$jsonIndex]->handler());
         $this->assertNotHasMiddleware($rules[$jsonIndex]->handler(), RedirectMiddleware::class);
 
         $redirectIndex = $this->matchingRuleIndex('GET', '/categories/1');
-        $this->assertSame(5, $redirectIndex);
+        $this->assertSame(7, $redirectIndex);
         $this->assertProxyHandler($rules[$redirectIndex]->handler());
         $this->assertHasMiddleware($rules[$redirectIndex]->handler(), RedirectMiddleware::class);
 
@@ -105,6 +125,7 @@ class ProdConfigurationRoutingTest extends TestCase
         $configDir = dirname(__DIR__, 2) . '/prod_configuration';
 
         require $configDir . '/rules/frontend.php';
+        require $configDir . '/rules/photos.php';
         require $configDir . '/rules/uploads.php';
         require $configDir . '/rules/deletes.php';
         require $configDir . '/rules/backend.php';
@@ -124,12 +145,14 @@ class ProdConfigurationRoutingTest extends TestCase
         return null;
     }
 
-    private function assertStaticHandler(RequestHandler $handler): void
-    {
+    private function assertStaticHandler(
+        RequestHandler $handler,
+        string $basePath = self::STATIC_ROOT . '/static'
+    ): void {
         $this->assertInstanceOf(StaticFileHandler::class, $handler);
 
         $folderLocation = $this->readProperty($handler, 'folderLocation');
-        $this->assertSame(self::STATIC_ROOT . '/static', $folderLocation->basePath());
+        $this->assertSame($basePath, $folderLocation->basePath());
     }
 
     private function assertProxyHandler(RequestHandler $handler): void
