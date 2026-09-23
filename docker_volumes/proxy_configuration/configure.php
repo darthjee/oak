@@ -10,6 +10,7 @@ use Tent\Models\FolderLocation;
 use Tent\Models\RequestMatcher;
 
 require_once __DIR__ . '/rules/frontend.php';
+require_once __DIR__ . '/rules/photos.php';
 require_once __DIR__ . '/rules/backend.php';
 require_once __DIR__ . '/rules/uploads.php';
 require_once __DIR__ . '/rules/deletes.php';
