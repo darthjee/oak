@@ -287,6 +287,9 @@ jobs:
       - run:
           name: Setup locals
           command: TARGET=configuration/locals.php SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/configuration deploy_frontend.sh copy_files
+      - run:
+          name: Upload proxy extension
+          command: SOURCE=proxy/extension/ SSH_REMOTE_TEMP_DIR=$SSH_REMOTE_TEMP_DIR/extension/ deploy_frontend.sh upload
   release:
     docker:
       - image: darthjee/vite_oak-base:0.0.1
