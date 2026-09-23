@@ -2,3 +2,10 @@
 
 $backendHost = 'https://oak-api.ffavs.net/';
 $staticRoot = '/home/darthjee_oak/oak.ffavs.net';
+
+// Persistent photo storage root (holds origin/, photos/ and snaps/).
+// Lives outside the release directory so it survives deploys.
+$storageRoot = '/home/darthjee_oak/photos';
+
+// Maximum accepted photo upload size (10 MB).
+$maxUploadSizeBytes = 10 * 1024 * 1024;
