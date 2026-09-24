@@ -17,11 +17,12 @@ use Tent\Http\CurlHttpClient;
  *
  * 1. Validates the uploaded file's extension and size before doing anything else.
  * 2. Calls the backend's status-gate endpoint with `{ status: "uploading" }`
- *    (forwarding the incoming `Cookie` header) — the pre-write authorization gate.
+ *    (forwarding the incoming `Cookie` header) — the pre-write authorization gate
+ *    (delegated to `PhotoSubmitBackendGateway`).
  *    On a non-2xx response, the backend's status/body is relayed as-is and nothing
  *    is written to disk.
  * 3. Writes three files under `storageRoot`, using the `file_path` returned by
- *    the gate call:
+ *    the gate call (delegated to `PhotoVersionStorer`):
  *    - `origin/<file_path>`: the uploaded bytes, as is;
  *    - `photos/<file_path>`: a copy that fits within 800x1064;
  *    - `snaps/<file_path>`: a copy that fits within 215x215.
@@ -32,7 +33,7 @@ use Tent\Http\CurlHttpClient;
  *    failure is logged with the photo id and `file_path`, finalize is not
  *    called and `502` is returned.
  * 4. Calls the same endpoint again with `{ status: "ready" }` (Finalize), only
- *    after all three files are on disk.
+ *    after all three files are on disk (delegated to `PhotoSubmitBackendGateway`).
  * 5. Responds `200` to the frontend.
  */
 class PhotoSubmitRequestHandler extends RequestHandler
@@ -51,38 +52,17 @@ class PhotoSubmitRequestHandler extends RequestHandler
      */
     private const DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
-    /** Folder, under storageRoot, holding the uploaded original. */
-    private const ORIGIN_PREFIX = 'origin';
-
-    /**
-     * Resized versions: folder under storageRoot => [max width, max height].
-     * Mirrors `prod_public_files/convert.sh` (`-resize 800x1064>` / `215x215>`).
-     */
-    private const VERSIONS = [
-        'photos' => [800, 1064],
-        'snaps' => [215, 215]
-    ];
-
-    /** @var string Backend base URL (e.g. 'http://backend:3000'). */
-    private string $host;
-
-    /** @var string Local filesystem root holding the `origin/`, `photos/` and `snaps/` folders. */
-    private string $storageRoot;
-
     /** @var int Maximum accepted upload size in bytes (0/negative disables the check). */
     private int $maxUploadSizeBytes;
 
     /** @var string[] Lower-cased allow-list of accepted file extensions. */
     private array $allowedExtensions;
 
-    /** @var HttpClientInterface Client used for the outbound status-gate calls. */
-    private HttpClientInterface $httpClient;
+    /** @var PhotoSubmitBackendGateway Makes the outbound status-gate/Finalize calls. */
+    private PhotoSubmitBackendGateway $gateway;
 
-    /** @var PhotoPathGuard Guards the write destination against path traversal/escapes. */
-    private PhotoPathGuard $pathGuard;
-
-    /** @var PhotoImageResizer Makes the resized `photos/` and `snaps/` versions. */
-    private PhotoImageResizer $resizer;
+    /** @var PhotoVersionStorer Writes the `origin/`, `photos/` and `snaps/` files. */
+    private PhotoVersionStorer $storer;
 
     /**
      * @param string                   $host               Backend base URL.
@@ -98,13 +78,10 @@ class PhotoSubmitRequestHandler extends RequestHandler
         array $allowedExtensions = self::DEFAULT_ALLOWED_EXTENSIONS,
         ?HttpClientInterface $httpClient = null
     ) {
-        $this->host = rtrim($host, '/');
-        $this->storageRoot = rtrim($storageRoot, '/');
         $this->maxUploadSizeBytes = $maxUploadSizeBytes;
         $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
-        $this->httpClient = $httpClient ?? new CurlHttpClient();
-        $this->pathGuard = new PhotoPathGuard();
-        $this->resizer = new PhotoImageResizer();
+        $this->gateway = new PhotoSubmitBackendGateway($host, $httpClient ?? new CurlHttpClient());
+        $this->storer = new PhotoVersionStorer($storageRoot, new PhotoPathGuard(), new PhotoImageResizer());
     }
 
     /**
@@ -154,9 +131,8 @@ class PhotoSubmitRequestHandler extends RequestHandler
         }
 
         $cookie = $this->headerValue($request, 'Cookie');
-        $gateUrl = $this->gateUrl($segments);
 
-        $gateResponse = $this->callGate($gateUrl, 'uploading', $cookie);
+        $gateResponse = $this->gateway->markUploading($segments, $cookie);
 
         if ($gateResponse->isSuccessful() === FALSE) {
             return $gateResponse;
@@ -168,13 +144,13 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return $this->errorResponse(502, 'Invalid response from backend');
         }
 
-        $storeError = $this->storeVersions($file['tmp_name'], $filePath, $segments['id']);
+        $storeError = $this->storer->store($file['tmp_name'], $filePath, $segments['id']);
 
         if ($storeError !== null) {
-            return $storeError;
+            return $this->errorResponse(502, $storeError);
         }
 
-        $finalizeResponse = $this->callGate($gateUrl, 'ready', $cookie);
+        $finalizeResponse = $this->gateway->markReady($segments, $cookie);
 
         if ($finalizeResponse->isSuccessful() === FALSE) {
             return $finalizeResponse;
@@ -242,156 +218,5 @@ class PhotoSubmitRequestHandler extends RequestHandler
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
         return in_array($extension, $this->allowedExtensions, true);
-    }
-
-    /**
-     * Builds the backend's status-gate/Finalize URL for the given path segments.
-     *
-     * @param array $segments Path segments returned by parsePath().
-     * @return string
-     */
-    private function gateUrl(array $segments): string
-    {
-        return sprintf(
-            '%s/categories/%s/items/%s/photos/%s.json',
-            $this->host,
-            $segments['category_slug'],
-            $segments['item_id'],
-            $segments['id']
-        );
-    }
-
-    /**
-     * Calls the backend's status-gate/Finalize endpoint with the given status.
-     *
-     * @param string      $url    The status-gate/Finalize URL.
-     * @param string      $status Either 'uploading' or 'ready'.
-     * @param string|null $cookie The incoming request's forwarded Cookie header, if any.
-     * @return Response
-     */
-    private function callGate(string $url, string $status, ?string $cookie): Response
-    {
-        $headers = ['Content-Type' => 'application/json'];
-
-        if ($cookie !== null) {
-            $headers['Cookie'] = $cookie;
-        }
-
-        $result = $this->httpClient->request(
-            'PATCH',
-            $url,
-            $headers,
-            json_encode(['status' => $status])
-        );
-
-        return new Response($result);
-    }
-
-    /**
-     * Writes `origin/`, `photos/` and `snaps/` for `$filePath`, rolling back
-     * every file already written if any step fails.
-     *
-     * @param string $tmpName  The uploaded file's temporary path.
-     * @param string $filePath The destination path, relative to each prefix folder.
-     * @param string $photoId  The photo id (for logging).
-     * @return Response|null A 502 error Response on failure, null on success.
-     */
-    private function storeVersions(string $tmpName, string $filePath, string $photoId): ?Response
-    {
-        $origin = $this->destination(self::ORIGIN_PREFIX, $filePath);
-
-        if ($origin === null || $this->moveUpload($tmpName, $origin) === FALSE) {
-            return $this->storeFailure([], $photoId, $filePath, self::ORIGIN_PREFIX, 'Failed to store uploaded file');
-        }
-
-        $written = [$origin];
-
-        foreach (self::VERSIONS as $prefix => [$maxWidth, $maxHeight]) {
-            $destination = $this->destination($prefix, $filePath);
-            $written[] = $destination;
-            $resized = $destination !== null
-                && $this->resizer->resize($origin, $destination, $maxWidth, $maxHeight);
-
-            if ($resized === FALSE) {
-                return $this->storeFailure($written, $photoId, $filePath, $prefix, 'Failed to resize uploaded file');
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Removes the given files, logs the failure and builds the 502 response.
-     *
-     * @param array<string|null> $written  Files written (or partly written) for this upload.
-     * @param string             $photoId  The photo id.
-     * @param string             $filePath The backend-provided file path.
-     * @param string             $step     The prefix folder whose write failed.
-     * @param string             $message  The error message returned to the client.
-     * @return Response
-     */
-    private function storeFailure(
-        array $written,
-        string $photoId,
-        string $filePath,
-        string $step,
-        string $message
-    ): Response {
-        foreach ($written as $path) {
-            if ($path !== null && is_file($path) === TRUE) {
-                unlink($path);
-            }
-        }
-
-        error_log(sprintf(
-            'PhotoSubmitRequestHandler: failed to write "%s" for photo %s, file_path "%s"; upload rolled back',
-            $step,
-            $photoId,
-            $filePath
-        ));
-
-        return $this->errorResponse(502, $message);
-    }
-
-    /**
-     * Resolves `<storageRoot>/<prefix>/<filePath>`, creating the prefix folder
-     * and the file's parent directories as needed.
-     *
-     * The destination is routed through `PhotoPathGuard` with
-     * `<storageRoot>/<prefix>` as the root, so a `..` segment or symlink
-     * escape in `filePath` is rejected instead of leaving the prefix folder.
-     *
-     * @param string $prefix   The prefix folder (origin, photos or snaps).
-     * @param string $filePath The destination path, relative to the prefix folder.
-     * @return string|null The safe destination path, or null if rejected.
-     */
-    private function destination(string $prefix, string $filePath): ?string
-    {
-        $root = $this->storageRoot . '/' . $prefix;
-        $dir = dirname($root . '/' . ltrim($filePath, '/'));
-
-        foreach ([$root, $dir] as $path) {
-            if (is_dir($path) === FALSE) {
-                @mkdir($path, 0775, true);
-            }
-        }
-
-        return $this->pathGuard->resolve($root, $filePath);
-    }
-
-    /**
-     * Moves the uploaded file to `$destination`.
-     *
-     * @param string $tmpName     The uploaded file's temporary path.
-     * @param string $destination The safe destination path.
-     * @return boolean
-     */
-    private function moveUpload(string $tmpName, string $destination): bool
-    {
-        if (is_uploaded_file($tmpName) === TRUE) {
-            return move_uploaded_file($tmpName, $destination);
-        }
-
-        return @rename($tmpName, $destination);
     }
 }

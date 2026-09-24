@@ -63,8 +63,12 @@ trait RuleAssertions
     ): void {
         $this->assertInstanceOf(PhotoSubmitRequestHandler::class, $handler);
 
-        $this->assertSame($storageRoot, $this->readProperty($handler, 'storageRoot'));
-        $this->assertSame(rtrim($host, '/'), $this->readProperty($handler, 'host'));
+        $storer = $this->readProperty($handler, 'storer');
+        $this->assertSame($storageRoot, $this->readProperty($storer, 'storageRoot'));
+
+        $gateway = $this->readProperty($handler, 'gateway');
+        $this->assertSame(rtrim($host, '/'), $this->readProperty($gateway, 'host'));
+
         $this->assertSame($maxUploadSizeBytes, $this->readProperty($handler, 'maxUploadSizeBytes'));
     }
 
