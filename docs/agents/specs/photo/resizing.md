@@ -31,6 +31,14 @@ the original, so it also makes the resized versions.
 5. Write `snaps/<file_path>`: fit within 215x215.
 6. Finalize (`PATCH ... { status: "ready" }`) only once all three files exist.
 
+The handler keeps validation and error responses, and delegates the rest
+(#355):
+
+- `PhotoSubmitBackendGateway` makes the status-gate (`uploading`) and
+  Finalize (`ready`) calls (steps 2 and 6).
+- `PhotoVersionStorer` writes the three files and rolls them back on failure
+  (steps 3 to 5).
+
 Every write goes through `PhotoPathGuard::resolve(storageRoot, "<prefix>/<file_path>")`
 (or with the prefix folder as the root), so a bad `file_path` can't escape
 the prefix folder. Create parent directories as the handler does today.
