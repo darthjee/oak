@@ -16,15 +16,35 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
 
     private const DESTROY_URL = 'http://backend:3000/categories/miniatures/items/42/photos/7.json';
 
+    private const PREFIXES = ['origin', 'photos', 'snaps'];
+
+    /** @var string|false The error_log setting before the test silenced it. */
+    private $previousErrorLog;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // The deleter logs every skipped version; keep the test output clean.
+        $this->previousErrorLog = ini_set('error_log', '/dev/null');
+    }
+
+    protected function tearDown(): void
+    {
+        ini_set('error_log', $this->previousErrorLog === false ? '' : $this->previousErrorLog);
+
+        parent::tearDown();
+    }
+
     protected function tempDirPrefix(): string
     {
         return 'photo_delete_test_';
     }
 
-    public function testHappyPathDeletesFileThenBackendRow(): void
+    public function testHappyPathDeletesAllVersionsThenBackendRow(): void
     {
         $filePath = 'users/1/items/42/photo.jpg';
-        $this->writeExistingFile($filePath, 'bytes');
+        $this->writeVersions($filePath);
 
         $httpClient = new FakeHttpClient([
             ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
@@ -43,7 +63,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame('DELETE', $httpClient->calls[1]['method']);
         $this->assertSame(self::DESTROY_URL, $httpClient->calls[1]['url']);
 
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertSame([], $this->filesUnder($this->storageRoot));
     }
 
     public function testAlreadyMissingFileIsANoOpButBackendRowIsStillDeleted(): void
@@ -61,13 +81,50 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame(200, $response->httpCode());
         $this->assertCount(2, $httpClient->calls);
         $this->assertSame('DELETE', $httpClient->calls[1]['method']);
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertSame([], $this->filesUnder($this->storageRoot));
+    }
+
+    public function testOnlySomeVersionsPresentDeletesThoseAndSucceeds(): void
+    {
+        $filePath = 'users/1/items/42/photo.jpg';
+        $this->writeVersions($filePath, ['origin']);
+
+        $httpClient = new FakeHttpClient([
+            ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
+            ['body' => '', 'httpCode' => 200, 'headers' => []]
+        ]);
+        $handler = $this->buildHandler($httpClient);
+
+        $response = $handler->handleRequest($this->buildRequest());
+
+        $this->assertSame(200, $response->httpCode());
+        $this->assertCount(2, $httpClient->calls);
+        $this->assertSame('DELETE', $httpClient->calls[1]['method']);
+        $this->assertSame([], $this->filesUnder($this->storageRoot));
+    }
+
+    public function testFilePathEscapingThePrefixFoldersDeletesNothingOutsideThem(): void
+    {
+        $this->writeVersions('escape.jpg', ['']);
+        $this->writeVersions('users/1/items/42/photo.jpg');
+
+        $httpClient = new FakeHttpClient([
+            ['body' => json_encode(['file_path' => '../escape.jpg']), 'httpCode' => 200, 'headers' => []],
+            ['body' => '', 'httpCode' => 200, 'headers' => []]
+        ]);
+        $handler = $this->buildHandler($httpClient);
+
+        $response = $handler->handleRequest($this->buildRequest());
+
+        $this->assertSame(200, $response->httpCode());
+        $this->assertFileExists($this->storageRoot . '/escape.jpg');
+        $this->assertCount(4, $this->filesUnder($this->storageRoot));
     }
 
     public function testNonSuccessfulDeletableGateIsRelayedWithoutDeletingAnything(): void
     {
         $filePath = 'users/1/items/42/photo.jpg';
-        $this->writeExistingFile($filePath, 'bytes');
+        $this->writeVersions($filePath);
 
         $httpClient = new FakeHttpClient([
             ['body' => '{"error":"not ready"}', 'httpCode' => 422, 'headers' => []]
@@ -79,13 +136,13 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame(422, $response->httpCode());
         $this->assertSame('{"error":"not ready"}', $response->body());
         $this->assertCount(1, $httpClient->calls);
-        $this->assertFileExists($this->photosPath . '/' . $filePath);
+        $this->assertSame($this->versionPaths($filePath), $this->filesUnder($this->storageRoot));
     }
 
     public function testForbiddenDeletableGateIsRelayedWithoutDeletingAnything(): void
     {
         $filePath = 'users/1/items/42/photo.jpg';
-        $this->writeExistingFile($filePath, 'bytes');
+        $this->writeVersions($filePath);
 
         $httpClient = new FakeHttpClient([
             ['body' => '{"error":"forbidden"}', 'httpCode' => 403, 'headers' => []]
@@ -96,13 +153,13 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
 
         $this->assertSame(403, $response->httpCode());
         $this->assertCount(1, $httpClient->calls);
-        $this->assertFileExists($this->photosPath . '/' . $filePath);
+        $this->assertSame($this->versionPaths($filePath), $this->filesUnder($this->storageRoot));
     }
 
-    public function testNonSuccessfulBackendDeleteIsRelayedButFileIsAlreadyGone(): void
+    public function testNonSuccessfulBackendDeleteIsRelayedButFilesAreAlreadyGone(): void
     {
         $filePath = 'users/1/items/42/photo.jpg';
-        $this->writeExistingFile($filePath, 'bytes');
+        $this->writeVersions($filePath);
 
         $httpClient = new FakeHttpClient([
             ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
@@ -119,13 +176,13 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         // Disk-first ordering: even though the overall response is an
         // error, the file must already be gone by the time the backend
         // DELETE call happens.
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertSame([], $this->filesUnder($this->storageRoot));
     }
 
     public function testForwardsCookieOnBothBackendCalls(): void
     {
         $filePath = 'users/1/items/42/photo.jpg';
-        $this->writeExistingFile($filePath, 'bytes');
+        $this->writeVersions($filePath);
 
         $httpClient = new FakeHttpClient([
             ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
@@ -143,7 +200,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
     {
         return new PhotoDeleteRequestHandler(
             'http://backend:3000',
-            $this->photosPath,
+            $this->storageRoot,
             $httpClient
         );
     }
@@ -161,15 +218,28 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         ]);
     }
 
-    private function writeExistingFile(string $filePath, string $contents): void
+    /**
+     * Seeds `<storageRoot>/<prefix>/<filePath>` for each given prefix.
+     */
+    private function writeVersions(string $filePath, array $prefixes = self::PREFIXES): void
     {
-        $destination = $this->photosPath . '/' . $filePath;
-        $dir = dirname($destination);
+        foreach ($prefixes as $prefix) {
+            $destination = rtrim($this->storageRoot . '/' . $prefix, '/') . '/' . $filePath;
+            $dir = dirname($destination);
 
-        if (is_dir($dir) === false) {
-            mkdir($dir, 0775, true);
+            if (is_dir($dir) === false) {
+                mkdir($dir, 0775, true);
+            }
+
+            file_put_contents($destination, 'bytes');
         }
+    }
 
-        file_put_contents($destination, $contents);
+    /**
+     * The sorted, storageRoot-relative paths of every version of `$filePath`.
+     */
+    private function versionPaths(string $filePath): array
+    {
+        return array_map(fn ($prefix) => $prefix . '/' . $filePath, self::PREFIXES);
     }
 }

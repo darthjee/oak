@@ -6,57 +6,78 @@ namespace Oak\Proxy;
  * Deletes photo files from disk on behalf of `PhotoDeleteRequestHandler`,
  * keeping the handler free of filesystem concerns — mirroring how
  * `PhotoPathGuard` was already split out for path-safety.
+ *
+ * Every photo has up to three versions under `storageRoot`: `origin/`,
+ * `photos/` and `snaps/`; all of them are removed.
  */
 class PhotoFileDeleter
 {
-    /** @var string Local filesystem base path backing `Settings.photos_path`. */
-    private string $photosPath;
+    /** Folders, under storageRoot, holding each version of a photo. */
+    private const PREFIXES = ['origin', 'photos', 'snaps'];
+
+    /** @var string Local filesystem root holding the `origin/`, `photos/` and `snaps/` folders. */
+    private string $storageRoot;
 
     /** @var PhotoPathGuard Guards the unlink target against path traversal/escapes. */
     private PhotoPathGuard $pathGuard;
 
     /**
-     * @param string        $photosPath Local filesystem base path for photos.
-     * @param PhotoPathGuard $pathGuard Guards the unlink target against path traversal/escapes.
+     * @param string         $storageRoot Root holding origin/, photos/ and snaps/.
+     * @param PhotoPathGuard $pathGuard   Guards the unlink target against path traversal/escapes.
      */
-    public function __construct(string $photosPath, PhotoPathGuard $pathGuard)
+    public function __construct(string $storageRoot, PhotoPathGuard $pathGuard)
     {
-        $this->photosPath = rtrim($photosPath, '/');
+        $this->storageRoot = rtrim($storageRoot, '/');
         $this->pathGuard = $pathGuard;
     }
 
     /**
-     * Deletes `<photosPath>/<filePath>` from disk, if it exists.
+     * Deletes `<storageRoot>/<prefix>/<filePath>` for every prefix, if it
+     * exists.
      *
-     * Does not create any directories — unlike Submit's write path, the
-     * destination directory is expected to already exist for a `ready`
-     * photo. A missing file (or a path the guard rejects as unsafe) is
-     * logged and treated as a harmless no-op, never an error.
+     * Does not create any directories. A missing file (or a path the guard
+     * rejects as unsafe) is logged and skipped for that prefix only, never
+     * an error.
      *
-     * @param string $filePath The file path to delete, relative to photosPath.
+     * @param string $filePath The file path to delete, relative to each prefix folder.
      * @return void
      */
     public function delete(string $filePath): void
     {
-        $destinationDir = dirname(rtrim($this->photosPath, '/') . '/' . ltrim($filePath, '/'));
+        foreach (self::PREFIXES as $prefix) {
+            $this->deleteUnder($this->storageRoot . '/' . $prefix, $filePath);
+        }
+    }
+
+    /**
+     * Deletes `<root>/<filePath>` from disk, if it exists.
+     *
+     * @param string $root     The prefix folder used as the guard root.
+     * @param string $filePath The file path to delete, relative to `$root`.
+     * @return void
+     */
+    private function deleteUnder(string $root, string $filePath): void
+    {
+        $destinationDir = dirname($root . '/' . ltrim($filePath, '/'));
 
         if (is_dir($destinationDir) === FALSE) {
             error_log(sprintf(
-                'PhotoDeleteRequestHandler: destination directory for file_path "%s" does not exist, ' .
+                'PhotoDeleteRequestHandler: destination directory for file_path "%s" under "%s" does not exist, ' .
                     'treating as already missing',
-                $filePath
+                $filePath,
+                $root
             ));
 
             return;
         }
 
-        $safeDestination = $this->pathGuard->resolve($this->photosPath, $filePath);
+        $safeDestination = $this->pathGuard->resolve($root, $filePath);
 
         if ($safeDestination === null) {
             error_log(sprintf(
-                'PhotoDeleteRequestHandler: rejected unsafe file_path "%s" under photosPath "%s"',
+                'PhotoDeleteRequestHandler: rejected unsafe file_path "%s" under "%s"',
                 $filePath,
-                $this->photosPath
+                $root
             ));
 
             return;

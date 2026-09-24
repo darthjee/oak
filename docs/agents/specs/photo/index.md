@@ -95,9 +95,8 @@ the dev proxy config and mounts (`dev_public_files` as the storage root) and
 checks. Its issue body offers two options and points to `architecture.md`;
 this page is the answer: keep `users/...`, the proxy adds the prefixes.
 
-Until #335 lands, the handlers still write `<photosPath>/<file_path>` with no
-prefix. So #330 passes `photosPath => $storageRoot . '/origin'`, and #335
-replaces it with `storageRoot => $storageRoot` once the handlers add the
+#330 passed `photosPath => $storageRoot . '/origin'` as an interim; #335
+replaced it with `storageRoot => $storageRoot`, and the handlers now add the
 prefixes themselves (see [Proxy Rules](proxy-rules.md#upload-and-delete-rules)).
 
 ## Pages

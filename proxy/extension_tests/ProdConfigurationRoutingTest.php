@@ -167,7 +167,7 @@ class ProdConfigurationRoutingTest extends TestCase
     {
         $this->assertInstanceOf(PhotoSubmitRequestHandler::class, $handler);
 
-        $this->assertSame(self::STORAGE_ROOT . '/origin', $this->readProperty($handler, 'photosPath'));
+        $this->assertSame(self::STORAGE_ROOT, $this->readProperty($handler, 'storageRoot'));
         $this->assertSame(rtrim(self::BACKEND_HOST, '/'), $this->readProperty($handler, 'host'));
         $this->assertSame(self::MAX_UPLOAD_SIZE_BYTES, $this->readProperty($handler, 'maxUploadSizeBytes'));
     }
@@ -176,7 +176,7 @@ class ProdConfigurationRoutingTest extends TestCase
     {
         $this->assertInstanceOf(PhotoDeleteRequestHandler::class, $handler);
 
-        $this->assertSame(self::STORAGE_ROOT . '/origin', $this->readProperty($handler, 'photosPath'));
+        $this->assertSame(self::STORAGE_ROOT, $this->readProperty($handler, 'storageRoot'));
 
         $gateway = $this->readProperty($handler, 'gateway');
         $this->assertSame(rtrim(self::BACKEND_HOST, '/'), rtrim($this->readProperty($gateway, 'host'), '/'));

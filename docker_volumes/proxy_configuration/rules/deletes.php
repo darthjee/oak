@@ -12,10 +12,9 @@ use Tent\Configuration;
 
 Configuration::buildRule([
     'handler' => [
-        'class'      => 'Oak\Proxy\PhotoDeleteRequestHandler',
-        'host'       => 'http://backend:3000',
-        // #335 switches this to a `storageRoot` handler option.
-        'photosPath' => '/tmp/photos/origin'
+        'class'       => 'Oak\Proxy\PhotoDeleteRequestHandler',
+        'host'        => 'http://backend:3000',
+        'storageRoot' => '/tmp/photos'
     ],
     'matchers' => [
         [

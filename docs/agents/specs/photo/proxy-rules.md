@@ -2,7 +2,7 @@
 
 Target Tent configuration for production photo upload and serving
 (sub-issues #330, #332 and #335). #330 and #332 are done and described in
-"Current state"; the `storageRoot` option (#335) is still a proposal. See
+"Current state", with the `storageRoot` option added by #335. See
 the [guide index](index.md) for the path decision.
 
 ## Current state
@@ -15,8 +15,8 @@ the [guide index](index.md) for the path decision.
   `Oak\Proxy\CacheControlMiddleware`.
 - `uploads.php` and `deletes.php` route to `Oak\Proxy\PhotoSubmitRequestHandler`
   and `Oak\Proxy\PhotoDeleteRequestHandler` with
-  `photosPath => '/tmp/photos/origin'` (#333, matching prod's #330 interim;
-  originals land in `dev_public_files/origin/`) and host
+  `storageRoot => '/tmp/photos'` (#335; the handlers write
+  `origin/`, `photos/` and `snaps/` under `dev_public_files/`) and host
   `http://backend:3000`.
 - Prod config: committed in `proxy/prod_configuration/` (#339, #330).
   `configure.php` requires `locals.php` first, then `rules/frontend.php`,
@@ -31,7 +31,7 @@ the [guide index](index.md) for the path decision.
   `Oak\Proxy\CacheControlMiddleware`.
 - Prod `uploads.php` and `deletes.php` (#330) use the dev regex matchers and
   handler classes with `host => $backendHost` and
-  `photosPath => $storageRoot . '/origin'`; the submit rule also passes
+  `storageRoot => $storageRoot` (#335); the submit rule also passes
   `maxUploadSizeBytes => $maxUploadSizeBytes` (10 MB in prod).
 - `proxy/extension_tests/ProdConfigurationRoutingTest.php` covers the prod
   rule order (including the static photo rules, the upload and delete rules
@@ -108,17 +108,17 @@ See [examples.md](examples.md#static-photo-rules).
 
 ## Upload and delete rules
 
-Implemented in #330 (see "Current state"); #335 is still a proposal.
+Implemented in #330 and #335 (see "Current state").
 
 - Reuse the dev regex matchers and handler classes as they are:
   - `POST #^/uploads/categories/[^/]+/items/\d+/photos/\d+/submit/?$#`
   - `DELETE #^/uploads/categories/[^/]+/items/\d+/photos/\d+/?$#`
 - `host` becomes `$backendHost`.
-- **#330 (current):** `photosPath => $storageRoot . '/origin'`. The handlers
-  still write `<photosPath>/<file_path>` with no prefix, so originals land in
-  `origin/` and never inside the release directory.
-- **#335 (target):** the option becomes `storageRoot => $storageRoot`, and
-  the handlers add the `origin/`, `photos/` and `snaps/` prefixes.
+- **#330 (interim):** `photosPath => $storageRoot . '/origin'`, with the
+  handlers writing `<photosPath>/<file_path>` with no prefix.
+- **#335 (current):** the option is `storageRoot => $storageRoot`, and
+  the handlers add the `origin/`, `photos/` and `snaps/` prefixes (see
+  [Resizing and Delete](resizing.md)).
 - #330's issue body calls the variable `$photosPath`. Use `$storageRoot`
   (the root) in `locals.php` and derive the `origin/` path in the rule, so
   #335 needs no `locals.php` change on the server.

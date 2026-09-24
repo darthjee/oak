@@ -73,8 +73,9 @@ proxy/prod_configuration/
   (`proxy/prod_configuration/locals.php`) and is never uploaded by CI.
 - **Photo storage:** `$storageRoot` is the persistent photo root (holding
   `origin/`, `photos/` and `snaps/`), outside the release directory. The
-  upload/delete handlers use `$storageRoot . '/origin'` as their
-  `photosPath` until #335 adds a `storageRoot` handler option.
+  upload/delete handlers take it as their `storageRoot` option (#335): submit
+  writes the original and the resized `photos/`/`snaps/` versions, delete
+  removes all three.
   `$maxUploadSizeBytes` is 10 MB in production; PHP's `upload_max_filesize`
   and `post_max_size` on the server must be at least that.
 - **One-time bootstrap:** before the first tag that uses this flow, create

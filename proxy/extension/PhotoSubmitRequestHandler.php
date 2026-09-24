@@ -20,9 +20,19 @@ use Tent\Http\CurlHttpClient;
  *    (forwarding the incoming `Cookie` header) — the pre-write authorization gate.
  *    On a non-2xx response, the backend's status/body is relayed as-is and nothing
  *    is written to disk.
- * 3. Writes the uploaded bytes to `<photosPath>/<file_path>`, using the `file_path`
- *    returned by the gate call.
- * 4. Calls the same endpoint again with `{ status: "ready" }` (Finalize).
+ * 3. Writes three files under `storageRoot`, using the `file_path` returned by
+ *    the gate call:
+ *    - `origin/<file_path>`: the uploaded bytes, as is;
+ *    - `photos/<file_path>`: a copy that fits within 800x1064;
+ *    - `snaps/<file_path>`: a copy that fits within 215x215.
+ *    Resizing is done by `PhotoImageResizer` (shrink only, aspect ratio kept,
+ *    EXIF orientation applied). Every destination goes through `PhotoPathGuard`
+ *    with its prefix folder as the root. If any write or resize fails, every
+ *    file already written for this upload (origin included) is removed, the
+ *    failure is logged with the photo id and `file_path`, finalize is not
+ *    called and `502` is returned.
+ * 4. Calls the same endpoint again with `{ status: "ready" }` (Finalize), only
+ *    after all three files are on disk.
  * 5. Responds `200` to the frontend.
  */
 class PhotoSubmitRequestHandler extends RequestHandler
@@ -41,11 +51,23 @@ class PhotoSubmitRequestHandler extends RequestHandler
      */
     private const DEFAULT_ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png'];
 
+    /** Folder, under storageRoot, holding the uploaded original. */
+    private const ORIGIN_PREFIX = 'origin';
+
+    /**
+     * Resized versions: folder under storageRoot => [max width, max height].
+     * Mirrors `prod_public_files/convert.sh` (`-resize 800x1064>` / `215x215>`).
+     */
+    private const VERSIONS = [
+        'photos' => [800, 1064],
+        'snaps' => [215, 215]
+    ];
+
     /** @var string Backend base URL (e.g. 'http://backend:3000'). */
     private string $host;
 
-    /** @var string Local filesystem base path backing `Settings.photos_path`. */
-    private string $photosPath;
+    /** @var string Local filesystem root holding the `origin/`, `photos/` and `snaps/` folders. */
+    private string $storageRoot;
 
     /** @var int Maximum accepted upload size in bytes (0/negative disables the check). */
     private int $maxUploadSizeBytes;
@@ -59,26 +81,30 @@ class PhotoSubmitRequestHandler extends RequestHandler
     /** @var PhotoPathGuard Guards the write destination against path traversal/escapes. */
     private PhotoPathGuard $pathGuard;
 
+    /** @var PhotoImageResizer Makes the resized `photos/` and `snaps/` versions. */
+    private PhotoImageResizer $resizer;
+
     /**
      * @param string                   $host               Backend base URL.
-     * @param string                   $photosPath         Local filesystem base path for photos.
+     * @param string                   $storageRoot        Root holding origin/, photos/ and snaps/.
      * @param integer                  $maxUploadSizeBytes Maximum accepted upload size in bytes.
      * @param array                    $allowedExtensions  Allowed file extensions.
      * @param HttpClientInterface|null $httpClient          Optional HTTP client (defaults to CurlHttpClient).
      */
     public function __construct(
         string $host,
-        string $photosPath,
+        string $storageRoot,
         int $maxUploadSizeBytes,
         array $allowedExtensions = self::DEFAULT_ALLOWED_EXTENSIONS,
         ?HttpClientInterface $httpClient = null
     ) {
         $this->host = rtrim($host, '/');
-        $this->photosPath = rtrim($photosPath, '/');
+        $this->storageRoot = rtrim($storageRoot, '/');
         $this->maxUploadSizeBytes = $maxUploadSizeBytes;
         $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
         $this->httpClient = $httpClient ?? new CurlHttpClient();
         $this->pathGuard = new PhotoPathGuard();
+        $this->resizer = new PhotoImageResizer();
     }
 
     /**
@@ -87,11 +113,11 @@ class PhotoSubmitRequestHandler extends RequestHandler
      * Example:
      *   PhotoSubmitRequestHandler::build([
      *     'host' => 'http://backend:3000',
-     *     'photosPath' => '/tmp/photos',
+     *     'storageRoot' => '/tmp/photos',
      *     'maxUploadSizeBytes' => 5242880
      *   ])
      *
-     * @param array $params Associative array with keys 'host', 'photosPath',
+     * @param array $params Associative array with keys 'host', 'storageRoot',
      *   'maxUploadSizeBytes' and, optionally, 'allowedExtensions'.
      * @return self
      */
@@ -99,7 +125,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
     {
         return new self(
             $params['host'] ?? '',
-            $params['photosPath'] ?? '/tmp/photos',
+            $params['storageRoot'] ?? '/tmp/photos',
             (int) ($params['maxUploadSizeBytes'] ?? 0),
             $params['allowedExtensions'] ?? self::DEFAULT_ALLOWED_EXTENSIONS
         );
@@ -142,8 +168,10 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return $this->errorResponse(502, 'Invalid response from backend');
         }
 
-        if ($this->writeFile($file['tmp_name'], $filePath) === FALSE) {
-            return $this->errorResponse(502, 'Failed to store uploaded file');
+        $storeError = $this->storeVersions($file['tmp_name'], $filePath, $segments['id']);
+
+        if ($storeError !== null) {
+            return $storeError;
         }
 
         $finalizeResponse = $this->callGate($gateUrl, 'ready', $cookie);
@@ -260,36 +288,110 @@ class PhotoSubmitRequestHandler extends RequestHandler
     }
 
     /**
-     * Writes the uploaded file to `<photosPath>/<filePath>`, creating any
-     * intermediate directories as needed.
-     *
-     * The resolved destination is routed through `PhotoPathGuard` after the
-     * directory is created, so a `..` segment or symlink escape in
-     * `filePath` is rejected instead of writing outside `photosPath`.
+     * Writes `origin/`, `photos/` and `snaps/` for `$filePath`, rolling back
+     * every file already written if any step fails.
      *
      * @param string $tmpName  The uploaded file's temporary path.
-     * @param string $filePath The destination path, relative to photosPath.
-     * @return boolean True on success, false if the write was rejected/failed.
+     * @param string $filePath The destination path, relative to each prefix folder.
+     * @param string $photoId  The photo id (for logging).
+     * @return Response|null A 502 error Response on failure, null on success.
      */
-    private function writeFile(string $tmpName, string $filePath): bool
+    private function storeVersions(string $tmpName, string $filePath, string $photoId): ?Response
     {
-        $destination = $this->photosPath . '/' . ltrim($filePath, '/');
-        $dir = dirname($destination);
+        $origin = $this->destination(self::ORIGIN_PREFIX, $filePath);
 
-        if (is_dir($dir) === FALSE) {
-            mkdir($dir, 0775, true);
+        if ($origin === null || $this->moveUpload($tmpName, $origin) === FALSE) {
+            return $this->storeFailure([], $photoId, $filePath, self::ORIGIN_PREFIX, 'Failed to store uploaded file');
         }
 
-        $safeDestination = $this->pathGuard->resolve($this->photosPath, $filePath);
+        $written = [$origin];
 
-        if ($safeDestination === null) {
-            return false;
+        foreach (self::VERSIONS as $prefix => [$maxWidth, $maxHeight]) {
+            $destination = $this->destination($prefix, $filePath);
+            $written[] = $destination;
+            $resized = $destination !== null
+                && $this->resizer->resize($origin, $destination, $maxWidth, $maxHeight);
+
+            if ($resized === FALSE) {
+                return $this->storeFailure($written, $photoId, $filePath, $prefix, 'Failed to resize uploaded file');
+            }
         }
 
+        return null;
+    }
+
+    /**
+     * Removes the given files, logs the failure and builds the 502 response.
+     *
+     * @param array<string|null> $written  Files written (or partly written) for this upload.
+     * @param string             $photoId  The photo id.
+     * @param string             $filePath The backend-provided file path.
+     * @param string             $step     The prefix folder whose write failed.
+     * @param string             $message  The error message returned to the client.
+     * @return Response
+     */
+    private function storeFailure(
+        array $written,
+        string $photoId,
+        string $filePath,
+        string $step,
+        string $message
+    ): Response {
+        foreach ($written as $path) {
+            if ($path !== null && is_file($path) === TRUE) {
+                unlink($path);
+            }
+        }
+
+        error_log(sprintf(
+            'PhotoSubmitRequestHandler: failed to write "%s" for photo %s, file_path "%s"; upload rolled back',
+            $step,
+            $photoId,
+            $filePath
+        ));
+
+        return $this->errorResponse(502, $message);
+    }
+
+    /**
+     * Resolves `<storageRoot>/<prefix>/<filePath>`, creating the prefix folder
+     * and the file's parent directories as needed.
+     *
+     * The destination is routed through `PhotoPathGuard` with
+     * `<storageRoot>/<prefix>` as the root, so a `..` segment or symlink
+     * escape in `filePath` is rejected instead of leaving the prefix folder.
+     *
+     * @param string $prefix   The prefix folder (origin, photos or snaps).
+     * @param string $filePath The destination path, relative to the prefix folder.
+     * @return string|null The safe destination path, or null if rejected.
+     */
+    private function destination(string $prefix, string $filePath): ?string
+    {
+        $root = $this->storageRoot . '/' . $prefix;
+        $dir = dirname($root . '/' . ltrim($filePath, '/'));
+
+        foreach ([$root, $dir] as $path) {
+            if (is_dir($path) === FALSE) {
+                @mkdir($path, 0775, true);
+            }
+        }
+
+        return $this->pathGuard->resolve($root, $filePath);
+    }
+
+    /**
+     * Moves the uploaded file to `$destination`.
+     *
+     * @param string $tmpName     The uploaded file's temporary path.
+     * @param string $destination The safe destination path.
+     * @return boolean
+     */
+    private function moveUpload(string $tmpName, string $destination): bool
+    {
         if (is_uploaded_file($tmpName) === TRUE) {
-            return move_uploaded_file($tmpName, $safeDestination);
+            return move_uploaded_file($tmpName, $destination);
         }
 
-        return rename($tmpName, $safeDestination);
+        return @rename($tmpName, $destination);
     }
 }
