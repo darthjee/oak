@@ -63,9 +63,6 @@ class PhotoSubmitRequestHandler extends RequestHandler
         'snaps' => [215, 215]
     ];
 
-    /** @var string Backend base URL (e.g. 'http://backend:3000'). */
-    private string $host;
-
     /** @var string Local filesystem root holding the `origin/`, `photos/` and `snaps/` folders. */
     private string $storageRoot;
 
@@ -75,8 +72,8 @@ class PhotoSubmitRequestHandler extends RequestHandler
     /** @var string[] Lower-cased allow-list of accepted file extensions. */
     private array $allowedExtensions;
 
-    /** @var HttpClientInterface Client used for the outbound status-gate calls. */
-    private HttpClientInterface $httpClient;
+    /** @var PhotoSubmitBackendGateway Makes the outbound status-gate/Finalize calls. */
+    private PhotoSubmitBackendGateway $gateway;
 
     /** @var PhotoPathGuard Guards the write destination against path traversal/escapes. */
     private PhotoPathGuard $pathGuard;
@@ -98,11 +95,10 @@ class PhotoSubmitRequestHandler extends RequestHandler
         array $allowedExtensions = self::DEFAULT_ALLOWED_EXTENSIONS,
         ?HttpClientInterface $httpClient = null
     ) {
-        $this->host = rtrim($host, '/');
         $this->storageRoot = rtrim($storageRoot, '/');
         $this->maxUploadSizeBytes = $maxUploadSizeBytes;
         $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
-        $this->httpClient = $httpClient ?? new CurlHttpClient();
+        $this->gateway = new PhotoSubmitBackendGateway($host, $httpClient ?? new CurlHttpClient());
         $this->pathGuard = new PhotoPathGuard();
         $this->resizer = new PhotoImageResizer();
     }
@@ -154,9 +150,8 @@ class PhotoSubmitRequestHandler extends RequestHandler
         }
 
         $cookie = $this->headerValue($request, 'Cookie');
-        $gateUrl = $this->gateUrl($segments);
 
-        $gateResponse = $this->callGate($gateUrl, 'uploading', $cookie);
+        $gateResponse = $this->gateway->markUploading($segments, $cookie);
 
         if ($gateResponse->isSuccessful() === FALSE) {
             return $gateResponse;
@@ -174,7 +169,7 @@ class PhotoSubmitRequestHandler extends RequestHandler
             return $storeError;
         }
 
-        $finalizeResponse = $this->callGate($gateUrl, 'ready', $cookie);
+        $finalizeResponse = $this->gateway->markReady($segments, $cookie);
 
         if ($finalizeResponse->isSuccessful() === FALSE) {
             return $finalizeResponse;
@@ -242,49 +237,6 @@ class PhotoSubmitRequestHandler extends RequestHandler
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
         return in_array($extension, $this->allowedExtensions, true);
-    }
-
-    /**
-     * Builds the backend's status-gate/Finalize URL for the given path segments.
-     *
-     * @param array $segments Path segments returned by parsePath().
-     * @return string
-     */
-    private function gateUrl(array $segments): string
-    {
-        return sprintf(
-            '%s/categories/%s/items/%s/photos/%s.json',
-            $this->host,
-            $segments['category_slug'],
-            $segments['item_id'],
-            $segments['id']
-        );
-    }
-
-    /**
-     * Calls the backend's status-gate/Finalize endpoint with the given status.
-     *
-     * @param string      $url    The status-gate/Finalize URL.
-     * @param string      $status Either 'uploading' or 'ready'.
-     * @param string|null $cookie The incoming request's forwarded Cookie header, if any.
-     * @return Response
-     */
-    private function callGate(string $url, string $status, ?string $cookie): Response
-    {
-        $headers = ['Content-Type' => 'application/json'];
-
-        if ($cookie !== null) {
-            $headers['Cookie'] = $cookie;
-        }
-
-        $result = $this->httpClient->request(
-            'PATCH',
-            $url,
-            $headers,
-            json_encode(['status' => $status])
-        );
-
-        return new Response($result);
     }
 
     /**
