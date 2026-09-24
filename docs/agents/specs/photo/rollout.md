@@ -46,13 +46,24 @@ Copy the existing files into the new storage root, keeping the
 
 ## #336: URL switch
 
+The code change ships first: placeholder images (`category.png`,
+`kind.png`) are served by the frontend from `/assets/images/`, and the
+`Category`, `Category::Form`, `Kind` and `Item::Index` decorators return
+those root-relative paths as `snap_url` when there is no main photo. They
+no longer depend on `OAK_PHOTOS_SERVER_URL`, so this is safe to deploy while
+the env var still points at the old host.
+
+The rest is a manual post-merge checklist (tracked on the issue):
+
 1. Set `OAK_PHOTOS_SERVER_URL` in the Render env to the Oak domain (the
    proxy host), and redeploy the backend.
-2. Check that existing photos and snaps load from the new URLs.
-3. Update the navi warm-up config (`navi/`) if it references
-   `photos.oak.ffavs.net`.
-4. Retire `photos.oak.ffavs.net` and remove `prod_public_files/convert.sh`,
-   along with any docs that mention them.
+2. Check that existing photos and snaps load from `/photos/...` and
+   `/snaps/...`, and that placeholders load.
+3. Retire `photos.oak.ffavs.net` once the new URLs are verified.
+   `prod_public_files/` (including `convert.sh`) is handled in a later issue.
+
+The navi warm-up config (`navi/`) does not reference the old host and needs
+no change.
 
 Rollback: set `OAK_PHOTOS_SERVER_URL` back to `photos.oak.ffavs.net`. Keep
 that host alive until the new URLs have been checked.

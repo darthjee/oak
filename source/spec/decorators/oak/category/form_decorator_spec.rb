@@ -8,9 +8,7 @@ RSpec.describe Oak::Category::FormDecorator do
   let(:category) { build(:oak_category, name:) }
   let(:slug) { category.slug }
   let(:name) { 'Sample Category' }
-  let(:snap_url) do
-    [Settings.photos_server_url, 'category.png'].join('/')
-  end
+  let(:snap_url) { '/assets/images/category.png' }
   let(:kinds) { [] }
 
   describe '#as_json' do

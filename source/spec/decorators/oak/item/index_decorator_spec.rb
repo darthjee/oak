@@ -11,9 +11,7 @@ RSpec.describe Oak::Item::IndexDecorator do
   let(:category_slug) { item.category.slug }
   let(:kind_slug) { item.kind.slug }
   let(:user) { item.user }
-  let(:snap_url) do
-    [Settings.photos_server_url, 'category.png'].join('/')
-  end
+  let(:snap_url) { '/assets/images/category.png' }
   let(:links) { [] }
   let(:main_link) { nil }
 

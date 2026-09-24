@@ -8,9 +8,7 @@ RSpec.describe Oak::Kind::Decorator do
   let(:kind) { build(:oak_kind, name:) }
   let(:slug) { kind.slug }
   let(:name) { 'Sample Kind' }
-  let(:snap_url) do
-    [Settings.photos_server_url, 'kind.png'].join('/')
-  end
+  let(:snap_url) { '/assets/images/kind.png' }
 
   describe '#as_json' do
     let(:expected) do
