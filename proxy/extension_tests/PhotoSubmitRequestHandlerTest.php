@@ -2,16 +2,10 @@
 
 namespace Oak\Proxy\Tests;
 
-require_once __DIR__ . '/FakeHttpClient.php';
-require_once __DIR__ . '/PhotoRequestHandlerTestCase.php';
+require_once __DIR__ . '/PhotoSubmitRequestHandlerTestCase.php';
 
-use Oak\Proxy\PhotoSubmitRequestHandler;
-use Tent\Models\ProcessingRequest;
-
-class PhotoSubmitRequestHandlerTest extends PhotoRequestHandlerTestCase
+class PhotoSubmitRequestHandlerTest extends PhotoSubmitRequestHandlerTestCase
 {
-    private const SUBMIT_PATH = '/uploads/categories/miniatures/items/42/photos/7/submit';
-
     protected function tempDirPrefix(): string
     {
         return 'photo_submit_test_';
@@ -189,76 +183,5 @@ class PhotoSubmitRequestHandlerTest extends PhotoRequestHandlerTestCase
         foreach (['origin', 'photos', 'snaps'] as $prefix) {
             $this->assertFileExists($this->storageRoot . '/' . $prefix . '/' . $filePath);
         }
-    }
-
-    private function successfulClient(string $filePath): FakeHttpClient
-    {
-        return new FakeHttpClient([
-            ['body' => json_encode(['file_path' => $filePath]), 'httpCode' => 200, 'headers' => []],
-            ['body' => '{}', 'httpCode' => 200, 'headers' => []]
-        ]);
-    }
-
-    /**
-     * Points `error_log` at a temp file; returns [temp file, previous setting].
-     */
-    private function captureErrorLog(): array
-    {
-        $logFile = tempnam(sys_get_temp_dir(), 'photo_submit_log_');
-
-        return [$logFile, ini_set('error_log', $logFile)];
-    }
-
-    /**
-     * Restores `error_log` and returns what was logged meanwhile.
-     */
-    private function restoreErrorLog(array $log): string
-    {
-        [$logFile, $previous] = $log;
-        ini_set('error_log', $previous === false ? '' : $previous);
-        $logged = (string) file_get_contents($logFile);
-        unlink($logFile);
-
-        return $logged;
-    }
-
-    private function buildHandler(
-        FakeHttpClient $httpClient,
-        int $maxUploadSizeBytes = 1_048_576
-    ): PhotoSubmitRequestHandler {
-        return new PhotoSubmitRequestHandler(
-            'http://backend:3000',
-            $this->storageRoot,
-            $maxUploadSizeBytes,
-            ['jpg', 'jpeg', 'png'],
-            $httpClient
-        );
-    }
-
-    private function buildUploadedFile(string $name, string $contents): array
-    {
-        $tmpName = tempnam(sys_get_temp_dir(), 'photo_submit_upload_');
-        file_put_contents($tmpName, $contents);
-
-        return [
-            'name' => $name,
-            'type' => 'application/octet-stream',
-            'tmp_name' => $tmpName,
-            'error' => UPLOAD_ERR_OK,
-            'size' => strlen($contents)
-        ];
-    }
-
-    private function buildRequest(array $uploadedFile, ?string $cookie = null): ProcessingRequest
-    {
-        $headers = $cookie !== null ? ['Cookie' => $cookie] : [];
-
-        return new ProcessingRequest([
-            'requestMethod' => 'POST',
-            'requestPath' => self::SUBMIT_PATH,
-            'headers' => $headers,
-            'uploadedFiles' => ['file' => $uploadedFile],
-            'postFields' => []
-        ]);
     }
 }
