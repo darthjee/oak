@@ -54,7 +54,9 @@ The proxy gets a single `storageRoot` and adds the prefixes itself:
 
 `Oak::Photo::FileUrl` already builds
 `<photos_server_url>/{photos,snaps}/users/<uid>/items/<id>/<file>`, so the
-only URL change is the `OAK_PHOTOS_SERVER_URL` value (#336).
+only URL change is the `OAK_PHOTOS_SERVER_URL` value (#336). Placeholder
+images (`category.png`, `kind.png`) for objects without a photo are served
+from the frontend's `/assets/images/` and do not use `photos_server_url`.
 
 ## Serving
 
