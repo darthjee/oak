@@ -2,7 +2,8 @@
 /**
  * Photo upload submit rule.
  * Routes POST .../photos/:id/submit to the custom PhotoSubmitRequestHandler
- * (proxy/extension/), which stores the file under $storageRoot and notifies
+ * (proxy/extension/), which stores the original and its resized photo and
+ * snap versions under $storageRoot (origin/, photos/, snaps/) and notifies
  * $backendHost (both set in locals.php, as is $maxUploadSizeBytes).
  */
 
@@ -12,8 +13,7 @@ Configuration::buildRule([
     'handler' => [
         'class'              => 'Oak\Proxy\PhotoSubmitRequestHandler',
         'host'               => $backendHost,
-        // #335 switches this to a `storageRoot` handler option.
-        'photosPath'         => $storageRoot . '/origin',
+        'storageRoot'        => $storageRoot,
         'maxUploadSizeBytes' => $maxUploadSizeBytes
     ],
     'matchers' => [

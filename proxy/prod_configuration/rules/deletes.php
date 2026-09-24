@@ -2,18 +2,17 @@
 /**
  * Photo delete rule.
  * Routes DELETE .../photos/:id to the custom PhotoDeleteRequestHandler
- * (proxy/extension/), which removes the file under $storageRoot and notifies
- * $backendHost (both set in locals.php).
+ * (proxy/extension/), which removes the origin, photo and snap files under
+ * $storageRoot and notifies $backendHost (both set in locals.php).
  */
 
 use Tent\Configuration;
 
 Configuration::buildRule([
     'handler' => [
-        'class'      => 'Oak\Proxy\PhotoDeleteRequestHandler',
-        'host'       => $backendHost,
-        // #335 switches this to a `storageRoot` handler option.
-        'photosPath' => $storageRoot . '/origin'
+        'class'       => 'Oak\Proxy\PhotoDeleteRequestHandler',
+        'host'        => $backendHost,
+        'storageRoot' => $storageRoot
     ],
     'matchers' => [
         [
