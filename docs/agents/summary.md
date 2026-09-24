@@ -33,6 +33,7 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Contributing — Code Style](contributing/code-style.md) | Code organization (single responsibility, method order, one class per file, small methods), dependency injection, and refactoring guidelines. |
 | [Contributing — Examples](contributing/examples.md) | Good/bad code snippets referenced by the git workflow and code style pages. |
 | [Issue Enhancement](issue-enhancement.md) | Checklist of concerns to flesh out a vague issue idea before it reaches the `Created` stage. |
+| [Arcanum Split Issue](arcanum-split-issue.md) | Checklist of concerns to weigh when splitting a broad issue into sub-issues via `/arcanum-split-issue`. |
 | [Azeroth Usage](external/azeroth-usage.md) | How to use the Azeroth gem's `resource_for`/`model_for` and decorators for Rails controller endpoints and JSON serialization. |
 | [Sinclair Usage](external/sinclair-usage.md) | How to use the Sinclair gem's dynamic method builder, configuration objects, option objects, and plain Ruby models. |
 | [Jace Usage](external/jace-usage.md) | How to use the Jace gem's event registry to build internal, event-driven logic within a single application. |
