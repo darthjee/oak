@@ -3,14 +3,11 @@
 namespace Oak\Proxy\Tests;
 
 require_once __DIR__ . '/PhotoRequestHandlerTestCase.php';
-require_once __DIR__ . '/PhotoImageFixtures.php';
 
 use Oak\Proxy\PhotoImageResizer;
 
 class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 {
-    use PhotoImageFixtures;
-
     private PhotoImageResizer $resizer;
 
     protected function setUp(): void
@@ -27,8 +24,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testShrinksALargeJpegToFitTheBoxKeepingAspectRatio(): void
     {
-        $source = $this->makeJpeg($this->photosPath . '/large.jpg', 2000, 1500);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpeg($this->storageRoot . '/large.jpg', 2000, 1500);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 800, 1064));
 
@@ -37,8 +34,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testShrinksALargePngToFitTheBoxKeepingAlpha(): void
     {
-        $source = $this->makePng($this->photosPath . '/large.png', 2000, 1500);
-        $destination = $this->photosPath . '/out.png';
+        $source = $this->makePng($this->storageRoot . '/large.png', 2000, 1500);
+        $destination = $this->storageRoot . '/out.png';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 215, 215));
 
@@ -54,8 +51,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testFitsATallImageByHeight(): void
     {
-        $source = $this->makeJpeg($this->photosPath . '/tall.jpg', 800, 2128);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpeg($this->storageRoot . '/tall.jpg', 800, 2128);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 800, 1064));
 
@@ -64,8 +61,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testFitsATallImageIntoTheSnapBox(): void
     {
-        $source = $this->makeJpeg($this->photosPath . '/tall.jpg', 800, 2128);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpeg($this->storageRoot . '/tall.jpg', 800, 2128);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 215, 215));
 
@@ -74,8 +71,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testDoesNotUpscaleASmallImageAndCopiesItAsIs(): void
     {
-        $source = $this->makeJpeg($this->photosPath . '/small.jpg', 100, 80);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpeg($this->storageRoot . '/small.jpg', 100, 80);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 800, 1064));
 
@@ -85,8 +82,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testDoesNotUpscaleASmallPng(): void
     {
-        $source = $this->makePng($this->photosPath . '/small.png', 100, 80);
-        $destination = $this->photosPath . '/out.png';
+        $source = $this->makePng($this->storageRoot . '/small.png', 100, 80);
+        $destination = $this->storageRoot . '/out.png';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 215, 215));
 
@@ -95,8 +92,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testRotatesAJpegWithExifOrientationSixUpright(): void
     {
-        $source = $this->makeJpegWithOrientation($this->photosPath . '/rotated.jpg', 400, 200, 6);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpegWithOrientation($this->storageRoot . '/rotated.jpg', 400, 200, 6);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertSame(6, exif_read_data($source)['Orientation']);
 
@@ -116,8 +113,8 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testRotatesAndShrinksAJpegWithExifOrientation(): void
     {
-        $source = $this->makeJpegWithOrientation($this->photosPath . '/rotated.jpg', 2128, 800, 6);
-        $destination = $this->photosPath . '/out.jpg';
+        $source = $this->makeJpegWithOrientation($this->storageRoot . '/rotated.jpg', 2128, 800, 6);
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertTrue($this->resizer->resize($source, $destination, 800, 1064));
 
@@ -126,9 +123,9 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testReturnsFalseForANonImageSource(): void
     {
-        $source = $this->photosPath . '/not_an_image.jpg';
+        $source = $this->storageRoot . '/not_an_image.jpg';
         file_put_contents($source, 'not an image');
-        $destination = $this->photosPath . '/out.jpg';
+        $destination = $this->storageRoot . '/out.jpg';
 
         $this->assertFalse($this->resizer->resize($source, $destination, 800, 1064));
         $this->assertFileDoesNotExist($destination);
@@ -136,16 +133,16 @@ class PhotoImageResizerTest extends PhotoRequestHandlerTestCase
 
     public function testReturnsFalseForAMissingSource(): void
     {
-        $destination = $this->photosPath . '/out.jpg';
+        $destination = $this->storageRoot . '/out.jpg';
 
-        $this->assertFalse($this->resizer->resize($this->photosPath . '/missing.jpg', $destination, 800, 1064));
+        $this->assertFalse($this->resizer->resize($this->storageRoot . '/missing.jpg', $destination, 800, 1064));
         $this->assertFileDoesNotExist($destination);
     }
 
     public function testReturnsFalseWhenTheDestinationCannotBeWritten(): void
     {
-        $source = $this->makeJpeg($this->photosPath . '/large.jpg', 2000, 1500);
-        $destination = $this->photosPath . '/missing_dir/out.jpg';
+        $source = $this->makeJpeg($this->storageRoot . '/large.jpg', 2000, 1500);
+        $destination = $this->storageRoot . '/missing_dir/out.jpg';
 
         $this->assertFalse($this->resizer->resize($source, $destination, 800, 1064));
         $this->assertFileDoesNotExist($destination);

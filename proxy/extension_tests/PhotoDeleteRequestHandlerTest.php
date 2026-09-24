@@ -43,7 +43,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame('DELETE', $httpClient->calls[1]['method']);
         $this->assertSame(self::DESTROY_URL, $httpClient->calls[1]['url']);
 
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertFileDoesNotExist($this->storageRoot . '/' . $filePath);
     }
 
     public function testAlreadyMissingFileIsANoOpButBackendRowIsStillDeleted(): void
@@ -61,7 +61,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame(200, $response->httpCode());
         $this->assertCount(2, $httpClient->calls);
         $this->assertSame('DELETE', $httpClient->calls[1]['method']);
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertFileDoesNotExist($this->storageRoot . '/' . $filePath);
     }
 
     public function testNonSuccessfulDeletableGateIsRelayedWithoutDeletingAnything(): void
@@ -79,7 +79,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         $this->assertSame(422, $response->httpCode());
         $this->assertSame('{"error":"not ready"}', $response->body());
         $this->assertCount(1, $httpClient->calls);
-        $this->assertFileExists($this->photosPath . '/' . $filePath);
+        $this->assertFileExists($this->storageRoot . '/' . $filePath);
     }
 
     public function testForbiddenDeletableGateIsRelayedWithoutDeletingAnything(): void
@@ -96,7 +96,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
 
         $this->assertSame(403, $response->httpCode());
         $this->assertCount(1, $httpClient->calls);
-        $this->assertFileExists($this->photosPath . '/' . $filePath);
+        $this->assertFileExists($this->storageRoot . '/' . $filePath);
     }
 
     public function testNonSuccessfulBackendDeleteIsRelayedButFileIsAlreadyGone(): void
@@ -119,7 +119,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
         // Disk-first ordering: even though the overall response is an
         // error, the file must already be gone by the time the backend
         // DELETE call happens.
-        $this->assertFileDoesNotExist($this->photosPath . '/' . $filePath);
+        $this->assertFileDoesNotExist($this->storageRoot . '/' . $filePath);
     }
 
     public function testForwardsCookieOnBothBackendCalls(): void
@@ -143,7 +143,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
     {
         return new PhotoDeleteRequestHandler(
             'http://backend:3000',
-            $this->photosPath,
+            $this->storageRoot,
             $httpClient
         );
     }
@@ -163,7 +163,7 @@ class PhotoDeleteRequestHandlerTest extends PhotoRequestHandlerTestCase
 
     private function writeExistingFile(string $filePath, string $contents): void
     {
-        $destination = $this->photosPath . '/' . $filePath;
+        $destination = $this->storageRoot . '/' . $filePath;
         $dir = dirname($destination);
 
         if (is_dir($dir) === false) {
