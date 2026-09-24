@@ -19,10 +19,11 @@ use Tent\Http\CurlHttpClient;
  *    header forwarded — the pre-delete authorization gate. On a non-2xx
  *    response, the backend's status/body is relayed as-is and nothing is
  *    deleted.
- * 2. Deletes `<photosPath>/<file_path>` from disk, using the `file_path`
- *    returned by the gate call — a file that is already missing (or a path
- *    the `PhotoPathGuard` rejects) is treated as a harmless no-op, not an
- *    error.
+ * 2. Deletes `origin/<file_path>`, `photos/<file_path>` and
+ *    `snaps/<file_path>` under `storageRoot`, using the `file_path` returned
+ *    by the gate call — a file that is already missing (or a path the
+ *    `PhotoPathGuard` rejects) is skipped for that version as a harmless
+ *    no-op, not an error.
  * 3. Calls the backend's `DELETE .../photos/:id.json` to remove the row
  *    (only after the disk step completes — a partial failure must leave an
  *    orphaned-but-harmless missing-file reference, never a dangling file
@@ -39,8 +40,8 @@ class PhotoDeleteRequestHandler extends RequestHandler
     private const PATH_PATTERN =
         '#^/uploads/categories/(?<category_slug>[^/]+)/items/(?<item_id>\d+)/photos/(?<id>\d+)/?$#';
 
-    /** @var string Local filesystem base path backing `Settings.photos_path`. */
-    private string $photosPath;
+    /** @var string Local filesystem root holding the `origin/`, `photos/` and `snaps/` folders. */
+    private string $storageRoot;
 
     /** @var PhotoPathGuard Guards the unlink target against path traversal/escapes. */
     private PhotoPathGuard $pathGuard;
@@ -52,19 +53,19 @@ class PhotoDeleteRequestHandler extends RequestHandler
     private PhotoFileDeleter $fileDeleter;
 
     /**
-     * @param string                   $host       Backend base URL.
-     * @param string                   $photosPath Local filesystem base path for photos.
-     * @param HttpClientInterface|null $httpClient Optional HTTP client (defaults to CurlHttpClient).
+     * @param string                   $host        Backend base URL.
+     * @param string                   $storageRoot Root holding origin/, photos/ and snaps/.
+     * @param HttpClientInterface|null $httpClient  Optional HTTP client (defaults to CurlHttpClient).
      */
     public function __construct(
         string $host,
-        string $photosPath,
+        string $storageRoot,
         ?HttpClientInterface $httpClient = null
     ) {
-        $this->photosPath = rtrim($photosPath, '/');
+        $this->storageRoot = rtrim($storageRoot, '/');
         $this->pathGuard = new PhotoPathGuard();
         $this->gateway = new PhotoDeleteBackendGateway($host, $httpClient ?? new CurlHttpClient());
-        $this->fileDeleter = new PhotoFileDeleter($this->photosPath, $this->pathGuard);
+        $this->fileDeleter = new PhotoFileDeleter($this->storageRoot, $this->pathGuard);
     }
 
     /**
@@ -73,17 +74,17 @@ class PhotoDeleteRequestHandler extends RequestHandler
      * Example:
      *   PhotoDeleteRequestHandler::build([
      *     'host' => 'http://backend:3000',
-     *     'photosPath' => '/tmp/photos'
+     *     'storageRoot' => '/tmp/photos'
      *   ])
      *
-     * @param array $params Associative array with keys 'host' and 'photosPath'.
+     * @param array $params Associative array with keys 'host' and 'storageRoot'.
      * @return self
      */
     public static function build(array $params): self
     {
         return new self(
             $params['host'] ?? '',
-            $params['photosPath'] ?? '/tmp/photos'
+            $params['storageRoot'] ?? '/tmp/photos'
         );
     }
 
