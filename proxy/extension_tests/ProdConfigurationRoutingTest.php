@@ -20,8 +20,8 @@ use Tent\RequestHandlers\StaticFileHandler;
  * (proxy/prod_configuration/).
  *
  * The real locals.php only exists on production servers, so this test never
- * loads configure.php. It sets the locals inline and requires the rule files
- * in the same order configure.php does.
+ * loads configure.php. It builds the locals as an explicit array and includes
+ * each rule file through includeRuleFile(), in the same order configure.php does.
  */
 class ProdConfigurationRoutingTest extends TestCase
 {
@@ -33,6 +33,7 @@ class ProdConfigurationRoutingTest extends TestCase
     private const DELETE_PATH = '/uploads/categories/project/items/132/photos/549';
     private const PHOTO_PATH = '/photos/users/1/items/2/a.jpg';
     private const SNAP_PATH = '/snaps/users/1/items/2/a.jpg';
+    private const RULE_FILES = ['frontend', 'photos', 'uploads', 'deletes', 'backend', 'redirects'];
 
     protected function setUp(): void
     {
@@ -117,19 +118,31 @@ class ProdConfigurationRoutingTest extends TestCase
     private function loadProdRules(): void
     {
         // Stand-ins for the server-only locals.php, consumed by the rule files.
-        $backendHost = self::BACKEND_HOST;
-        $staticRoot = self::STATIC_ROOT;
-        $storageRoot = self::STORAGE_ROOT;
-        $maxUploadSizeBytes = self::MAX_UPLOAD_SIZE_BYTES;
+        $locals = [
+            'backendHost'        => self::BACKEND_HOST,
+            'staticRoot'         => self::STATIC_ROOT,
+            'storageRoot'        => self::STORAGE_ROOT,
+            'maxUploadSizeBytes' => self::MAX_UPLOAD_SIZE_BYTES,
+        ];
 
         $configDir = dirname(__DIR__, 2) . '/prod_configuration';
 
-        require $configDir . '/rules/frontend.php';
-        require $configDir . '/rules/photos.php';
-        require $configDir . '/rules/uploads.php';
-        require $configDir . '/rules/deletes.php';
-        require $configDir . '/rules/backend.php';
-        require $configDir . '/rules/redirects.php';
+        foreach (self::RULE_FILES as $file) {
+            $this->includeRuleFile($configDir . '/rules/' . $file . '.php', $locals);
+        }
+    }
+
+    /**
+     * Includes a rule file with the given locals in scope, the same way
+     * configure.php exposes the variables defined by locals.php.
+     */
+    private function includeRuleFile(string $path, array $locals): void
+    {
+        $this->assertFileExists($path);
+
+        extract($locals);
+
+        include $path;
     }
 
     private function matchingRuleIndex(string $method, string $path): ?int
