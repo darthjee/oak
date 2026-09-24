@@ -1,8 +1,7 @@
 # Resizing and Delete
 
-Target proxy behaviour for making the `photos/` and `snaps/` versions on
-upload and removing all three files on delete (#335). This is a proposal,
-not the current state.
+Proxy behaviour for making the `photos/` and `snaps/` versions on upload
+and removing all three files on delete (#335).
 
 ## Why in the proxy
 
@@ -15,14 +14,14 @@ the original, so it also makes the resized versions.
 
 - PHP GD. The Tent images get GD in `darthjee/tent:1.0.0` and
   `darthjee/tent-test:1.0.0` (darthjee/tent#287), adopted in #334.
-- Dreamhost PHP has `gd` and `imagick`. Check that `gd` is loaded under
-  fcgid with a `phpinfo()` page before #335 ships, then delete that page.
+- Dreamhost PHP has `gd` and `exif` (checked on the `oak` host for PHP 8.2,
+  8.3 and 8.4).
 - Don't depend on `imagick`: the Tent images don't ship it.
 
 ## Submit sequence
 
-Current handler (`PhotoSubmitRequestHandler`): validate, status-gate, write
-`<photosPath>/<file_path>`, finalize. Target:
+`PhotoSubmitRequestHandler` takes a `storageRoot` option and adds the
+`origin/`, `photos/` and `snaps/` prefixes itself:
 
 1. Validate the multipart request (extension, size), as today.
 2. Status-gate with the backend (`uploading`), as today, to get
@@ -30,7 +29,7 @@ Current handler (`PhotoSubmitRequestHandler`): validate, status-gate, write
 3. Write `origin/<file_path>` under `storageRoot`, through `PhotoPathGuard`.
 4. Write `photos/<file_path>`: fit within 800x1064.
 5. Write `snaps/<file_path>`: fit within 215x215.
-6. Finalize (`uploaded`) only once all three files exist.
+6. Finalize (`PATCH ... { status: "ready" }`) only once all three files exist.
 
 Every write goes through `PhotoPathGuard::resolve(storageRoot, "<prefix>/<file_path>")`
 (or with the prefix folder as the root), so a bad `file_path` can't escape
@@ -43,9 +42,9 @@ the prefix folder. Create parent directories as the handler does today.
   This matches ImageMagick's `>` flag used by `convert.sh`.
 - **Keep the format.** jpg/jpeg in, jpeg out; png in, png out. Keep png
   transparency (`imagealphablending(false)`, `imagesavealpha(true)`).
-- **EXIF orientation** (note): phone jpegs may carry a rotation flag. GD
-  ignores it. Handling it (`exif_read_data` + rotate) is optional for #335;
-  if skipped, note it as a known gap.
+- **EXIF orientation.** Phone jpegs may carry a rotation flag, which GD
+  ignores. The handler reads it with `exif_read_data` and rotates the image
+  upright before resizing.
 - Use a quality around 85 for jpeg.
 
 ### Failure handling
@@ -72,7 +71,9 @@ Specs live in `proxy/extension_tests/` and run on `darthjee/tent-test:1.0.0`:
 
 - A large jpeg and png produce `photos/` within 800x1064 and `snaps/` within
   215x215, with the aspect ratio kept.
+- A tall image (800x2128) gives a 400x1064 photo.
 - A small image (smaller than both boxes) is not upscaled.
+- A jpeg with an EXIF rotation flag comes out upright.
 - The output format matches the input.
 - Finalize is called only after all three files exist; a resize failure
   leaves no partial files and no finalize call.

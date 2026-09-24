@@ -74,7 +74,7 @@ Configuration::buildRule([
     'handler' => [
         'class'              => 'Oak\Proxy\PhotoSubmitRequestHandler',
         'host'               => $backendHost,
-        'photosPath'         => $storageRoot . '/origin', // #335: 'storageRoot' => $storageRoot
+        'storageRoot'        => $storageRoot,
         'maxUploadSizeBytes' => $maxUploadSizeBytes
     ],
     'matchers' => [
