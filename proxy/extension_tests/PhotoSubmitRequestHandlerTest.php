@@ -222,8 +222,10 @@ class PhotoSubmitRequestHandlerTest extends PhotoRequestHandlerTestCase
         return $logged;
     }
 
-    private function buildHandler(FakeHttpClient $httpClient, int $maxUploadSizeBytes = 1_048_576): PhotoSubmitRequestHandler
-    {
+    private function buildHandler(
+        FakeHttpClient $httpClient,
+        int $maxUploadSizeBytes = 1_048_576
+    ): PhotoSubmitRequestHandler {
         return new PhotoSubmitRequestHandler(
             'http://backend:3000',
             $this->storageRoot,
