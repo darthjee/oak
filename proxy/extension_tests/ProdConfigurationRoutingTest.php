@@ -2,18 +2,14 @@
 
 namespace Oak\Proxy\Tests;
 
+require_once __DIR__ . '/RuleAssertions.php';
+
 use Oak\Proxy\CacheControlMiddleware;
-use Oak\Proxy\PhotoDeleteRequestHandler;
-use Oak\Proxy\PhotoSubmitRequestHandler;
 use PHPUnit\Framework\TestCase;
 use Tent\Configuration;
 use Tent\Middlewares\RedirectMiddleware;
 use Tent\Middlewares\SetPathMiddleware;
 use Tent\Models\Request;
-use Tent\RequestHandlers\DefaultProxyRequestHandler;
-use Tent\RequestHandlers\ProxyRequestHandler;
-use Tent\RequestHandlers\RequestHandler;
-use Tent\RequestHandlers\StaticFileHandler;
 
 /**
  * Routing spec for the committed production proxy configuration
@@ -22,9 +18,16 @@ use Tent\RequestHandlers\StaticFileHandler;
  * The real locals.php only exists on production servers, so this test never
  * loads configure.php. It builds the locals as an explicit array and includes
  * each rule file through includeRuleFile(), in the same order configure.php does.
+ *
+ * Tent\Configuration only exposes a static API (reset(), getRules()), so there
+ * is no instance to inject.
+ *
+ * @SuppressWarnings("PHPMD.StaticAccess")
  */
 class ProdConfigurationRoutingTest extends TestCase
 {
+    use RuleAssertions;
+
     private const BACKEND_HOST = 'https://oak-api.example.test/';
     private const STATIC_ROOT = '/tmp/oak-prod-config-test';
     private const STORAGE_ROOT = '/tmp/oak-prod-config-test-photos';
@@ -66,11 +69,11 @@ class ProdConfigurationRoutingTest extends TestCase
 
         $assetsIndex = $this->matchingRuleIndex('GET', '/assets/index.js');
         $this->assertSame(0, $assetsIndex);
-        $this->assertStaticHandler($rules[$assetsIndex]->handler());
+        $this->assertStaticHandler($rules[$assetsIndex]->handler(), self::STATIC_ROOT . '/static');
 
         $rootIndex = $this->matchingRuleIndex('GET', '/');
         $this->assertSame(1, $rootIndex);
-        $this->assertStaticHandler($rules[$rootIndex]->handler());
+        $this->assertStaticHandler($rules[$rootIndex]->handler(), self::STATIC_ROOT . '/static');
         $this->assertHasMiddleware($rules[$rootIndex]->handler(), SetPathMiddleware::class);
 
         $photoIndex = $this->matchingRuleIndex('GET', self::PHOTO_PATH);
@@ -91,24 +94,29 @@ class ProdConfigurationRoutingTest extends TestCase
 
         $submitIndex = $this->matchingRuleIndex('POST', self::SUBMIT_PATH);
         $this->assertSame(4, $submitIndex);
-        $this->assertSubmitHandler($rules[$submitIndex]->handler());
+        $this->assertSubmitHandler(
+            $rules[$submitIndex]->handler(),
+            self::STORAGE_ROOT,
+            self::BACKEND_HOST,
+            self::MAX_UPLOAD_SIZE_BYTES
+        );
         $this->assertSame(4, $this->matchingRuleIndex('POST', self::SUBMIT_PATH . '/'));
 
         $deleteIndex = $this->matchingRuleIndex('DELETE', self::DELETE_PATH);
         $this->assertSame(5, $deleteIndex);
-        $this->assertDeleteHandler($rules[$deleteIndex]->handler());
+        $this->assertDeleteHandler($rules[$deleteIndex]->handler(), self::STORAGE_ROOT, self::BACKEND_HOST);
 
         // A GET on the submit path is not an upload: it falls through to redirects.
         $this->assertSame(7, $this->matchingRuleIndex('GET', self::SUBMIT_PATH));
 
         $jsonIndex = $this->matchingRuleIndex('GET', '/categories.json');
         $this->assertSame(6, $jsonIndex);
-        $this->assertProxyHandler($rules[$jsonIndex]->handler());
+        $this->assertProxyHandler($rules[$jsonIndex]->handler(), self::BACKEND_HOST);
         $this->assertNotHasMiddleware($rules[$jsonIndex]->handler(), RedirectMiddleware::class);
 
         $redirectIndex = $this->matchingRuleIndex('GET', '/categories/1');
         $this->assertSame(7, $redirectIndex);
-        $this->assertProxyHandler($rules[$redirectIndex]->handler());
+        $this->assertProxyHandler($rules[$redirectIndex]->handler(), self::BACKEND_HOST);
         $this->assertHasMiddleware($rules[$redirectIndex]->handler(), RedirectMiddleware::class);
 
         // Hash routes are not redirected again: no configured rule matches them.
@@ -156,77 +164,5 @@ class ProdConfigurationRoutingTest extends TestCase
         }
 
         return null;
-    }
-
-    private function assertStaticHandler(
-        RequestHandler $handler,
-        string $basePath = self::STATIC_ROOT . '/static'
-    ): void {
-        $this->assertInstanceOf(StaticFileHandler::class, $handler);
-
-        $folderLocation = $this->readProperty($handler, 'folderLocation');
-        $this->assertSame($basePath, $folderLocation->basePath());
-    }
-
-    private function assertProxyHandler(RequestHandler $handler): void
-    {
-        $this->assertInstanceOf(DefaultProxyRequestHandler::class, $handler);
-
-        $server = $this->readProperty($handler, 'server', ProxyRequestHandler::class);
-        $this->assertSame(rtrim(self::BACKEND_HOST, '/'), rtrim($server->baseUrl(), '/'));
-    }
-
-    private function assertSubmitHandler(RequestHandler $handler): void
-    {
-        $this->assertInstanceOf(PhotoSubmitRequestHandler::class, $handler);
-
-        $this->assertSame(self::STORAGE_ROOT, $this->readProperty($handler, 'storageRoot'));
-        $this->assertSame(rtrim(self::BACKEND_HOST, '/'), $this->readProperty($handler, 'host'));
-        $this->assertSame(self::MAX_UPLOAD_SIZE_BYTES, $this->readProperty($handler, 'maxUploadSizeBytes'));
-    }
-
-    private function assertDeleteHandler(RequestHandler $handler): void
-    {
-        $this->assertInstanceOf(PhotoDeleteRequestHandler::class, $handler);
-
-        $this->assertSame(self::STORAGE_ROOT, $this->readProperty($handler, 'storageRoot'));
-
-        $gateway = $this->readProperty($handler, 'gateway');
-        $this->assertSame(rtrim(self::BACKEND_HOST, '/'), rtrim($this->readProperty($gateway, 'host'), '/'));
-    }
-
-    private function assertHasMiddleware(RequestHandler $handler, string $class): void
-    {
-        $this->assertTrue(
-            $this->hasMiddleware($handler, $class),
-            sprintf('Expected handler to have middleware %s', $class)
-        );
-    }
-
-    private function assertNotHasMiddleware(RequestHandler $handler, string $class): void
-    {
-        $this->assertFalse(
-            $this->hasMiddleware($handler, $class),
-            sprintf('Expected handler not to have middleware %s', $class)
-        );
-    }
-
-    private function hasMiddleware(RequestHandler $handler, string $class): bool
-    {
-        foreach ($this->readProperty($handler, 'middlewares') as $middleware) {
-            if ($middleware instanceof $class) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function readProperty(object $object, string $name, ?string $declaringClass = null): mixed
-    {
-        $property = new \ReflectionProperty($declaringClass ?? $object, $name);
-        $property->setAccessible(true);
-
-        return $property->getValue($object);
     }
 }
