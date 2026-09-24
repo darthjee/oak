@@ -150,7 +150,7 @@ class ProdConfigurationRoutingTest extends TestCase
         $request = new Request(['requestMethod' => $method, 'requestPath' => $path]);
 
         foreach (Configuration::getRules() as $index => $rule) {
-            if ($rule->match($request)) {
+            if ($rule->match($request) === true) {
                 return $index;
             }
         }
