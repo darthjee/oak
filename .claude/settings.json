@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(auto-fix-issue/scripts/commit_change.sh *)",
+      "Bash(auto-fix-issue/scripts/run_checks.sh *)",
+      "Bash(git add *)"
+    ]
+  }
+}
