@@ -4,53 +4,11 @@ namespace Oak\Proxy\Tests;
 
 require_once __DIR__ . '/PhotoSubmitRequestHandlerTestCase.php';
 
-class PhotoSubmitRequestHandlerTest extends PhotoSubmitRequestHandlerTestCase
+class PhotoSubmitRequestHandlerStorageTest extends PhotoSubmitRequestHandlerTestCase
 {
     protected function tempDirPrefix(): string
     {
-        return 'photo_submit_test_';
-    }
-
-    public function testRejectsDisallowedExtensionWithoutCallingBackendOrWriting(): void
-    {
-        $httpClient = new FakeHttpClient();
-        $handler = $this->buildHandler($httpClient);
-        $uploadedFile = $this->buildUploadedFile('photo.txt', 'not a photo');
-
-        $response = $handler->handleRequest($this->buildRequest($uploadedFile));
-
-        $this->assertSame(415, $response->httpCode());
-        $this->assertSame([], $httpClient->calls);
-        $this->assertSame([], $this->filesUnder($this->storageRoot));
-    }
-
-    public function testRejectsOversizedUploadWithoutCallingBackendOrWriting(): void
-    {
-        $httpClient = new FakeHttpClient();
-        $handler = $this->buildHandler($httpClient, 4);
-        $uploadedFile = $this->buildUploadedFile('photo.jpg', 'way too large for the limit');
-
-        $response = $handler->handleRequest($this->buildRequest($uploadedFile));
-
-        $this->assertSame(413, $response->httpCode());
-        $this->assertSame([], $httpClient->calls);
-        $this->assertSame([], $this->filesUnder($this->storageRoot));
-    }
-
-    public function testStopsBeforeWritingWhenTheUploadingGateIsRejected(): void
-    {
-        $httpClient = new FakeHttpClient([
-            ['body' => '{"error":"forbidden"}', 'httpCode' => 403, 'headers' => []]
-        ]);
-        $handler = $this->buildHandler($httpClient);
-        $uploadedFile = $this->buildUploadedFile('photo.jpg', 'bytes');
-
-        $response = $handler->handleRequest($this->buildRequest($uploadedFile));
-
-        $this->assertSame(403, $response->httpCode());
-        $this->assertSame('{"error":"forbidden"}', $response->body());
-        $this->assertCount(1, $httpClient->calls);
-        $this->assertSame([], $this->filesUnder($this->storageRoot));
+        return 'photo_submit_storage_test_';
     }
 
     public function testHappyPathGatesWritesAllVersionsAndFinalizes(): void
@@ -99,30 +57,6 @@ class PhotoSubmitRequestHandlerTest extends PhotoSubmitRequestHandlerTestCase
         $this->assertSame([1500, 2000, IMAGETYPE_PNG], $this->imageInfo($this->storageRoot . '/origin/' . $filePath));
         $this->assertSame([798, 1064, IMAGETYPE_PNG], $this->imageInfo($this->storageRoot . '/photos/' . $filePath));
         $this->assertSame([161, 215, IMAGETYPE_PNG], $this->imageInfo($this->storageRoot . '/snaps/' . $filePath));
-    }
-
-    public function testTallImageKeepsItsAspectRatio(): void
-    {
-        $filePath = 'users/1/items/42/tall.jpg';
-        $handler = $this->buildHandler($this->successfulClient($filePath));
-
-        $response = $handler->handleRequest($this->buildRequest($this->buildImageUpload('tall.jpg', 800, 2128)));
-
-        $this->assertSame(200, $response->httpCode());
-        $this->assertSame([400, 1064, IMAGETYPE_JPEG], $this->imageInfo($this->storageRoot . '/photos/' . $filePath));
-        $this->assertSame([81, 215, IMAGETYPE_JPEG], $this->imageInfo($this->storageRoot . '/snaps/' . $filePath));
-    }
-
-    public function testSmallImageIsNotUpscaled(): void
-    {
-        $filePath = 'users/1/items/42/small.jpg';
-        $handler = $this->buildHandler($this->successfulClient($filePath));
-
-        $response = $handler->handleRequest($this->buildRequest($this->buildImageUpload('small.jpg', 100, 80)));
-
-        $this->assertSame(200, $response->httpCode());
-        $this->assertSame([100, 80, IMAGETYPE_JPEG], $this->imageInfo($this->storageRoot . '/photos/' . $filePath));
-        $this->assertSame([100, 80, IMAGETYPE_JPEG], $this->imageInfo($this->storageRoot . '/snaps/' . $filePath));
     }
 
     public function testResizeFailureRemovesEveryFileAndDoesNotFinalize(): void
