@@ -21,7 +21,7 @@ trait PhotoVersionFixtures
             $destination = rtrim($this->storageRoot . '/' . $prefix, '/') . '/' . $filePath;
             $dir = dirname($destination);
 
-            if (is_dir($dir) === FALSE) {
+            if (is_dir($dir) === false) {
                 mkdir($dir, 0775, true);
             }
 

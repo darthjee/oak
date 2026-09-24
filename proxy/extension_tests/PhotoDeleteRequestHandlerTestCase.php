@@ -37,7 +37,7 @@ abstract class PhotoDeleteRequestHandlerTestCase extends PhotoRequestHandlerTest
 
     protected function tearDown(): void
     {
-        ini_set('error_log', $this->previousErrorLog === FALSE ? '' : $this->previousErrorLog);
+        ini_set('error_log', $this->previousErrorLog === false ? '' : $this->previousErrorLog);
 
         parent::tearDown();
     }
