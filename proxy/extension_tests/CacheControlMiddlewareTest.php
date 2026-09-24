@@ -6,6 +6,14 @@ use Oak\Proxy\CacheControlMiddleware;
 use PHPUnit\Framework\TestCase;
 use Tent\Models\Response;
 
+/**
+ * Spec for Oak\Proxy\CacheControlMiddleware.
+ *
+ * CacheControlMiddleware::build() is Tent's static middleware factory
+ * contract, so the build tests must call it statically.
+ *
+ * @SuppressWarnings("PHPMD.StaticAccess")
+ */
 class CacheControlMiddlewareTest extends TestCase
 {
     private const MAX_AGE = 604800;
