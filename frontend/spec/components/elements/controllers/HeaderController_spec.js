@@ -196,6 +196,7 @@ describe('HeaderController', function() {
   });
 
   it('does not surface a login check failure as a header error', async function() {
+    setLoggedIn(true);
     const { setLogged, setCategories, setLoading, setError } = buildSetters();
 
     stubFetch((url) => {
@@ -217,6 +218,8 @@ describe('HeaderController', function() {
 
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).toHaveBeenCalledWith(null);
+    expect(setLogged).not.toHaveBeenCalledWith(false);
+    expect(isLoggedIn()).toBe(true);
   });
 
   it('logs off and reloads categories', async function() {
