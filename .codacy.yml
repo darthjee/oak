@@ -1,0 +1,11 @@
+---
+# Literal templates whose content is substituted verbatim into commit
+# messages and pull request bodies (installed by arcanum's init-claude).
+# Markdownlint rules such as MD033 (inline HTML, triggered by the
+# <placeholder> syntax) and MD041 (first-line heading) do not apply to
+# them, and "fixing" them would alter the generated output.
+# See issue #361 and arcanum's equivalent exclusion (arcanum #502).
+exclude_paths:
+  - '.github/commit_message_template.md'
+  - '.github/commit_message_template-2.0.md'
+  - '.github/pull_request_template.md'
