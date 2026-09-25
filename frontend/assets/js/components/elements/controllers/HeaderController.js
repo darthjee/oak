@@ -89,7 +89,10 @@ export default class HeaderController {
       .catch(this.#ignoreError);
   }
 
-  #ignoreError() {}
+  #ignoreError() {
+    // Login check failures (network, 5xx, bad JSON) are non-fatal:
+    // keep the cached logged state and do not surface a header error.
+  }
 
   #fetchCategories(safeSet) {
     return this.client.fetchCategories()
