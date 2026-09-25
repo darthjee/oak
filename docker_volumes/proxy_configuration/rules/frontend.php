@@ -1,13 +1,9 @@
 <?php
 
 use Tent\Configuration;
-use Tent\Handlers\ProxyRequestHandler;
-use Tent\Handlers\StaticFileHandler;
-use Tent\Models\Server;
-use Tent\Models\RequestMatcher;
 
-if (getenv('FRONTEND_DEV_MODE') === 'true') {
-    Configuration::buildRule([
+$devRules = [
+    [
         'handler' => [
             'type' => 'proxy',
             'host' => 'http://frontend:8080'
@@ -21,9 +17,11 @@ if (getenv('FRONTEND_DEV_MODE') === 'true') {
             ['method' => 'GET', 'uri' => '/node_modules/', 'type' => 'begins_with'],
             ['method' => 'GET', 'uri' => '/@react-refresh', 'type' => 'exact'],
         ]
-    ]);
-} else {
-    Configuration::buildRule([
+    ]
+];
+
+$staticRules = [
+    [
         'handler' => [
             'type' => 'static',
             'location' => '/var/www/html/static'
@@ -31,8 +29,8 @@ if (getenv('FRONTEND_DEV_MODE') === 'true') {
         'matchers' => [
             ['method' => 'GET', 'uri' => '/assets', 'type' => 'begins_with'],
         ]
-    ]);
-    Configuration::buildRule([
+    ],
+    [
         'handler' => [
             'type' => 'static',
             'location' => '/var/www/html/static'
@@ -46,5 +44,11 @@ if (getenv('FRONTEND_DEV_MODE') === 'true') {
                 'path' => '/index.html'
             ]
         ]
-    ]);
+    ]
+];
+
+$rules = getenv('FRONTEND_DEV_MODE') === 'true' ? $devRules : $staticRules;
+
+foreach ($rules as $rule) {
+    Configuration::buildRule($rule);
 }
