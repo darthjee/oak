@@ -9,6 +9,8 @@ ESLint (`frontend/eslint.config.mjs`) enforces:
 - Complexity/size constraints (`complexity`, `max-lines`, `max-depth`).
 - Jasmine-specific exceptions under `spec/` (JSDoc requirements are disabled for test files).
 
+## JSDoc
+
 All public classes, methods, and exported functions in `frontend/assets/js/` should include JSDoc comments.
 
 ### Convention
