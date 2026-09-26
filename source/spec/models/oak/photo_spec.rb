@@ -97,4 +97,62 @@ RSpec.describe Oak::Photo do
       end
     end
   end
+
+  describe 'migration_status' do
+    it 'defaults to pending' do
+      expect(described_class.new.migration_status).to eq('pending')
+    end
+
+    it 'declares the string-backed enum values' do
+      expected = %w[pending migrating migrated missing].index_by(&:itself)
+
+      expect(described_class.migration_statuses).to eq(expected)
+    end
+
+    it 'exposes prefixed predicates' do
+      photo.migration_status = :migrating
+      expect(photo).to be_migration_migrating
+    end
+
+    it 'exposes prefixed scopes' do
+      migrated = create(:oak_photo, migration_status: :migrated)
+      create(:oak_photo)
+
+      expect(described_class.migration_migrated).to eq([migrated])
+    end
+  end
+
+  describe 'MIGRATION_CLAIM_TIMEOUT' do
+    it 'is five minutes' do
+      expect(described_class::MIGRATION_CLAIM_TIMEOUT).to eq(5.minutes)
+    end
+  end
+
+  describe '.uuid_file_name?' do
+    let(:uuid) { SecureRandom.uuid }
+
+    it 'returns true for a UUID-suffixed name' do
+      expect(described_class.uuid_file_name?("photo-#{uuid}.jpg")).to be(true)
+    end
+
+    it 'returns true for an uppercase UUID-suffixed name' do
+      expect(described_class.uuid_file_name?("photo-#{uuid.upcase}.JPG")).to be(true)
+    end
+
+    it 'returns false for a legacy name' do
+      expect(described_class.uuid_file_name?('photo.jpg')).to be(false)
+    end
+
+    it 'returns false when the UUID is not before the extension' do
+      expect(described_class.uuid_file_name?("#{uuid}-photo.jpg")).to be(false)
+    end
+
+    it 'returns false when there is no extension' do
+      expect(described_class.uuid_file_name?("photo-#{uuid}")).to be(false)
+    end
+
+    it 'returns false for nil' do
+      expect(described_class.uuid_file_name?(nil)).to be(false)
+    end
+  end
 end

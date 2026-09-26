@@ -37,6 +37,10 @@ RSpec.describe Oak::Photo::CreateBuilder do
       expect(created_photo.ready).to be(false)
     end
 
+    it 'marks the photo as migrated' do
+      expect(created_photo).to be_migration_migrated
+    end
+
     context 'when called twice with the same file_name on the same scope' do
       it 'generates different file_name values' do
         first_file_name = described_class.build(**params).file_name

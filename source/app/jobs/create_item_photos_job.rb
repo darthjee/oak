@@ -16,7 +16,7 @@ class CreateItemPhotosJob
     return unless item
 
     new_files.each do |file_name|
-      item.photos.create!(file_name:, ready: true)
+      item.photos.create!(file_name:, ready: true, migration_status: :migrated)
     end
   end
 

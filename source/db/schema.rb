@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_15_120100) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_26_120000) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -78,6 +78,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_15_120100) do
     t.datetime "updated_at", null: false
     t.string "file_name", null: false
     t.boolean "ready", default: false, null: false
+    t.string "migration_status", default: "pending", null: false
+    t.string "migration_file_name"
+    t.datetime "migration_claimed_at"
     t.index ["item_id", "file_name"], name: "index_photos_on_item_id_and_file_name", unique: true
   end
 
