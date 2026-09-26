@@ -24,22 +24,10 @@ module Oak
 
       def photo_params
         {
-          file_name: unique_file_name,
-          ready: false
+          file_name: Oak::Photo::UniqueFileName.build(file_name),
+          ready: false,
+          migration_status: :migrated
         }
-      end
-
-      def unique_file_name
-        "#{sanitized_stem}-#{SecureRandom.uuid}#{extension}"
-      end
-
-      def sanitized_stem
-        stem = File.basename(file_name.to_s, extension).gsub(/[^a-zA-Z0-9_-]/, '_')
-        stem.presence || 'photo'
-      end
-
-      def extension
-        File.extname(file_name.to_s)
       end
     end
   end

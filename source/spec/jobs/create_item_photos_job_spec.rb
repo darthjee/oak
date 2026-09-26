@@ -42,6 +42,12 @@ RSpec.describe CreateItemPhotosJob do
 
         expect(item.photos.pluck(:ready)).to all(be(true))
       end
+
+      it 'creates photos as migrated' do
+        perform
+
+        expect(item.photos.pluck(:migration_status)).to all(eq('migrated'))
+      end
     end
 
     context 'when the item does not exist' do
