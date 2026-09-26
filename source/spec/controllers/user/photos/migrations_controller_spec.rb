@@ -199,4 +199,140 @@ RSpec.describe User::Photos::MigrationsController do
       end
     end
   end
+
+  describe 'PATCH #update' do
+    let(:parameters) { { migrated:, missing:, format: :json } }
+    let(:migrated) { [] }
+    let(:missing) { [] }
+
+    let!(:photo) do
+      create(:oak_photo, item:, file_name: 'cat.jpg', migration_status: :migrating,
+                         migration_file_name: 'cat-new.jpg', migration_claimed_at: 1.minute.ago)
+    end
+
+    context 'when the user is not logged in' do
+      let(:session) { nil }
+      let(:migrated) { [photo.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status(:unauthorized)
+      end
+
+      it 'does not change the photo' do
+        expect(photo.reload).to be_migration_migrating
+      end
+    end
+
+    context 'when the photo is reported as migrated' do
+      let(:migrated) { [photo.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'returns ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'marks the photo as migrated' do
+        expect(photo.reload).to be_migration_migrated
+      end
+
+      it 'swaps the file name to the target name' do
+        expect(photo.reload.file_name).to eq('cat-new.jpg')
+      end
+    end
+
+    context 'when the photo is reported as missing' do
+      let(:missing) { [photo.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'returns ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'marks the photo as missing' do
+        expect(photo.reload).to be_migration_missing
+      end
+
+      it 'keeps the legacy file name' do
+        expect(photo.reload.file_name).to eq('cat.jpg')
+      end
+    end
+
+    context 'when the photo is in both lists' do
+      let(:migrated) { [photo.id] }
+      let(:missing) { [photo.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'marks the photo as migrated' do
+        expect(photo.reload).to be_migration_migrated
+      end
+
+      it 'swaps the file name' do
+        expect(photo.reload.file_name).to eq('cat-new.jpg')
+      end
+    end
+
+    context 'when the photo belongs to another user' do
+      let(:item) { create(:oak_item) }
+      let(:migrated) { [photo.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'returns ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'leaves the photo untouched' do
+        expect(photo.reload).to have_attributes(migration_status: 'migrating', file_name: 'cat.jpg')
+      end
+    end
+
+    context 'when the photo is not migrating' do
+      let!(:pending) { create(:oak_photo, item:, migration_file_name: 'pending-new.jpg') }
+      let!(:missing_photo) { create(:oak_photo, item:, migration_status: :missing) }
+      let(:migrated) { [pending.id] }
+      let(:missing) { [missing_photo.id, pending.id] }
+
+      before { patch :update, params: parameters }
+
+      it 'leaves the pending photo untouched' do
+        expect(pending.reload).to have_attributes(migration_status: 'pending', file_name: pending.file_name)
+      end
+
+      it 'leaves the missing photo missing' do
+        expect(missing_photo.reload).to be_migration_missing
+      end
+    end
+
+    context 'with unknown ids and junk values' do
+      let(:migrated) { [0, 'abc'] }
+      let(:missing) { [-1] }
+
+      before { patch :update, params: parameters }
+
+      it 'returns ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'leaves existing photos untouched' do
+        expect(photo.reload).to be_migration_migrating
+      end
+    end
+
+    context 'when no lists are given' do
+      before { patch :update, params: { format: :json } }
+
+      it 'returns ok' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'leaves existing photos untouched' do
+        expect(photo.reload).to be_migration_migrating
+      end
+    end
+  end
 end
