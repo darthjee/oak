@@ -16,6 +16,36 @@ namespace Oak\Proxy;
 class PhotoPathGuard
 {
     /**
+     * Expected shape of a backend-provided photo path, relative to a kind
+     * folder: `users/<digits>/items/<digits>/<file_name>`.
+     */
+    private const PHOTO_PATH_PATTERN = '#^users/\d+/items/\d+/(?<file_name>[^/]+)$#D';
+
+    /**
+     * Checks that `$path` has the strict `users/<uid>/items/<item_id>/<file_name>`
+     * shape.
+     *
+     * The file-name segment must be non-empty and contain no `/`, no `..`
+     * and no NUL byte; spaces and accented characters are allowed (legacy
+     * names may contain them). Absolute paths are rejected.
+     *
+     * @param string $path The path to check, relative to a kind folder.
+     * @return boolean
+     */
+    public function isValidPhotoPath(string $path): bool
+    {
+        if (preg_match(self::PHOTO_PATH_PATTERN, $path, $matches) !== 1) {
+            return false;
+        }
+
+        $fileName = $matches['file_name'];
+
+        return $fileName !== '.'
+            && strpos($fileName, '..') === false
+            && strpos($fileName, "\0") === false;
+    }
+
+    /**
      * Resolves `<photosPath>/<filePath>` and confirms the result stays
      * contained within `photosPath`.
      *
