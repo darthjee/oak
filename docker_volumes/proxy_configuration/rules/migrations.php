@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Legacy photo migration rule (see
  * docs/agents/issues/381-proxy-migrations-photos-handler-moving-legacy-files.md).

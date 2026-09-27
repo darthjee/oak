@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Legacy photo migration rule.
  * Routes POST /migrations/photos?limit=N to the custom
