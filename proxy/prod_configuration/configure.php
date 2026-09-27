@@ -11,7 +11,7 @@ use Tent\Models\RequestMatcher;
 
 /*
  * Host-specific values ($backendHost, $staticRoot, $storageRoot,
- * $maxUploadSizeBytes) live in locals.php,
+ * $legacyRoot, $maxUploadSizeBytes) live in locals.php,
  * which exists only on production servers (see locals.php.sample).
  * It must be loaded before any rule file.
  */
@@ -21,5 +21,6 @@ require_once __DIR__ . '/rules/frontend.php';
 require_once __DIR__ . '/rules/photos.php';
 require_once __DIR__ . '/rules/uploads.php';
 require_once __DIR__ . '/rules/deletes.php';
+require_once __DIR__ . '/rules/migrations.php';
 require_once __DIR__ . '/rules/backend.php';
 require_once __DIR__ . '/rules/redirects.php';
