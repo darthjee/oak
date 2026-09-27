@@ -7,5 +7,10 @@ $staticRoot = '/home/darthjee_oak/oak.ffavs.net';
 // Lives outside the release directory so it survives deploys.
 $storageRoot = '/home/darthjee_oak/photos';
 
+// Root holding the legacy photos/ and snaps/ files, moved to their new names
+// by POST /migrations/photos. Currently the same folder as $storageRoot
+// (photos.oak.ffavs.net links to it); falls back to $storageRoot when unset.
+$legacyRoot = '/home/darthjee_oak/photos';
+
 // Maximum accepted photo upload size (10 MB).
 $maxUploadSizeBytes = 10 * 1024 * 1024;
