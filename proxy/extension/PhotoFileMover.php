@@ -124,7 +124,7 @@ class PhotoFileMover
 
         $targetDir = dirname($this->targetFile($kind, $filePath));
 
-        if (is_dir($targetDir) === FALSE && @mkdir($targetDir, 0775, true) === FALSE) {
+        if (is_dir($targetDir) === FALSE && $this->quietly(fn () => mkdir($targetDir, 0775, true)) === FALSE) {
             return 'mkdir failed';
         }
 
@@ -135,11 +135,29 @@ class PhotoFileMover
             return 'unsafe path';
         }
 
-        if (@rename($source, $target) === FALSE) {
+        if ($this->quietly(fn () => rename($source, $target)) === FALSE) {
             return 'rename failed';
         }
 
         return null;
+    }
+
+    /**
+     * Runs a filesystem operation with its PHP warnings silenced; its
+     * failure is reported through the returned boolean instead.
+     *
+     * @param callable $operation The operation to run.
+     * @return boolean The operation's result.
+     */
+    private function quietly(callable $operation): bool
+    {
+        set_error_handler(static fn (): bool => true);
+
+        try {
+            return $operation();
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**
