@@ -11,4 +11,6 @@ require_once __DIR__ . '/PhotoMigrationBackendGateway.php';
 require_once __DIR__ . '/PhotoFileMover.php';
 require_once __DIR__ . '/PhotoSubmitRequestHandler.php';
 require_once __DIR__ . '/PhotoDeleteRequestHandler.php';
+require_once __DIR__ . '/PhotoMigrationBatchRunner.php';
+require_once __DIR__ . '/PhotoMigrationRequestHandler.php';
 require_once __DIR__ . '/CacheControlMiddleware.php';
