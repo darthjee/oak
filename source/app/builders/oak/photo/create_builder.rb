@@ -25,8 +25,7 @@ module Oak
       def photo_params
         {
           file_name: Oak::Photo::UniqueFileName.build(file_name),
-          ready: false,
-          migration_status: :migrated
+          ready: false
         }
       end
     end
