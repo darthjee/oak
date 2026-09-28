@@ -101,16 +101,16 @@ export default class PhotoMigrationHelper {
 
   static #renderStatusMessage(status, totals, error) {
     switch (status) {
-    case 'done':
-      return <Alert message='All photos migrated.' variant='success' />;
-    case 'stopped':
-      return <Alert message='Stopped.' variant='secondary' />;
-    case 'noProgress':
-      return this.#renderNoProgress(totals);
-    case 'error':
-      return <Alert message={error || 'Migration request failed.'} />;
-    default:
-      return null;
+      case 'done':
+        return <Alert message='All photos migrated.' variant='success' />;
+      case 'stopped':
+        return <Alert message='Stopped.' variant='secondary' />;
+      case 'noProgress':
+        return this.#renderNoProgress(totals);
+      case 'error':
+        return <Alert message={error || 'Migration request failed.'} />;
+      default:
+        return null;
     }
   }
 

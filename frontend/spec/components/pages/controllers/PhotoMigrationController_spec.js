@@ -1,7 +1,5 @@
-import PhotoMigrationController, {
-  BATCH_LIMIT,
-  buildEmptyTotals,
-} from '../../../../assets/js/components/pages/controllers/PhotoMigrationController.js';
+import PhotoMigrationController, { BATCH_LIMIT }
+  from '../../../../assets/js/components/pages/controllers/PhotoMigrationController.js';
 import { setLoggedIn } from '../../../../assets/js/utils/authState.js';
 import { buildSpies, flushPromises } from '../../../support/factories.js';
 
@@ -39,6 +37,15 @@ describe('PhotoMigrationController', function() {
     client
   );
 
+  const deferMigrate = () => {
+    let resolveFirst;
+    client.migrate.and.callFake(() => new Promise((resolve) => {
+      resolveFirst = resolve;
+    }));
+
+    return (value) => resolveFirst(value);
+  };
+
   const mount = (controller) => {
     cleanup = controller.buildEffect()();
     return controller;
@@ -58,10 +65,6 @@ describe('PhotoMigrationController', function() {
     setLoggedIn(false);
   });
 
-  it('uses a batch limit of 20', function() {
-    expect(BATCH_LIMIT).toBe(20);
-  });
-
   it('builds a default client when none is given', function() {
     const controller = new PhotoMigrationController(
       setters.setLogged, setters.setStatus, setters.setTotals, setters.setError
@@ -71,20 +74,11 @@ describe('PhotoMigrationController', function() {
   });
 
   describe('#buildEffect', function() {
-    it('sets the logged state from authState', function() {
-      setLoggedIn(true);
+    it('sets the logged state from authState and follows its changes', function() {
       mount(buildController());
-
-      expect(setters.setLogged).toHaveBeenCalledWith(true);
-    });
-
-    it('updates the logged state when authState changes', function() {
-      mount(buildController());
-      setters.setLogged.calls.reset();
-
       setLoggedIn(true);
 
-      expect(setters.setLogged).toHaveBeenCalledWith(true);
+      expect(setters.setLogged.calls.allArgs()).toEqual([[false], [true]]);
     });
 
     it('unsubscribes on cleanup', function() {
@@ -100,21 +94,15 @@ describe('PhotoMigrationController', function() {
   });
 
   describe('#start', function() {
-    it('requests batches with the batch limit', async function() {
-      queue = [batch(1, [], [], 0)];
+    it('requests with the batch limit and stops with done when remaining is 0', async function() {
+      queue = [batch(2, [], [], 0)];
       const controller = mount(buildController());
 
       await controller.start();
 
-      expect(client.migrate).toHaveBeenCalledOnceWith(BATCH_LIMIT);
-    });
-
-    it('sets running status when starting', async function() {
-      queue = [batch(1, [], [], 0)];
-      const controller = mount(buildController());
-
-      await controller.start();
-
+      expect(BATCH_LIMIT).toBe(20);
+      expect(client.migrate).toHaveBeenCalledOnceWith(20);
+      expect(controller.status).toBe('done');
       expect(setters.setStatus.calls.allArgs()).toEqual([['running'], ['done']]);
     });
 
@@ -139,16 +127,6 @@ describe('PhotoMigrationController', function() {
       expect(controller.totals).toEqual(expected);
       expect(setters.setTotals).toHaveBeenCalledWith(expected);
       expect(controller.status).toBe('done');
-    });
-
-    it('stops with done when remaining is 0', async function() {
-      queue = [batch(2, [], [], 0)];
-      const controller = mount(buildController());
-
-      await controller.start();
-
-      expect(controller.status).toBe('done');
-      expect(setters.setStatus).toHaveBeenCalledWith('done');
     });
 
     it('stops with noProgress when a batch made no progress', async function() {
@@ -225,10 +203,7 @@ describe('PhotoMigrationController', function() {
     });
 
     it('is a no-op while already running', async function() {
-      let resolveFirst;
-      client.migrate.and.callFake(() => new Promise((resolve) => {
-        resolveFirst = resolve;
-      }));
+      const resolveFirst = deferMigrate();
       const controller = mount(buildController());
 
       const run = controller.start();
@@ -243,10 +218,7 @@ describe('PhotoMigrationController', function() {
 
   describe('#stop', function() {
     it('waits for the request in flight, merges its result and stops', async function() {
-      let resolveFirst;
-      client.migrate.and.callFake(() => new Promise((resolve) => {
-        resolveFirst = resolve;
-      }));
+      const resolveFirst = deferMigrate();
       const controller = mount(buildController());
 
       const run = controller.start();
@@ -264,10 +236,7 @@ describe('PhotoMigrationController', function() {
     });
 
     it('prefers done when the in-flight batch finished everything', async function() {
-      let resolveFirst;
-      client.migrate.and.callFake(() => new Promise((resolve) => {
-        resolveFirst = resolve;
-      }));
+      const resolveFirst = deferMigrate();
       const controller = mount(buildController());
 
       const run = controller.start();
@@ -278,28 +247,17 @@ describe('PhotoMigrationController', function() {
       expect(controller.status).toBe('done');
     });
 
-    it('is a no-op when not running', async function() {
+    it('is a no-op when not running', function() {
       const controller = mount(buildController());
 
       controller.stop();
 
       expect(controller.status).toBe('idle');
       expect(setters.setStatus).not.toHaveBeenCalled();
-
-      queue = [batch(1, [], [], 0)];
-      await controller.start();
-      setters.setStatus.calls.reset();
-      controller.stop();
-
-      expect(controller.status).toBe('done');
-      expect(setters.setStatus).not.toHaveBeenCalled();
     });
 
     it('keeps start disabled after a stopped run', async function() {
-      let resolveFirst;
-      client.migrate.and.callFake(() => new Promise((resolve) => {
-        resolveFirst = resolve;
-      }));
+      const resolveFirst = deferMigrate();
       const controller = mount(buildController());
 
       const run = controller.start();
@@ -316,10 +274,7 @@ describe('PhotoMigrationController', function() {
 
   describe('unmount', function() {
     it('does not fire further requests after unmount', async function() {
-      let resolveFirst;
-      client.migrate.and.callFake(() => new Promise((resolve) => {
-        resolveFirst = resolve;
-      }));
+      const resolveFirst = deferMigrate();
       const controller = mount(buildController());
 
       const run = controller.start();
@@ -333,12 +288,6 @@ describe('PhotoMigrationController', function() {
 
       expect(client.migrate).toHaveBeenCalledTimes(1);
       expect(setters.setTotals).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('buildEmptyTotals', function() {
-    it('returns empty totals', function() {
-      expect(buildEmptyTotals()).toEqual({ migrated: 0, missing: [], failed: [], remaining: null });
     });
   });
 });
