@@ -43,7 +43,7 @@ export default class HeaderHelper {
   static render(logged, categories, handlers) {
     return this.#renderShell(
       this.#renderCategories(logged, categories),
-      this.#renderKindsLink(),
+      this.#renderKindsLink(logged),
       this.#renderAuth(logged, handlers),
       this.#renderLoginModal(handlers)
     );
@@ -77,16 +77,24 @@ export default class HeaderHelper {
   }
 
   /**
-   * Renders the always-visible Kinds navigation link.
+   * Renders the always-visible Kinds navigation link, plus the Photo migration link
+   * when the user is logged in.
    *
-   * @returns {JSX.Element} nav item linking to the kinds list
+   * @param {boolean} [logged=false] whether the current user is logged in
+   * @returns {JSX.Element} nav items linking to the kinds list and, when logged in,
+   *   the photo migration page
    */
-  static #renderKindsLink() {
+  static #renderKindsLink(logged = false) {
     return (
       <ul className='navbar-nav'>
         <li className='nav-item p-2'>
           <a className='nav-link' href='/#/kinds'>Kinds</a>
         </li>
+        {logged ? (
+          <li className='nav-item p-2'>
+            <a className='nav-link' href='/#/photos/migration'>Photo migration</a>
+          </li>
+        ) : null}
       </ul>
     );
   }
