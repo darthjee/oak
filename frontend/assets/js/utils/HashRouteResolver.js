@@ -29,6 +29,7 @@ export default class HashRouteResolver {
     router.register('/kinds/new', 'kindNew');
     router.register('/kinds/:slug', 'kind');
     router.register('/kinds', 'kinds');
+    router.register('/photos/migration', 'photoMigration');
     return router;
   }
 

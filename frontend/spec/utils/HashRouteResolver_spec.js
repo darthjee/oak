@@ -124,6 +124,12 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).not.toBe('kind');
     });
 
+    it('returns "photoMigration" for the photo migration route', function() {
+      const resolver = new HashRouteResolver(() => '#/photos/migration');
+
+      expect(resolver.getPage()).toBe('photoMigration');
+    });
+
     it('returns "home" for unrecognized routes', function() {
       const resolver = new HashRouteResolver(() => '#/other');
 

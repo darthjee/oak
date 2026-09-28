@@ -12,6 +12,7 @@ import Kind from '../pages/Kind.jsx';
 import KindEdit from '../pages/KindEdit.jsx';
 import KindNew from '../pages/KindNew.jsx';
 import Kinds from '../pages/Kinds.jsx';
+import PhotoMigration from '../pages/PhotoMigration.jsx';
 
 const PAGES = {
   category: <Category />,
@@ -27,6 +28,7 @@ const PAGES = {
   kindEdit: <KindEdit />,
   kindNew: <KindNew />,
   kinds: <Kinds />,
+  photoMigration: <PhotoMigration />,
 };
 
 /**
