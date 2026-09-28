@@ -3,6 +3,7 @@
 Oak is a Rails monolith that serves JSON endpoints and the SPA shell from the same process, fronted by a reverse proxy that caches HTML and simulates production locally. This page covers the high-level overview and frontend summary; see the linked pages for infrastructure/request-routing detail and the backend source layout.
 
 - [Infrastructure](infrastructure.md) — service topology, request routing, and the production proxy configuration (`proxy/prod_configuration/`, server-only `locals.php`).
+- [Photo Storage & Serving](photo-storage.md) — prod on-disk photo layout, static `/photos` and `/snaps` rules, `OAK_PHOTOS_SERVER_URL`, and the prod photo checklist.
 - [Backend Layout](backend-layout.md) — `source/app/` layout, key gems, template rendering pattern.
 
 ---
