@@ -14,5 +14,4 @@ require_once __DIR__ . '/rules/photos.php';
 require_once __DIR__ . '/rules/backend.php';
 require_once __DIR__ . '/rules/uploads.php';
 require_once __DIR__ . '/rules/deletes.php';
-require_once __DIR__ . '/rules/migrations.php';
 require_once __DIR__ . '/rules/redirects.php';
