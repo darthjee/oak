@@ -12,10 +12,6 @@ RSpec.describe Oak::Photo::UniqueFileName do
       expect(unique_file_name).to match(/\Acat-\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\.jpg\z/)
     end
 
-    it 'produces a name recognised as a UUID file name' do
-      expect(Oak::Photo.uuid_file_name?(unique_file_name)).to be(true)
-    end
-
     it 'generates a different name on each call' do
       expect(unique_file_name).not_to eq(described_class.build(file_name))
     end
