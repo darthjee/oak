@@ -23,8 +23,7 @@ file.
 
 `CreateItemPhotosJob`/`ProcessUserItemPhotosJob` (the existing
 filesystem-scan-based ingestion pipeline) **stay in place and coexist**
-with this new HTTP-driven upload flow. The deprecation/migration decision
-for the scan job is explicitly punted to future work, not decided here:
+with this new HTTP-driven upload flow. The deprecation decision for the
+scan job is explicitly punted to future work, not decided here:
 
 - #249 — deciding the scan-job deprecation timeline.
-- #250/#251 — writing and executing the existing-photo-data migration plan.

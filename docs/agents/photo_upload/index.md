@@ -46,6 +46,4 @@ PHP-to-backend calls.
 - Implementing any of the flow above (proxy rule, backend endpoints,
   frontend client) — that's #246/#247/#248.
 - Deciding the scan-job deprecation timeline — that's #249.
-- Writing the existing-photo-data migration plan and executing it — that's
-  #250/#251.
 - Actually creating the `proxy` agent config — that's #252.
