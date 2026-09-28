@@ -18,7 +18,7 @@ Rails app (oak_app)            ← port 3010 in dev, 3000 internally
   └── Apache httpd (oak_photos) ← static photo/file serving; port 3001
 ```
 
-In production there is no `oak_photos` container; uploaded files are served by the production infrastructure directly.
+In production there is no `oak_photos` container; photos and snaps are served by the Tent proxy's static `/photos` and `/snaps` rules (see [Photo Storage & Serving](photo-storage.md)).
 
 ---
 
@@ -48,6 +48,7 @@ proxy/prod_configuration/
 ├── locals.php.sample      # committed; documents every variable
 └── rules/
     ├── frontend.php       # GET / and GET /assets* from $staticRoot . '/static'
+    ├── photos.php         # static GET /photos and /snaps from $staticRoot
     ├── uploads.php        # POST .../photos/:id/submit -> PhotoSubmitRequestHandler
     ├── deletes.php        # DELETE .../photos/:id -> PhotoDeleteRequestHandler
     ├── backend.php        # *.json proxied to $backendHost
@@ -75,7 +76,10 @@ proxy/prod_configuration/
   `origin/`, `photos/` and `snaps/`), outside the release directory. The
   upload/delete handlers take it as their `storageRoot` option (#335): submit
   writes the original and the resized `photos/`/`snaps/` versions, delete
-  removes all three.
+  removes all three (see
+  [Resizing & Storage](../photo_upload/resizing-and-storage.md)). The
+  on-disk layout, static serving rules and prod checklist are in
+  [Photo Storage & Serving](photo-storage.md).
   `$maxUploadSizeBytes` is 10 MB in production; PHP's `upload_max_filesize`
   and `post_max_size` on the server must be at least that.
 - **One-time bootstrap:** before the first tag that uses this flow, create

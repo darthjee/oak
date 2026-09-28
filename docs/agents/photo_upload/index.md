@@ -27,6 +27,13 @@ extension mechanism this requires.
 - [Edge Cases & Coexistence](edge-cases-and-coexistence.md) — abandoned/duplicate
   upload handling, and how this flow coexists with the existing scan-job
   ingestion.
+- [Resizing & Storage](resizing-and-storage.md) — the `origin/`, `photos/`
+  and `snaps/` versions the proxy writes on Submit, resize rules, failure
+  handling, and delete of all three files.
+
+Production storage, serving and deploy are covered in
+[Photo Storage & Serving](../architecture/photo-storage.md) and
+[Infrastructure](../architecture/infrastructure.md).
 
 ## Reference flow correction
 
