@@ -107,32 +107,6 @@ describe('HeaderHelper', function() {
     expect(html).toContain('Kinds');
   });
 
-  it('renders the Photo migration link when logged in', function() {
-    const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
-
-    expect(html).toContain('href="/#/photos/migration"');
-    expect(html).toContain('Photo migration');
-  });
-
-  it('does not render the Photo migration link when logged out', function() {
-    const html = renderToStaticMarkup(HeaderHelper.render(false, [], buildHandlers()));
-
-    expect(html).not.toContain('/#/photos/migration');
-    expect(html).not.toContain('Photo migration');
-  });
-
-  it('does not render the Photo migration link in loading state', function() {
-    const html = renderToStaticMarkup(HeaderHelper.renderLoading());
-
-    expect(html).not.toContain('/#/photos/migration');
-  });
-
-  it('does not render the Photo migration link in error state', function() {
-    const html = renderToStaticMarkup(HeaderHelper.renderError('network failure'));
-
-    expect(html).not.toContain('/#/photos/migration');
-  });
-
   it('wires the login link and login modal props', function() {
     const handlers = buildHandlers({ showModal: true });
     const element = HeaderHelper.render(false, [], handlers);

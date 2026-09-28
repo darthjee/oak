@@ -18,8 +18,6 @@ Rails.application.routes.draw do
 
   namespace :user do
     resources :categories, only: :index
-    post 'photos/migration/prepare' => 'photos/migrations#prepare'
-    patch 'photos/migration' => 'photos/migrations#update'
   end
 
   get '/categories', to: 'index_categories#index', as: :index_categories

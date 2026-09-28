@@ -87,7 +87,7 @@ Every sub-issue must keep this true.
 | #333 | backend / proxy | Align settings, jobs, dev proxy config and mounts with the layout | none |
 | #334 | proxy / architect | Move to `darthjee/tent:1.0.0` (GD) | darthjee/tent#287 |
 | #335 | proxy | Resize into `photos/` and `snaps/`; delete removes all three files | #333, #334 |
-| #336 | backend / architect | Switch `OAK_PHOTOS_SERVER_URL`, retire `photos.oak.ffavs.net` | #251 (file migration) |
+| #336 | backend / architect | Switch `OAK_PHOTOS_SERVER_URL`, retire `photos.oak.ffavs.net` | none |
 | #337 | architect | Move lasting content into `photo_upload/`, delete this guide | all of the above |
 
 **#333 no longer changes `file_path`.** The proxy adds the `origin/`,
@@ -108,7 +108,7 @@ prefixes themselves (see [Proxy Rules](proxy-rules.md#upload-and-delete-rules)).
 - [Deployment](deployment.md): CircleCI changes, `link_photos`, on-disk
   layout.
 - [Resizing](resizing.md): GD resizing on submit, and delete.
-- [Rollout](rollout.md): ship order, #251 migration, URL switch, prod checks.
+- [Rollout](rollout.md): ship order, URL switch, prod checks.
 - [Examples](examples.md): PHP and CircleCI snippets (proposals).
 
 ## Background

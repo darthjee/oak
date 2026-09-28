@@ -101,12 +101,6 @@ describe('AppHelper', function() {
       expect(html).toContain('Loading kind new form...');
     });
 
-    it('renders the PhotoMigration component for "photoMigration" page', function() {
-      const html = renderPage('photoMigration');
-
-      expect(html).toContain('Please log in to migrate your photos.');
-    });
-
     it('uses the provided hash as the page fragment key', function() {
       const element = AppHelper.render('home', '#/categories?page=2&per_page=10');
 
