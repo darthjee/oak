@@ -329,7 +329,7 @@ jobs:
           command: bin/deploy_frontend.sh release
   warm-up-cache:
     docker:
-      - image: darthjee/navi-hey-client:latest
+      - image: darthjee/navi-hey-client:0.2.4
     steps:
       - checkout
       - run:
