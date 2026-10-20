@@ -7,9 +7,10 @@ export default class LoginModalClient {
    *
    * @param {string} login login name to submit
    * @param {string} password password to submit
+   * @param {boolean} [keepSignedIn=false] whether the session should persist
    * @returns {Promise<Response>} fetch response from the login endpoint
    */
-  submit(login, password) {
+  submit(login, password, keepSignedIn = false) {
     return fetch('/users/login.json', {
       method: 'POST',
       headers: {
@@ -18,7 +19,7 @@ export default class LoginModalClient {
         'X-Skip-Cache': '1',
       },
       body: JSON.stringify({
-        login: { login, password },
+        login: { login, password, keepSignedIn: Boolean(keepSignedIn) },
       }),
     });
   }
