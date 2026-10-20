@@ -36,5 +36,6 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [How to Use Navi](external/HOW_TO_USE_NAVI.md) | Integrating the Navi cache-warmer into CI/CD pipelines, across four integration modes (Docker image, npm package, CircleCI executor, hosted server). |
 | [How to Use navi-hey-client](external/HOW_TO_USE_NAVI-CLIENT.md) | Using the `navi-hey-client` library/CLI to control an already-running, hosted Navi instance via its `/api/*` namespace. |
 | [How to Use darthjee/tent](external/HOW_TO_USE_DARTHJEE-TENT.md) | Full reference for the darthjee/tent reverse proxy: Docker setup, rules/matchers/middlewares, cache configuration, and the frontend dev-mode flip. |
+| [Specs](specs.md) | Permanent hub for temporary, Epic-scoped feature specs: the split layout, the lifecycle, and the list of active specs. |
 | [Plans](plans/) | Implementation plans for ongoing or upcoming features, one subfolder per issue. |
 | [Issues](issues/) | Detailed specs for open issues. |

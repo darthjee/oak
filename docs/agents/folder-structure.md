@@ -69,5 +69,6 @@ Top-level directory layout of the repository and the role of each folder, down t
 | Subdirectory | Description |
 |--------------|-------------|
 | `external/` | Reference docs for external tools and gems this project depends on (e.g. Darthjee-Tent, Navi, Azeroth, Jace, Sinclair). Standing convention: any future usage-guide doc for a third-party tool or gem belongs here, keeping it separate from this project's own architecture/process docs. |
+| `specs/` | Temporary, Epic-scoped feature specs, one entry file plus one topic folder per feature. See [specs.md](specs.md). |
 | `plans/` | Implementation plans for ongoing or upcoming features, one subfolder per issue. |
 | `issues/` | Detailed specs for open issues. |
