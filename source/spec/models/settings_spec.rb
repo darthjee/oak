@@ -55,4 +55,12 @@ describe Settings do
       let(:expected_class) { ActiveSupport::Duration }
     end
   end
+
+  describe '.long_session_period' do
+    it_behaves_like 'a setting', :long_session_period do
+      let(:default_value)  { 30.days }
+      let(:value)          { Random.rand(3600..7200) }
+      let(:expected_class) { ActiveSupport::Duration }
+    end
+  end
 end

@@ -7,6 +7,7 @@ class ActiveSettings
     :password_salt,
     :hex_code_size,
     :session_period,
+    :long_session_period,
     :cache_age,
     :title,
     :favicon,
