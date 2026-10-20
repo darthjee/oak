@@ -7,5 +7,6 @@ module Oak
     class NotLogged        < Oak::Exception; end
     class InvalidParameter < Oak::Exception; end
     class TooManyRequests  < Oak::Exception; end
+    class NotFound         < Oak::Exception; end
   end
 end

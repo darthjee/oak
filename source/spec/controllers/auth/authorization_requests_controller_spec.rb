@@ -211,4 +211,215 @@ describe Auth::AuthorizationRequestsController do
       end
     end
   end
+
+  describe 'POST poll' do
+    let(:poll_token)       { SecureRandom.urlsafe_base64(32) }
+    let(:status)           { 'open' }
+    let(:keep_signed_in)   { false }
+    let(:request_token)    { poll_token }
+    let(:uuid)             { authorization_request.uuid }
+    let(:parameters)       { { uuid:, pollToken: request_token, format: :json } }
+    let(:created_session)  { user.sessions.last }
+    let(:session_cookie) do
+      Array(response.headers['Set-Cookie'])
+        .flat_map { |header| header.split("\n") }
+        .find { |header| header.start_with?('session=') }
+    end
+
+    let(:authorization_request) do
+      create(:authorization_request, user:, poll_token:, status:, keep_signed_in:)
+    end
+
+    shared_examples 'a poll answering' do |expected_status|
+      before { post :poll, params: parameters, as: :json }
+
+      it { expect(response).to be_successful }
+
+      it { expect(response.headers['X-Skip-Cache']).to eq('true') }
+
+      it { expect(response.parsed_body).to eq('status' => expected_status) }
+
+      it 'does not set the session cookie' do
+        expect(session_cookie).to be_nil
+      end
+    end
+
+    shared_examples 'a poll not found' do
+      before { post :poll, params: parameters, as: :json }
+
+      it { expect(response).to have_http_status(:not_found) }
+
+      it { expect(response.headers['X-Skip-Cache']).to eq('true') }
+
+      it do
+        expect(response.parsed_body).to eq('message' => 'Authorization request not found')
+      end
+    end
+
+    context 'when the uuid is unknown' do
+      let(:uuid) { SecureRandom.uuid }
+
+      it_behaves_like 'a poll not found'
+    end
+
+    context 'when the token is missing' do
+      let(:parameters) { { uuid:, format: :json } }
+
+      it_behaves_like 'a poll not found'
+    end
+
+    context 'when the token is wrong' do
+      let(:request_token) { SecureRandom.urlsafe_base64(32) }
+
+      it_behaves_like 'a poll not found'
+    end
+
+    context 'when the token is wrong and the request is approved' do
+      let(:status)        { 'approved' }
+      let(:request_token) { SecureRandom.urlsafe_base64(32) }
+
+      it 'does not claim the request' do
+        post :poll, params: parameters, as: :json
+        expect(authorization_request.reload.status).to eq('approved')
+      end
+    end
+
+    context 'when the request is open' do
+      it_behaves_like 'a poll answering', 'open'
+    end
+
+    context 'when the request is denied' do
+      let(:status) { 'denied' }
+
+      it_behaves_like 'a poll answering', 'denied'
+    end
+
+    context 'when the request is expired' do
+      let(:status) { 'expired' }
+
+      it_behaves_like 'a poll answering', 'expired'
+    end
+
+    context 'when the request is logged' do
+      let(:status) { 'logged' }
+
+      it_behaves_like 'a poll answering', 'logged'
+    end
+
+    context 'when the request is open but past expiration' do
+      before { authorization_request.update!(expires_at: 1.minute.ago) }
+
+      it_behaves_like 'a poll answering', 'expired'
+    end
+
+    context 'when the request is approved but past expiration' do
+      let(:status) { 'approved' }
+
+      before { authorization_request.update!(expires_at: 1.minute.ago) }
+
+      it_behaves_like 'a poll answering', 'expired'
+
+      it 'does not create a session' do
+        expect { post :poll, params: parameters, as: :json }
+          .not_to change(Session, :count)
+      end
+    end
+
+    context 'when the request is approved' do
+      let(:status) { 'approved' }
+
+      it 'creates a session' do
+        expect { post :poll, params: parameters, as: :json }
+          .to change(user.sessions, :count).by(1)
+      end
+
+      it 'claims the request' do
+        expect { post :poll, params: parameters, as: :json }
+          .to change { authorization_request.reload.status }.from('approved').to('logged')
+      end
+
+      context 'when the poll wins the claim' do
+        before { post :poll, params: parameters, as: :json }
+
+        it { expect(response).to be_successful }
+
+        it { expect(response.headers['X-Skip-Cache']).to eq('true') }
+
+        it 'answers approved with the session' do
+          expect(response.parsed_body).to eq(
+            'status' => 'approved',
+            'session' => JSON.parse(Session::Decorator.new(created_session).to_json)
+          )
+        end
+
+        it 'stores the session in the signed cookie' do
+          expect(cookies.signed[:session]).to eq(created_session.id)
+        end
+
+        it 'creates a session with the regular expiration' do
+          expect(created_session.expiration)
+            .to be_in(Time.zone.now..Settings.session_period.from_now)
+        end
+
+        it 'sets a session-only cookie' do
+          expect(session_cookie).to match(/\Asession=(?!.*expires=)/i)
+        end
+      end
+
+      context 'when keep_signed_in is true' do
+        let(:keep_signed_in) { true }
+
+        before { post :poll, params: parameters, as: :json }
+
+        it 'creates a session with the long expiration' do
+          expect(created_session.expiration)
+            .to be_in(Settings.session_period.from_now..Settings.long_session_period.from_now)
+        end
+
+        it 'sets a persistent cookie' do
+          expect(session_cookie).to match(/expires=/i)
+        end
+      end
+
+      context 'when the claim was already won by another poll' do
+        before { authorization_request.claim! }
+
+        it_behaves_like 'a poll answering', 'logged'
+
+        it 'does not create a session' do
+          expect { post :poll, params: parameters, as: :json }
+            .not_to change(Session, :count)
+        end
+      end
+
+      context 'when another poll claims it concurrently' do
+        # The record is loaded as approved, then another poll wins before this claim runs.
+        before do
+          allow(AuthorizationRequest).to receive(:find_by).and_wrap_original do |method, *args|
+            method.call(*args).tap { |found| AuthorizationRequest.new(id: found.id).claim! }
+          end
+        end
+
+        it_behaves_like 'a poll answering', 'logged'
+      end
+
+      context 'when logging' do
+        let(:logged) { [] }
+
+        before do
+          allow(Rails.logger).to receive(:info) { |message| logged << message }
+          post :poll, params: parameters, as: :json
+        end
+
+        it 'logs the minted session with ip and user id' do
+          expect(logged)
+            .to include(a_string_including('session minted', "user_id=#{user.id}", 'ip='))
+        end
+
+        it 'never logs the poll token' do
+          expect(logged.join).not_to include(poll_token)
+        end
+      end
+    end
+  end
 end
