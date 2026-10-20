@@ -11,12 +11,14 @@ import LoginModalHelper from './helpers/LoginModalHelper.jsx';
 export default function LoginModal({ show, onClose, onSuccess }) {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
   const [incorrect, setIncorrect] = useState(false);
   const [error, setError] = useState(false);
 
   const controller = new LoginModalController(
     setLogin,
     setPassword,
+    setKeepSignedIn,
     setIncorrect,
     setError,
     onSuccess
@@ -35,7 +37,7 @@ export default function LoginModal({ show, onClose, onSuccess }) {
       event.preventDefault();
     }
 
-    return controller.handleSubmit(login, password);
+    return controller.handleSubmit(login, password, keepSignedIn);
   };
 
   return LoginModalHelper.render(

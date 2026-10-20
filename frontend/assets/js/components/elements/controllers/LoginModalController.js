@@ -9,6 +9,7 @@ export default class LoginModalController {
    *
    * @param {Function} setLogin state setter for the login field
    * @param {Function} setPassword state setter for the password field
+   * @param {Function} setKeepSignedIn state setter for the keep me signed in checkbox
    * @param {Function} setIncorrect state setter for invalid credential errors
    * @param {Function} setError state setter for unexpected errors
    * @param {Function|null} [onSuccess] callback invoked after a successful login
@@ -17,6 +18,7 @@ export default class LoginModalController {
   constructor(
     setLogin,
     setPassword,
+    setKeepSignedIn,
     setIncorrect,
     setError,
     onSuccess = null,
@@ -24,6 +26,7 @@ export default class LoginModalController {
   ) {
     this.setLogin = setLogin;
     this.setPassword = setPassword;
+    this.setKeepSignedIn = setKeepSignedIn;
     this.setIncorrect = setIncorrect;
     this.setError = setError;
     this.onSuccess = onSuccess;
@@ -35,14 +38,15 @@ export default class LoginModalController {
    *
    * @param {string} login login name to submit
    * @param {string} password password to submit
+   * @param {boolean} [keepSignedIn=false] whether the session should persist
    * @returns {Promise<void>} resolves when the request handling finishes
    */
-  async handleSubmit(login, password) {
+  async handleSubmit(login, password, keepSignedIn = false) {
     this.setIncorrect(false);
     this.setError(false);
 
     try {
-      const response = await this.client.submit(login, password);
+      const response = await this.client.submit(login, password, keepSignedIn);
 
       this.#handleResponse(response);
     } catch {
@@ -58,6 +62,7 @@ export default class LoginModalController {
   handleClear() {
     this.setLogin('');
     this.setPassword('');
+    this.setKeepSignedIn(false);
     this.setIncorrect(false);
     this.setError(false);
   }
