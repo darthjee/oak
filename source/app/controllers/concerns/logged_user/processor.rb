@@ -8,10 +8,11 @@ module LoggedUser
       @controller = controller
     end
 
-    def login(user)
+    def login(user, keep_signed_in: false)
       @logged_user = user
+      @keep_signed_in = keep_signed_in
 
-      signed_cookies[SESSION_KEY] = new_session.id
+      signed_cookies[SESSION_KEY] = session_cookie(new_session)
     end
 
     def logoff
@@ -31,12 +32,22 @@ module LoggedUser
 
     private
 
-    attr_reader :controller
+    attr_reader :controller, :keep_signed_in
 
     def new_session
       @session = logged_user.sessions.create(
-        expiration: Settings.session_period.from_now
+        expiration: session_period.from_now
       )
+    end
+
+    def session_period
+      keep_signed_in ? Settings.long_session_period : Settings.session_period
+    end
+
+    def session_cookie(new_session)
+      return new_session.id unless keep_signed_in
+
+      { value: new_session.id, expires: new_session.expiration }
     end
 
     def session_from_cookie

@@ -2,8 +2,9 @@
 
 module Oak
   class Exception < StandardError
-    class LoginFailed  < Oak::Exception; end
-    class Unauthorized < Oak::Exception; end
-    class NotLogged    < Oak::Exception; end
+    class LoginFailed      < Oak::Exception; end
+    class Unauthorized     < Oak::Exception; end
+    class NotLogged        < Oak::Exception; end
+    class InvalidParameter < Oak::Exception; end
   end
 end
