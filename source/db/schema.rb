@@ -10,13 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_28_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_20_120000) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_active_settings_on_key", unique: true
+  end
+
+  create_table "authorization_requests", charset: "utf8mb3", force: :cascade do |t|
+    t.string "uuid", limit: 36, null: false
+    t.bigint "user_id"
+    t.string "login", null: false
+    t.string "poll_token_digest", limit: 64, null: false
+    t.string "status", default: "open", null: false
+    t.boolean "keep_signed_in", default: false, null: false
+    t.string "request_ip"
+    t.string "request_user_agent", limit: 512
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["request_ip", "created_at"], name: "index_authorization_requests_on_request_ip_and_created_at"
+    t.index ["user_id", "status"], name: "index_authorization_requests_on_user_id_and_status"
+    t.index ["uuid"], name: "index_authorization_requests_on_uuid", unique: true
   end
 
   create_table "categories", charset: "utf8mb3", force: :cascade do |t|
@@ -111,6 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_28_120000) do
     t.index ["login"], name: "index_users_on_login", unique: true
   end
 
+  add_foreign_key "authorization_requests", "users"
   add_foreign_key "category_kinds", "categories"
   add_foreign_key "category_kinds", "kinds"
   add_foreign_key "items", "categories"
