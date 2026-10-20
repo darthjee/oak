@@ -156,6 +156,76 @@ describe AuthorizationRequest do
     end
   end
 
+  %w[authorize deny].each do |action|
+    describe "##{action}!" do
+      let(:target)  { action == 'authorize' ? 'approved' : 'denied' }
+      let(:request) { create(:authorization_request) }
+
+      context 'when open' do
+        it { expect(request.public_send("#{action}!")).to be(true) }
+
+        it 'moves the status in the database' do
+          expect { request.public_send("#{action}!") }
+            .to change { request.reload.status }.from('open').to(target)
+        end
+
+        it 'updates the in-memory status' do
+          request.public_send("#{action}!")
+          expect(request.status).to eq(target)
+        end
+
+        it 'does not transition twice' do
+          request.public_send("#{action}!")
+          expect(request.public_send("#{action}!")).to be(false)
+        end
+      end
+
+      %i[approved denied logged expired past_expiration].each do |trait|
+        context "when #{trait}" do
+          let(:request) { create(:authorization_request, trait) }
+
+          it { expect(request.public_send("#{action}!")).to be(false) }
+
+          it 'leaves the row unchanged' do
+            expect { request.public_send("#{action}!") }
+              .not_to(change { request.reload.attributes })
+          end
+        end
+      end
+    end
+  end
+
+  describe '.pending_for' do
+    let!(:older)  { create(:authorization_request, user:, created_at: 2.minutes.ago) }
+    let!(:newer)  { create(:authorization_request, user:, created_at: 1.minute.ago) }
+
+    before do
+      create(:authorization_request, :approved, user:)
+      create(:authorization_request, :denied, user:)
+      create(:authorization_request, :past_expiration, user:)
+      create(:authorization_request)
+      create(:authorization_request, :without_user)
+    end
+
+    it 'returns only the open, unexpired requests of the user, newest first' do
+      expect(described_class.pending_for(user).to_a).to eq([newer, older])
+    end
+  end
+
+  describe '#owned_by?' do
+    let(:request) { create(:authorization_request, user:) }
+
+    it { expect(request.owned_by?(user)).to be(true) }
+    it { expect(request.owned_by?(create(:user))).to be(false) }
+    it { expect(request.owned_by?(nil)).to be(false) }
+
+    context 'when the request has no user' do
+      let(:request) { create(:authorization_request, :without_user) }
+
+      it { expect(request.owned_by?(user)).to be(false) }
+    end
+  end
+
   describe 'open requests cap' do
     let(:max_open) { Settings.authorization_request_max_open }
 

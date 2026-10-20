@@ -11,6 +11,9 @@ class AuthorizationRequest < ApplicationRecord
 
   scope :not_expired, -> { where('expires_at > ?', Time.zone.now) }
   scope :open_for, ->(user) { where(user:, status: 'open').not_expired.order(:created_at, :id) }
+  scope :pending_for, lambda { |user|
+    where(user:, status: 'open').not_expired.order(created_at: :desc, id: :desc)
+  }
   scope :created_by_ip_since, ->(ip, time) { where(request_ip: ip).where('created_at > ?', time) }
 
   validates :uuid, :login, :poll_token_digest, :expires_at, presence: true
@@ -67,7 +70,30 @@ class AuthorizationRequest < ApplicationRecord
     self.class.transition_all(claimable, to: 'logged') == 1
   end
 
+  # Atomic open -> approved transition; false if no longer open or expired.
+  def authorize!
+    transition_open_to('approved')
+  end
+
+  # Atomic open -> denied transition; false if no longer open or expired.
+  def deny!
+    transition_open_to('denied')
+  end
+
+  def owned_by?(other)
+    user_id.present? && user_id == other&.id
+  end
+
   private
+
+  def transition_open_to(new_status) # rubocop:disable Naming/PredicateMethod
+    transitionable = self.class.where(id:, status: 'open').not_expired
+    return false unless self.class.transition_all(transitionable, to: new_status) == 1
+
+    self.status = new_status
+    clear_attribute_changes([:status])
+    true
+  end
 
   def start_defaults
     self.uuid ||= SecureRandom.uuid
