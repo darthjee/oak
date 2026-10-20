@@ -4,6 +4,7 @@ class User < ApplicationRecord
   validates :name, :login, :email, :encrypted_password, presence: true
 
   has_many :sessions
+  has_many :authorization_requests, dependent: :destroy
   has_many :subscriptions, class_name: 'Oak::Subscription', dependent: :destroy
   has_many :categories, through: :subscriptions, source: :category
   has_many :items, class_name: 'Oak::Item', dependent: :destroy
