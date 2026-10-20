@@ -45,6 +45,7 @@ export default function LoginModal({ show, onClose, onSuccess }) {
     {
       login,
       password,
+      keepSignedIn,
       incorrect,
       error,
     },
@@ -54,6 +55,7 @@ export default function LoginModal({ show, onClose, onSuccess }) {
       onSubmit: handleSubmit,
       onLoginChange: (event) => setLogin(event.target.value),
       onPasswordChange: (event) => setPassword(event.target.value),
+      onKeepSignedInChange: (event) => setKeepSignedIn(event.target.checked),
     }
   );
 }

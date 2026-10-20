@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-bootstrap/cjs/Modal.js';
 import Alert from '../Alert.jsx';
+import LabeledCheckbox from '../LabeledCheckbox.jsx';
 import LabeledInput from '../LabeledInput.jsx';
 
 /**
@@ -11,8 +12,8 @@ export default class LoginModalHelper {
    * Renders the login modal.
    *
    * @param {boolean} show whether the modal is visible
-   * @param {{login: string, password: string, incorrect: boolean, error: boolean}} state modal state
-   * @param {{onClose: Function, onCancel: Function, onSubmit: Function, onLoginChange: Function, onPasswordChange: Function}} handlers modal event handlers
+   * @param {{login: string, password: string, keepSignedIn: boolean, incorrect: boolean, error: boolean}} state modal state
+   * @param {{onClose: Function, onCancel: Function, onSubmit: Function, onLoginChange: Function, onPasswordChange: Function, onKeepSignedInChange: Function}} handlers modal event handlers
    * @returns {JSX.Element} rendered login modal
    */
   static render(show, state, handlers) {
@@ -38,6 +39,12 @@ export default class LoginModalHelper {
               type='password'
               value={state.password}
               onChange={handlers.onPasswordChange}
+            />
+            <LabeledCheckbox
+              id='keepSignedIn'
+              label='Keep me signed in'
+              checked={state.keepSignedIn}
+              onChange={handlers.onKeepSignedInChange}
             />
           </Modal.Body>
           <Modal.Footer>

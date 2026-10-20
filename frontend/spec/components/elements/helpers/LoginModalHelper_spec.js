@@ -1,6 +1,7 @@
 import LoginModalHelper from '../../../../assets/js/components/elements/helpers/LoginModalHelper.jsx';
 import Modal from 'react-bootstrap/cjs/Modal.js';
 import Alert from '../../../../assets/js/components/elements/Alert.jsx';
+import LabeledCheckbox from '../../../../assets/js/components/elements/LabeledCheckbox.jsx';
 import LabeledInput from '../../../../assets/js/components/elements/LabeledInput.jsx';
 
 const findElement = (node, matcher) => {
@@ -38,12 +39,14 @@ describe('LoginModalHelper', function() {
     onSubmit: jasmine.createSpy('onSubmit'),
     onLoginChange: jasmine.createSpy('onLoginChange'),
     onPasswordChange: jasmine.createSpy('onPasswordChange'),
+    onKeepSignedInChange: jasmine.createSpy('onKeepSignedInChange'),
   });
 
   it('renders the login fields and buttons', function() {
     const element = LoginModalHelper.render(true, {
       login: '',
       password: '',
+      keepSignedIn: false,
       incorrect: false,
       error: false,
     }, buildHandlers());
@@ -72,6 +75,7 @@ describe('LoginModalHelper', function() {
       LoginModalHelper.render(true, {
         login: '',
         password: '',
+        keepSignedIn: false,
         incorrect: true,
         error: false,
       }, buildHandlers())
@@ -80,6 +84,7 @@ describe('LoginModalHelper', function() {
       LoginModalHelper.render(true, {
         login: '',
         password: '',
+        keepSignedIn: false,
         incorrect: false,
         error: true,
       }, buildHandlers())
@@ -102,6 +107,7 @@ describe('LoginModalHelper', function() {
     const element = LoginModalHelper.render(true, {
       login: '',
       password: '',
+      keepSignedIn: false,
       incorrect: false,
       error: false,
     }, handlers);
@@ -120,5 +126,53 @@ describe('LoginModalHelper', function() {
     expect(handlers.onClose).toHaveBeenCalled();
     expect(handlers.onCancel).toHaveBeenCalled();
     expect(handlers.onSubmit).toHaveBeenCalledWith(submitEvent);
+  });
+
+  const findCheckbox = (element) => findElement(
+    element,
+    (child) => child.type === LabeledCheckbox && child.props.id === 'keepSignedIn'
+  );
+
+  it('renders the keep me signed in checkbox unchecked by default', function() {
+    const element = LoginModalHelper.render(true, {
+      login: '',
+      password: '',
+      keepSignedIn: false,
+      incorrect: false,
+      error: false,
+    }, buildHandlers());
+    const checkbox = findCheckbox(element);
+
+    expect(checkbox).not.toBeNull();
+    expect(checkbox.props.label).toBe('Keep me signed in');
+    expect(checkbox.props.checked).toBe(false);
+  });
+
+  it('reflects the keep me signed in state', function() {
+    const element = LoginModalHelper.render(true, {
+      login: '',
+      password: '',
+      keepSignedIn: true,
+      incorrect: false,
+      error: false,
+    }, buildHandlers());
+
+    expect(findCheckbox(element).props.checked).toBe(true);
+  });
+
+  it('wires the keep me signed in change handler', function() {
+    const handlers = buildHandlers();
+    const element = LoginModalHelper.render(true, {
+      login: '',
+      password: '',
+      keepSignedIn: false,
+      incorrect: false,
+      error: false,
+    }, handlers);
+    const event = { target: { checked: true } };
+
+    findCheckbox(element).props.onChange(event);
+
+    expect(handlers.onKeepSignedInChange).toHaveBeenCalledWith(event);
   });
 });
