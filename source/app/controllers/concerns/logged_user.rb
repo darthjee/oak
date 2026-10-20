@@ -13,7 +13,11 @@ module LoggedUser
   delegate :logged_user, :logged_session, to: :logged_user_processor
 
   def save_session
-    logged_user_processor.login(user)
+    logged_user_processor.login(user, keep_signed_in: keep_signed_in?)
+  end
+
+  def keep_signed_in?
+    false
   end
 
   def destroy_session

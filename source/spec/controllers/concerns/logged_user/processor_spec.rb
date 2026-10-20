@@ -57,6 +57,46 @@ describe LoggedUser::Processor do
           )
       end
     end
+
+    context 'when keep_signed_in is false' do
+      before do
+        processor.login(user, keep_signed_in: false)
+      end
+
+      it 'sets signed cookie to session id without expiration' do
+        expect(signed_cookies[:session]).to eq(session.id)
+      end
+
+      it 'creates a session with the regular expiration date' do
+        expect(session.expiration)
+          .to be_between(
+            Settings.session_period.from_now - 1.second,
+            Settings.session_period.from_now
+          )
+      end
+    end
+
+    context 'when keep_signed_in is true' do
+      before do
+        processor.login(user, keep_signed_in: true)
+      end
+
+      it 'creates a session with the long expiration date' do
+        expect(session.expiration)
+          .to be_between(
+            Settings.long_session_period.from_now - 1.second,
+            Settings.long_session_period.from_now
+          )
+      end
+
+      it 'sets signed cookie with session id' do
+        expect(signed_cookies[:session][:value]).to eq(session.id)
+      end
+
+      it 'sets signed cookie expiring with the session' do
+        expect(signed_cookies[:session][:expires]).to eq(session.expiration)
+      end
+    end
   end
 
   describe '#logged_user' do
