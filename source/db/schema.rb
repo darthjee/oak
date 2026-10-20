@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_20_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_20_130000) do
   create_table "active_settings", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", limit: 50, null: false
     t.string "value", null: false
@@ -124,6 +124,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_20_120000) do
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.integer "authorization_failed_attempts", default: 0, null: false
+    t.datetime "authorization_locked_until"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["login"], name: "index_users_on_login", unique: true
   end

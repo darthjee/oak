@@ -12,6 +12,8 @@ class ActiveSettings
     :authorization_request_create_limit,
     :authorization_request_create_window,
     :authorization_request_max_open,
+    :authorization_request_max_attempts,
+    :authorization_request_lock_period,
     :cache_age,
     :title,
     :favicon,

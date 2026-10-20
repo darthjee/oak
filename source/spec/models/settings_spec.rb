@@ -95,4 +95,20 @@ describe Settings do
       let(:expected_class) { Integer }
     end
   end
+
+  describe '.authorization_request_max_attempts' do
+    it_behaves_like 'a setting', :authorization_request_max_attempts do
+      let(:default_value)  { 5 }
+      let(:value)          { Random.rand(6..15) }
+      let(:expected_class) { Integer }
+    end
+  end
+
+  describe '.authorization_request_lock_period' do
+    it_behaves_like 'a setting', :authorization_request_lock_period do
+      let(:default_value)  { 5.minutes }
+      let(:value)          { Random.rand(600..1200) }
+      let(:expected_class) { ActiveSupport::Duration }
+    end
+  end
 end
