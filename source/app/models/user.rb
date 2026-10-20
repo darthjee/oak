@@ -36,7 +36,41 @@ class User < ApplicationRecord
     raise Oak::Exception::LoginFailed
   end
 
+  def authorization_locked?
+    authorization_locked_until.present? && authorization_locked_until > Time.zone.now
+  end
+
+  # Counts a wrong approver password; true only when this failure triggers the lock.
+  def register_authorization_failure! # rubocop:disable Naming/PredicateMethod
+    increment_authorization_failures
+    return false if authorization_failed_attempts < Settings.authorization_request_max_attempts
+
+    lock_authorization!
+    true
+  end
+
+  def reset_authorization_failures!
+    write_authorization_lockout(authorization_failed_attempts: 0)
+  end
+
   private
+
+  def increment_authorization_failures
+    self.class.update_counters(id, authorization_failed_attempts: 1) # rubocop:disable Rails/SkipsModelValidations
+    self.authorization_failed_attempts = self.class.where(id:).pick(:authorization_failed_attempts)
+    clear_attribute_changes([:authorization_failed_attempts])
+  end
+
+  def lock_authorization!
+    write_authorization_lockout(
+      authorization_failed_attempts: 0,
+      authorization_locked_until: Settings.authorization_request_lock_period.from_now
+    )
+  end
+
+  def write_authorization_lockout(**attributes)
+    update_columns(**attributes) # rubocop:disable Rails/SkipsModelValidations
+  end
 
   def encrypt_password(pass)
     plain = salt + pass + Settings.password_salt
