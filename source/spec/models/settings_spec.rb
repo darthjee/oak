@@ -63,4 +63,36 @@ describe Settings do
       let(:expected_class) { ActiveSupport::Duration }
     end
   end
+
+  describe '.authorization_request_period' do
+    it_behaves_like 'a setting', :authorization_request_period do
+      let(:default_value)  { 1.hour }
+      let(:value)          { Random.rand(3600..7200) }
+      let(:expected_class) { ActiveSupport::Duration }
+    end
+  end
+
+  describe '.authorization_request_create_limit' do
+    it_behaves_like 'a setting', :authorization_request_create_limit do
+      let(:default_value)  { 5 }
+      let(:value)          { Random.rand(6..15) }
+      let(:expected_class) { Integer }
+    end
+  end
+
+  describe '.authorization_request_create_window' do
+    it_behaves_like 'a setting', :authorization_request_create_window do
+      let(:default_value)  { 1.minute }
+      let(:value)          { Random.rand(120..600) }
+      let(:expected_class) { ActiveSupport::Duration }
+    end
+  end
+
+  describe '.authorization_request_max_open' do
+    it_behaves_like 'a setting', :authorization_request_max_open do
+      let(:default_value)  { 5 }
+      let(:value)          { Random.rand(6..15) }
+      let(:expected_class) { Integer }
+    end
+  end
 end
