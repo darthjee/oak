@@ -140,7 +140,8 @@ describe Admin::UsersController do
 
         let(:user_attributes) do
           user.attributes
-              .except('id', 'created_at', 'updated_at', 'encrypted_password', 'salt', 'admin')
+              .except('id', 'created_at', 'updated_at', 'encrypted_password', 'salt', 'admin',
+                      'authorization_failed_attempts', 'authorization_locked_until')
         end
 
         let(:expected_user_attributes) do

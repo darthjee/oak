@@ -22,6 +22,8 @@ class Settings
   setting_with_options(:authorization_request_create_limit, default: 5, type: :integer)
   setting_with_options(:authorization_request_create_window, default: 1.minute, type: :seconds)
   setting_with_options(:authorization_request_max_open, default: 5, type: :integer)
+  setting_with_options(:authorization_request_max_attempts, default: 5, type: :integer)
+  setting_with_options(:authorization_request_lock_period, default: 5.minutes, type: :seconds)
   setting_with_options(:cache_age, default: 1.second, type: :seconds)
   setting_with_options(:title, default: 'Oak')
   setting_with_options(:favicon, default: '/favicon.ico')
