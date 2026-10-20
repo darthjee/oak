@@ -68,6 +68,129 @@ describe LoginController do
       end
     end
 
+    context 'when sending keepSignedIn as JSON' do
+      let(:created_session) { Session.last }
+      let(:keep_signed_in_parameters) do
+        parameters.deep_merge(login: { keepSignedIn: keep_signed_in })
+      end
+      let(:session_cookie) do
+        Array(response.headers['Set-Cookie'])
+          .flat_map { |header| header.split("\n") }
+          .find { |header| header.start_with?('session=') }
+      end
+
+      context 'when keepSignedIn is true' do
+        let(:keep_signed_in) { true }
+
+        before do
+          post :create, params: keep_signed_in_parameters, as: :json
+        end
+
+        it { expect(response).to be_successful }
+
+        it 'returns session serialized' do
+          expect(response.body).to eq(expected_json)
+        end
+
+        it 'creates a session with the long expiration' do
+          expect(created_session.expiration)
+            .to be_in(
+              Settings.session_period.from_now..Settings.long_session_period.from_now
+            )
+        end
+
+        it 'stores session in cookies' do
+          expect(cookies.signed[:session]).to eq(created_session.id)
+        end
+
+        it 'sets a persistent cookie' do
+          expect(session_cookie).to match(/expires=/i)
+        end
+      end
+
+      context 'when keepSignedIn is false' do
+        let(:keep_signed_in) { false }
+
+        before do
+          post :create, params: keep_signed_in_parameters, as: :json
+        end
+
+        it { expect(response).to be_successful }
+
+        it 'creates a session with the regular expiration' do
+          expect(created_session.expiration)
+            .to be_in(Time.zone.now..Settings.session_period.from_now)
+        end
+
+        it 'stores session in cookies' do
+          expect(cookies.signed[:session]).to eq(created_session.id)
+        end
+
+        it 'sets a session-only cookie' do
+          expect(session_cookie).to match(/\Asession=(?!.*expires=)/i)
+        end
+      end
+
+      context 'when keepSignedIn is missing' do
+        before do
+          post :create, params: parameters, as: :json
+        end
+
+        it { expect(response).to be_successful }
+
+        it 'creates a session with the regular expiration' do
+          expect(created_session.expiration)
+            .to be_in(Time.zone.now..Settings.session_period.from_now)
+        end
+
+        it 'sets a session-only cookie' do
+          expect(session_cookie).to match(/\Asession=(?!.*expires=)/i)
+        end
+      end
+
+      context 'when keepSignedIn is not a boolean' do
+        let(:keep_signed_in) { 'yes' }
+
+        it 'does not create a session' do
+          expect { post :create, params: keep_signed_in_parameters, as: :json }
+            .not_to change(Session, :count)
+        end
+
+        context 'when the request is completed' do
+          before do
+            post :create, params: keep_signed_in_parameters, as: :json
+          end
+
+          it { expect(response).to have_http_status(:bad_request) }
+
+          it 'returns an error message' do
+            expect(response.parsed_body)
+              .to eq('message' => 'keepSignedIn must be a boolean')
+          end
+
+          it 'does not set the session cookie' do
+            expect(session_cookie).to be_nil
+          end
+        end
+      end
+
+      context 'when keepSignedIn is true but the password is wrong' do
+        let(:keep_signed_in)   { true }
+        let(:request_password) { 'wrong_pass' }
+
+        it 'does not create a session' do
+          expect { post :create, params: keep_signed_in_parameters, as: :json }
+            .not_to change(Session, :count)
+        end
+
+        it do
+          post :create, params: keep_signed_in_parameters, as: :json
+
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+    end
+
     context 'when request is a failure due to bad password' do
       let(:request_password) { 'wrong_pass' }
 
