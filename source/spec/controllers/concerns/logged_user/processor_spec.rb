@@ -25,6 +25,8 @@ describe LoggedUser::Processor do
   describe '#login' do
     let(:session) { Session.last }
 
+    before { freeze_time }
+
     it 'creates a session' do
       expect { processor.login(user) }
         .to change(Session, :count).by(1)
@@ -51,10 +53,7 @@ describe LoggedUser::Processor do
 
       it 'creates a session with expiration date' do
         expect(session.expiration)
-          .to be_between(
-            Settings.session_period.from_now - 1.second,
-            Settings.session_period.from_now
-          )
+          .to eq(Settings.session_period.from_now)
       end
     end
 
@@ -69,10 +68,7 @@ describe LoggedUser::Processor do
 
       it 'creates a session with the regular expiration date' do
         expect(session.expiration)
-          .to be_between(
-            Settings.session_period.from_now - 1.second,
-            Settings.session_period.from_now
-          )
+          .to eq(Settings.session_period.from_now)
       end
     end
 
@@ -83,10 +79,7 @@ describe LoggedUser::Processor do
 
       it 'creates a session with the long expiration date' do
         expect(session.expiration)
-          .to be_between(
-            Settings.long_session_period.from_now - 1.second,
-            Settings.long_session_period.from_now
-          )
+          .to eq(Settings.long_session_period.from_now)
       end
 
       it 'sets signed cookie with session id' do
