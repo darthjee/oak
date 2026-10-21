@@ -94,4 +94,72 @@ describe('AuthorizationRequestsClient', function() {
       expect(response).toEqual({ ok: true });
     });
   });
+  describe('#mine', function() {
+    it('posts an empty body to the mine endpoint', async function() {
+      await client.mine();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/mine.json',
+        expectedRequest({})
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.mine();
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
+
+  describe('#authorize', function() {
+    it('posts the password to the authorize endpoint', async function() {
+      await client.authorize('abc-123', 'secret');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/abc-123/authorize.json',
+        expectedRequest({ password: 'secret' })
+      );
+    });
+
+    it('encodes the uuid in the path', async function() {
+      await client.authorize('a/b c', 'secret');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/a%2Fb%20c/authorize.json',
+        expectedRequest({ password: 'secret' })
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.authorize('abc-123', 'secret');
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
+
+  describe('#deny', function() {
+    it('posts an empty body to the deny endpoint', async function() {
+      await client.deny('abc-123');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/abc-123/deny.json',
+        expectedRequest({})
+      );
+    });
+
+    it('encodes the uuid in the path', async function() {
+      await client.deny('a/b c');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/a%2Fb%20c/deny.json',
+        expectedRequest({})
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.deny('abc-123');
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
 });
