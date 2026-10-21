@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../elements/Header.jsx';
+import Authorizations from '../pages/Authorizations.jsx';
 import Category from '../pages/Category.jsx';
 import CategoryEdit from '../pages/CategoryEdit.jsx';
 import Categories from '../pages/Categories.jsx';
@@ -14,6 +15,7 @@ import KindNew from '../pages/KindNew.jsx';
 import Kinds from '../pages/Kinds.jsx';
 
 const PAGES = {
+  authorizations: <Authorizations />,
   category: <Category />,
   categoryEdit: <CategoryEdit />,
   categories: <Categories />,
