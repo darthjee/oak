@@ -1,5 +1,6 @@
 import HeaderClient from '../../../client/HeaderClient.js';
 import { isLoggedIn, setLoggedIn, subscribe } from '../../../utils/authState.js';
+import LoginModalEvents from '../../../utils/LoginModalEvents.js';
 
 /**
  * Manages header state by fetching login status and categories from the API.
@@ -12,6 +13,8 @@ export default class HeaderController {
    * @param {Function} setCategories state setter for updating the categories list
    * @param {Function} setLoading state setter for updating the loading flag
    * @param {Function} setError state setter for updating the error message
+   * @param {Function} [setShowModal] state setter for showing or hiding the login modal
+   * @param {Function} [setModalMode] state setter for the login modal mode
    * @param {HeaderClient} [client] HTTP client used for API calls
    */
   constructor(
@@ -19,12 +22,16 @@ export default class HeaderController {
     setCategories,
     setLoading,
     setError,
+    setShowModal,
+    setModalMode,
     client = new HeaderClient()
   ) {
     this.setLogged = setLogged;
     this.setCategories = setCategories;
     this.setLoading = setLoading;
     this.setError = setError;
+    this.setShowModal = setShowModal;
+    this.setModalMode = setModalMode;
     this.client = client;
 
     this.handleLogoff = this.handleLogoff.bind(this);
@@ -54,6 +61,18 @@ export default class HeaderController {
   }
 
   /**
+   * Builds the React effect that listens to `LoginModalEvents` while mounted.
+   *
+   * Open requests are ignored while the user is logged in; close requests
+   * always hide the modal.
+   *
+   * @returns {Function} effect function that subscribes and returns the unsubscribe function
+   */
+  buildModalEffect() {
+    return () => LoginModalEvents.subscribe((detail) => this.#handleModalEvent(detail));
+  }
+
+  /**
    * Handles a logoff action triggered by the user.
    *
    * @param {Event} [event] optional DOM event; `preventDefault` is called when present
@@ -80,6 +99,21 @@ export default class HeaderController {
     safeSet(this.setError, null);
 
     return this.#loadHeaderData(safeSet);
+  }
+
+  #handleModalEvent(detail) {
+    if (!detail?.open) {
+      this.setShowModal(false);
+      return;
+    }
+
+    if (isLoggedIn()) {
+      this.setShowModal(false);
+      return;
+    }
+
+    this.setModalMode(detail.mode);
+    this.setShowModal(true);
   }
 
   #checkLogin(safeSet) {
