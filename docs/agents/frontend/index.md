@@ -5,6 +5,7 @@ The Oak front-end is a React + Vite SPA located in `frontend/`. It runs in its o
 Reference implementations: `../navi/frontend/src/components/` (component pattern) and `../weave/frontend/` (build/tooling setup).
 
 - [Component Pattern](component-pattern.md) — Component/Controller/Helper architecture, adding a new page or element, routing utilities.
+- [Login Modal and Device Authorization](login-and-device-authorization.md) — login-modal event bus, `onAuthSuccess`, Account dropdown, device mode and poller, Authorizations page.
 - [Dev Workflow](dev-workflow.md) — running locally, building for production, tests/lint, Docker setup, proxy modes.
 - [Linting](linting.md) — ESLint rules and JSDoc conventions.
 - [Examples](examples.md) — component/controller/helper code snippets.
