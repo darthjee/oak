@@ -101,6 +101,12 @@ describe('AppHelper', function() {
       expect(html).toContain('Loading kind new form...');
     });
 
+    it('renders the Authorizations component for "authorizations" page', function() {
+      const html = renderPage('authorizations');
+
+      expect(html).toContain('<h1>Authorizations</h1>');
+    });
+
     it('uses the provided hash as the page fragment key', function() {
       const element = AppHelper.render('home', '#/categories?page=2&per_page=10');
 

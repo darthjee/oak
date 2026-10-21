@@ -138,4 +138,70 @@ describe('HeaderHelper', function() {
 
     expect(handlers.onLogoff).toHaveBeenCalled();
   });
+
+  describe('Account dropdown', function() {
+    const findLink = (element, text) => findElement(
+      element,
+      (child) => child.type === 'a' && child.props.children === text
+    );
+
+    it('renders Account with Authorizations then Logoff when logged in', function() {
+      const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+      const accountIndex = html.indexOf('>Account<');
+      const authorizationsIndex = html.indexOf('>Authorizations<');
+      const logoffIndex = html.indexOf('>Logoff<');
+
+      expect(accountIndex).toBeGreaterThan(-1);
+      expect(authorizationsIndex).toBeGreaterThan(accountIndex);
+      expect(logoffIndex).toBeGreaterThan(authorizationsIndex);
+    });
+
+    it('links Authorizations to the authorizations route', function() {
+      const link = findLink(HeaderHelper.render(true, [], buildHandlers()), 'Authorizations');
+
+      expect(link.props.href).toEqual('/#/authorizations');
+      expect(link.props.className).toEqual('dropdown-item');
+    });
+
+    it('renders Logoff only as a dropdown item', function() {
+      const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+      const link = findLink(HeaderHelper.render(true, [], buildHandlers()), 'Logoff');
+
+      expect(link.props.className).toEqual('dropdown-item');
+      expect(html.match(/>Logoff</g).length).toEqual(1);
+    });
+
+    it('does not render the Login link when logged in', function() {
+      const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+
+      expect(html).not.toContain('>Login<');
+    });
+
+    it('hides the Account dropdown when logged out', function() {
+      const html = renderToStaticMarkup(HeaderHelper.render(false, [], buildHandlers()));
+
+      expect(html).toContain('>Login<');
+      expect(html).not.toContain('Account');
+      expect(html).not.toContain('Authorizations');
+    });
+  });
+
+  describe('login modal mode', function() {
+    const findModal = (handlers) => findElement(
+      HeaderHelper.render(false, [], handlers),
+      (child) => child.type === LoginModal
+    );
+
+    it('passes the modal mode to LoginModal', function() {
+      const modal = findModal(buildHandlers({ modalMode: 'device' }));
+
+      expect(modal.props.mode).toEqual('device');
+    });
+
+    it('defaults the modal mode to password', function() {
+      const modal = findModal(buildHandlers());
+
+      expect(modal.props.mode).toEqual('password');
+    });
+  });
 });

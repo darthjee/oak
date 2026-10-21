@@ -124,6 +124,12 @@ describe('HashRouteResolver', function() {
       expect(resolver.getPage()).not.toBe('kind');
     });
 
+    it('returns "authorizations" for authorizations routes', function() {
+      const resolver = new HashRouteResolver(() => '#/authorizations');
+
+      expect(resolver.getPage()).toBe('authorizations');
+    });
+
     it('returns "home" for unrecognized routes', function() {
       const resolver = new HashRouteResolver(() => '#/other');
 
