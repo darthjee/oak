@@ -3,34 +3,7 @@ import Modal from 'react-bootstrap/cjs/Modal.js';
 import Alert from '../../../../assets/js/components/elements/Alert.jsx';
 import LabeledCheckbox from '../../../../assets/js/components/elements/LabeledCheckbox.jsx';
 import LabeledInput from '../../../../assets/js/components/elements/LabeledInput.jsx';
-
-const findElement = (node, matcher) => {
-  if (!node) {
-    return null;
-  }
-
-  if (Array.isArray(node)) {
-    for (const child of node) {
-      const match = findElement(child, matcher);
-
-      if (match) {
-        return match;
-      }
-    }
-
-    return null;
-  }
-
-  if (typeof node !== 'object') {
-    return null;
-  }
-
-  if (matcher(node)) {
-    return node;
-  }
-
-  return findElement(node.props?.children, matcher);
-};
+import { findButton, findElement } from '../../../support/elementFinder.js';
 
 describe('LoginModalHelper', function() {
   const buildHandlers = () => ({
@@ -40,6 +13,9 @@ describe('LoginModalHelper', function() {
     onLoginChange: jasmine.createSpy('onLoginChange'),
     onPasswordChange: jasmine.createSpy('onPasswordChange'),
     onKeepSignedInChange: jasmine.createSpy('onKeepSignedInChange'),
+    onModeChange: jasmine.createSpy('onModeChange'),
+    onTryAgain: jasmine.createSpy('onTryAgain'),
+    onDeviceSubmit: jasmine.createSpy('onDeviceSubmit'),
   });
 
   it('renders the login fields and buttons', function() {
@@ -174,5 +150,55 @@ describe('LoginModalHelper', function() {
     findCheckbox(element).props.onChange(event);
 
     expect(handlers.onKeepSignedInChange).toHaveBeenCalledWith(event);
+  });
+
+  const buildState = (overrides = {}) => ({
+    login: '',
+    password: '',
+    keepSignedIn: false,
+    incorrect: false,
+    error: false,
+    mode: 'password',
+    panel: 'form',
+    submitError: null,
+    networkError: false,
+    countdown: '00:00',
+    ...overrides,
+  });
+
+  describe('tabs', function() {
+    it('renders both tabs with password active by default', function() {
+      const element = LoginModalHelper.render(true, buildState(), buildHandlers());
+      const passwordTab = findButton(element, 'Log in with password');
+      const deviceTab = findButton(element, 'Authorize with logged device');
+
+      expect(passwordTab.props.className).toContain('active');
+      expect(deviceTab.props.className).not.toContain('active');
+    });
+
+    it('marks the device tab active in device mode', function() {
+      const element = LoginModalHelper.render(true, buildState({ mode: 'device' }), buildHandlers());
+
+      expect(findButton(element, 'Authorize with logged device').props.className).toContain('active');
+      expect(findButton(element, 'Log in with password').props.className).not.toContain('active');
+    });
+
+    it('calls onModeChange with the clicked mode', function() {
+      const handlers = buildHandlers();
+      const element = LoginModalHelper.render(true, buildState(), handlers);
+
+      findButton(element, 'Authorize with logged device').props.onClick();
+      findButton(element, 'Log in with password').props.onClick();
+
+      expect(handlers.onModeChange.calls.allArgs()).toEqual([['device'], ['password']]);
+    });
+
+    it('renders tabs when state has no mode or panel', function() {
+      const element = LoginModalHelper.render(true, {
+        login: '', password: '', keepSignedIn: false, incorrect: false, error: false,
+      }, buildHandlers());
+
+      expect(findButton(element, 'Log in with password').props.className).toContain('active');
+    });
   });
 });
