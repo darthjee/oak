@@ -39,31 +39,9 @@ export default class LoginModalController {
    *   authorization requests
    * @param {AuthorizationRequestPoller} [options.poller] poller for authorization requests
    */
-  constructor(setters, {
-    onSuccess = null,
-    client = new LoginModalClient(),
-    requestsClient = new AuthorizationRequestsClient(),
-    poller = null,
-  } = {}) {
-    this.setLogin = setters.setLogin;
-    this.setPassword = setters.setPassword;
-    this.setKeepSignedIn = setters.setKeepSignedIn;
-    this.setIncorrect = setters.setIncorrect;
-    this.setError = setters.setError;
-    this.setMode = setters.setMode || noop;
-    this.setPanel = setters.setPanel || noop;
-    this.setSubmitError = setters.setSubmitError || noop;
-    this.setNetworkError = setters.setNetworkError || noop;
-    this.setExpiresAt = setters.setExpiresAt || noop;
-    this.onSuccess = onSuccess;
-    this.client = client;
-    this.requestsClient = requestsClient;
-    this.poller = poller || new AuthorizationRequestPoller({
-      client: requestsClient,
-      onApproved: () => this.#handleApproved(),
-      onFinal: (panel) => this.#handleFinal(panel),
-      onNetworkError: (failing) => this.setNetworkError(failing),
-    });
+  constructor(setters, options = {}) {
+    this.#assignSetters(setters);
+    this.#assignCollaborators(options);
   }
 
   /**
@@ -173,6 +151,31 @@ export default class LoginModalController {
    */
   stop() {
     this.poller.stop();
+  }
+
+  #assignSetters(setters) {
+    this.setLogin = setters.setLogin;
+    this.setPassword = setters.setPassword;
+    this.setKeepSignedIn = setters.setKeepSignedIn;
+    this.setIncorrect = setters.setIncorrect;
+    this.setError = setters.setError;
+    this.setMode = setters.setMode || noop;
+    this.setPanel = setters.setPanel || noop;
+    this.setSubmitError = setters.setSubmitError || noop;
+    this.setNetworkError = setters.setNetworkError || noop;
+    this.setExpiresAt = setters.setExpiresAt || noop;
+  }
+
+  #assignCollaborators({ onSuccess = null, client, requestsClient, poller }) {
+    this.onSuccess = onSuccess;
+    this.client = client || new LoginModalClient();
+    this.requestsClient = requestsClient || new AuthorizationRequestsClient();
+    this.poller = poller || new AuthorizationRequestPoller({
+      client: this.requestsClient,
+      onApproved: () => this.#handleApproved(),
+      onFinal: (panel) => this.#handleFinal(panel),
+      onNetworkError: (failing) => this.setNetworkError(failing),
+    });
   }
 
   #succeed() {
