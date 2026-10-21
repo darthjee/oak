@@ -9,6 +9,7 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Architecture — Infrastructure](architecture/infrastructure.md) | Docker service topology, how frontend-serving requests route through the reverse proxy to Rails, and the production proxy configuration and deploy. |
 | [Architecture — Photo Storage & Serving](architecture/photo-storage.md) | Prod on-disk photo layout and serving invariant, static `/photos` and `/snaps` rules, dev vs prod values, `OAK_PHOTOS_SERVER_URL`, and the prod photo checklist. |
 | [Architecture — Backend Layout](architecture/backend-layout.md) | `source/app/` directory layout, key gems, and the template rendering pattern (pure JSON API). |
+| [Architecture — Device Authorization](architecture/device-authorization.md) | "Authorize with logged device" login: requester/approver roles, flow, status machine, `authorization_requests` table, lockout columns, settings, "Keep me signed in", and security mitigations. |
 | [Flow](flow.md) | Main runtime flow: entry points, SPA page load, auxiliary routes, and two complete worked examples. |
 | [Routes](routes/index.md) | How resource vs. utility routes are categorized; links to the full route tables. |
 | [Routes — Resource Routes](routes/resource-routes.md) | Full table of SPA resource routes: Home, Categories, Items, Kinds, Admin — Users, Forbidden. |
@@ -21,6 +22,7 @@ Index of every document under `docs/agents/`, each with a short description and 
 | [Photo Upload — Resizing & Storage](photo_upload/resizing-and-storage.md) | The `origin/`, `photos/` and `snaps/` versions the proxy writes on Submit, GD resize rules, failure handling, delete of all three files, and specs. |
 | [Front-End](frontend/index.md) | Runtime boot flow, directory structure, and Pages vs. Elements; links to the component pattern, dev workflow, and linting pages. |
 | [Front-End — Component Pattern](frontend/component-pattern.md) | Component/Controller/Helper architecture, adding a new page or element, and routing utilities. |
+| [Front-End — Login Modal and Device Authorization](frontend/login-and-device-authorization.md) | Login-modal event bus, `onAuthSuccess`, Account dropdown, login modal modes and device poller, Authorizations page, and `AuthorizationRequestsClient`. |
 | [Front-End — Dev Workflow](frontend/dev-workflow.md) | Running locally, building for production, tests/lint commands, Docker setup, and proxy modes. |
 | [Front-End — Linting](frontend/linting.md) | ESLint rules and JSDoc conventions enforced on `frontend/assets/js/`. |
 | [Front-End — Examples](frontend/examples.md) | Component/controller/helper code snippets referenced by the component pattern page. |
