@@ -1,6 +1,7 @@
 import AuthorizationsHelper from '../../../../assets/js/components/pages/helpers/AuthorizationsHelper.jsx';
 import { buildSpies, renderStatic } from '../../../support/factories.js';
 import { findButton, findElement } from '../../../support/elementFinder.js';
+import { randomCredential } from '../../../support/testCredentials.js';
 
 const NOW = new Date('2026-10-21T10:30:00Z');
 
@@ -157,16 +158,22 @@ describe('AuthorizationsHelper', function() {
     });
 
     describe('when the row form is open', function() {
-      const rows = {
-        'abc-123': { formOpen: true, password: 'secret', error: null, submitting: false },
-      };
+      let typedPassword;
+      let rows;
+
+      beforeEach(function() {
+        typedPassword = randomCredential();
+        rows = {
+          'abc-123': { formOpen: true, password: typedPassword, error: null, submitting: false },
+        };
+      });
 
       it('renders the password input and confirm button', function() {
         const element = render({ rows });
         const html = renderStatic(element);
 
         expect(html).toContain('type="password"');
-        expect(html).toContain('value="secret"');
+        expect(html).toContain(`value="${typedPassword}"`);
         expect(html).toContain('Confirm');
         expect(findButton(element, 'Authorize')).toBeNull();
       });

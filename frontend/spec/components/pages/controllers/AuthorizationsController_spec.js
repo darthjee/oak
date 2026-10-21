@@ -6,6 +6,7 @@ import {
   sampleRequest,
 } from '../../../support/authorizationsControllerContext.js';
 import { flushPromises } from '../../../support/factories.js';
+import { randomCredential } from '../../../support/testCredentials.js';
 
 describe('AuthorizationsController', function() {
   let context;
@@ -14,8 +15,12 @@ describe('AuthorizationsController', function() {
   let controller;
   let modalEvents;
   let lastRows;
+  let typedPassword;
+  let otherPassword;
 
   beforeEach(function() {
+    typedPassword = randomCredential();
+    otherPassword = randomCredential();
     context = buildAuthorizationsContext();
     ({ spies, client, controller, modalEvents, lastRows } = context);
   });
@@ -162,16 +167,16 @@ describe('AuthorizationsController', function() {
 
     it('stores the password', function() {
       controller.openAuthorize('abc-123');
-      controller.setPassword('abc-123', 'secret');
+      controller.setPassword('abc-123', typedPassword);
 
       expect(lastRows()['abc-123']).toEqual({
-        formOpen: true, password: 'secret', error: null, submitting: false,
+        formOpen: true, password: typedPassword, error: null, submitting: false,
       });
     });
 
     it('closes the form and discards the password', function() {
       controller.openAuthorize('abc-123');
-      controller.setPassword('abc-123', 'secret');
+      controller.setPassword('abc-123', typedPassword);
       controller.closeAuthorize('abc-123');
 
       expect(lastRows()['abc-123']).toEqual(jasmine.objectContaining({
@@ -180,11 +185,11 @@ describe('AuthorizationsController', function() {
     });
 
     it('keeps rows independent', function() {
-      controller.setPassword('abc-123', 'one');
-      controller.setPassword('def-456', 'two');
+      controller.setPassword('abc-123', typedPassword);
+      controller.setPassword('def-456', otherPassword);
 
-      expect(lastRows()['abc-123'].password).toBe('one');
-      expect(lastRows()['def-456'].password).toBe('two');
+      expect(lastRows()['abc-123'].password).toBe(typedPassword);
+      expect(lastRows()['def-456'].password).toBe(otherPassword);
     });
   });
 

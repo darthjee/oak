@@ -1,9 +1,12 @@
 import AuthorizationRequestsClient from '../../assets/js/client/AuthorizationRequestsClient.js';
 import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
+import { randomCredential } from '../support/testCredentials.js';
 
 describe('AuthorizationRequestsClient', function() {
   let restoreGlobals;
   let client;
+  let typedPassword;
+  let pollToken;
 
   const expectedRequest = (body) => ({
     method: 'POST',
@@ -16,6 +19,8 @@ describe('AuthorizationRequestsClient', function() {
   });
 
   beforeEach(function() {
+    typedPassword = randomCredential();
+    pollToken = randomCredential('token');
     restoreGlobals = preserveGlobals('fetch');
     stubFetchResponse({ ok: true });
     client = new AuthorizationRequestsClient();
@@ -71,25 +76,25 @@ describe('AuthorizationRequestsClient', function() {
 
   describe('#poll', function() {
     it('posts the poll token to the request poll endpoint', async function() {
-      await client.poll('abc-123', 'secret-token');
+      await client.poll('abc-123', pollToken);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/abc-123/poll.json',
-        expectedRequest({ pollToken: 'secret-token' })
+        expectedRequest({ pollToken })
       );
     });
 
     it('encodes the uuid in the path', async function() {
-      await client.poll('a/b c', 'secret-token');
+      await client.poll('a/b c', pollToken);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/a%2Fb%20c/poll.json',
-        expectedRequest({ pollToken: 'secret-token' })
+        expectedRequest({ pollToken })
       );
     });
 
     it('returns the fetch response', async function() {
-      const response = await client.poll('abc-123', 'secret-token');
+      const response = await client.poll('abc-123', pollToken);
 
       expect(response).toEqual({ ok: true });
     });
@@ -113,25 +118,25 @@ describe('AuthorizationRequestsClient', function() {
 
   describe('#authorize', function() {
     it('posts the password to the authorize endpoint', async function() {
-      await client.authorize('abc-123', 'secret');
+      await client.authorize('abc-123', typedPassword);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/abc-123/authorize.json',
-        expectedRequest({ password: 'secret' })
+        expectedRequest({ password: typedPassword })
       );
     });
 
     it('encodes the uuid in the path', async function() {
-      await client.authorize('a/b c', 'secret');
+      await client.authorize('a/b c', typedPassword);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/a%2Fb%20c/authorize.json',
-        expectedRequest({ password: 'secret' })
+        expectedRequest({ password: typedPassword })
       );
     });
 
     it('returns the fetch response', async function() {
-      const response = await client.authorize('abc-123', 'secret');
+      const response = await client.authorize('abc-123', typedPassword);
 
       expect(response).toEqual({ ok: true });
     });

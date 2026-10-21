@@ -4,6 +4,7 @@ import {
   buildResponse,
   sampleRequest,
 } from '../../../support/authorizationsControllerContext.js';
+import { randomCredential } from '../../../support/testCredentials.js';
 
 describe('AuthorizationsController actions', function() {
   let context;
@@ -12,8 +13,10 @@ describe('AuthorizationsController actions', function() {
   let controller;
   let modalEvents;
   let lastRows;
+  let typedPassword;
 
   beforeEach(function() {
+    typedPassword = randomCredential();
     context = buildAuthorizationsContext();
     ({ spies, client, controller, modalEvents, lastRows } = context);
   });
@@ -25,14 +28,14 @@ describe('AuthorizationsController actions', function() {
   describe('#authorize', function() {
     beforeEach(function() {
       controller.openAuthorize('abc-123');
-      controller.setPassword('abc-123', 'secret');
+      controller.setPassword('abc-123', typedPassword);
       client.mine.calls.reset();
     });
 
     it('sends the typed password', async function() {
       await controller.authorize('abc-123');
 
-      expect(client.authorize).toHaveBeenCalledWith('abc-123', 'secret');
+      expect(client.authorize).toHaveBeenCalledWith('abc-123', typedPassword);
     });
 
     it('clears the row state and refreshes on success', async function() {
@@ -132,7 +135,7 @@ describe('AuthorizationsController actions', function() {
     });
 
     it('clears the row state and refreshes on success', async function() {
-      controller.setPassword('abc-123', 'x');
+      controller.setPassword('abc-123', typedPassword);
 
       await controller.deny('abc-123');
 
