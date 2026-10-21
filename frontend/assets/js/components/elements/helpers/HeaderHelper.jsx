@@ -37,7 +37,7 @@ export default class HeaderHelper {
    *
    * @param {boolean} logged whether the current user is logged in
    * @param {Array<Object>} categories list of category objects to display
-   * @param {{onLogoff: Function, onLoginClick: Function, onCloseModal: Function, onAuthSuccess: Function, showModal: boolean}} handlers callbacks and modal state
+   * @param {{onLogoff: Function, onLoginClick: Function, onCloseModal: Function, onAuthSuccess: Function, showModal: boolean, modalMode: ('password'|'device')}} handlers callbacks and modal state
    * @returns {JSX.Element} header shell with categories menu and auth controls
    */
   static render(logged, categories, handlers) {
@@ -130,15 +130,7 @@ export default class HeaderHelper {
 
   static #renderAuth(logged, handlers) {
     if (logged) {
-      return (
-        <ul className='nav navbar-nav'>
-          <li>
-            <a className='nav-link' href='' onClick={handlers.onLogoff}>
-              Logoff
-            </a>
-          </li>
-        </ul>
-      );
+      return this.#renderAccountMenu(handlers);
     }
 
     return (
@@ -159,10 +151,43 @@ export default class HeaderHelper {
     );
   }
 
+  /**
+   * Renders the Account dropdown shown to logged-in users.
+   *
+   * @param {{onLogoff: Function}} handlers callbacks used by the menu entries
+   * @returns {JSX.Element} dropdown with Authorizations and Logoff entries
+   */
+  static #renderAccountMenu(handlers) {
+    return (
+      <ul className='navbar-nav dropdown'>
+        <li className='nav-item p-2'>
+          <a
+            className='nav-link dropdown-toggle'
+            href='#'
+            role='button'
+            data-bs-toggle='dropdown'
+            aria-expanded='false'
+          >
+            Account
+          </a>
+          <div className='dropdown-menu'>
+            <a className='dropdown-item' href='/#/authorizations'>
+              Authorizations
+            </a>
+            <a className='dropdown-item' href='' onClick={handlers.onLogoff}>
+              Logoff
+            </a>
+          </div>
+        </li>
+      </ul>
+    );
+  }
+
   static #renderLoginModal(handlers) {
     return (
       <LoginModal
         show={Boolean(handlers.showModal)}
+        mode={handlers.modalMode || 'password'}
         onClose={handlers.onCloseModal}
         onSuccess={handlers.onAuthSuccess}
       />
