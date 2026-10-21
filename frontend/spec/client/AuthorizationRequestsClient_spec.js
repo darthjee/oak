@@ -1,9 +1,15 @@
 import AuthorizationRequestsClient from '../../assets/js/client/AuthorizationRequestsClient.js';
 import { preserveGlobals, stubFetchResponse } from '../support/factories.js';
+import { randomCredential } from '../support/testCredentials.js';
+
+const uuid = 'abc-123';
+const unsafeUuid = 'a/b c';
 
 describe('AuthorizationRequestsClient', function() {
   let restoreGlobals;
   let client;
+  let typedPassword;
+  let pollToken;
 
   const expectedRequest = (body) => ({
     method: 'POST',
@@ -16,6 +22,8 @@ describe('AuthorizationRequestsClient', function() {
   });
 
   beforeEach(function() {
+    typedPassword = randomCredential();
+    pollToken = randomCredential('token');
     restoreGlobals = preserveGlobals('fetch');
     stubFetchResponse({ ok: true });
     client = new AuthorizationRequestsClient();
@@ -71,25 +79,93 @@ describe('AuthorizationRequestsClient', function() {
 
   describe('#poll', function() {
     it('posts the poll token to the request poll endpoint', async function() {
-      await client.poll('abc-123', 'secret-token');
+      await client.poll(uuid, pollToken);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/abc-123/poll.json',
-        expectedRequest({ pollToken: 'secret-token' })
+        expectedRequest({ pollToken })
       );
     });
 
     it('encodes the uuid in the path', async function() {
-      await client.poll('a/b c', 'secret-token');
+      await client.poll(unsafeUuid, pollToken);
 
       expect(global.fetch).toHaveBeenCalledWith(
         '/auth/authorization-requests/a%2Fb%20c/poll.json',
-        expectedRequest({ pollToken: 'secret-token' })
+        expectedRequest({ pollToken })
       );
     });
 
     it('returns the fetch response', async function() {
-      const response = await client.poll('abc-123', 'secret-token');
+      const response = await client.poll(uuid, pollToken);
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
+  describe('#mine', function() {
+    it('posts an empty body to the mine endpoint', async function() {
+      await client.mine();
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/mine.json',
+        expectedRequest({})
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.mine();
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
+
+  describe('#authorize', function() {
+    it('posts the password to the authorize endpoint', async function() {
+      await client.authorize(uuid, typedPassword);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/abc-123/authorize.json',
+        expectedRequest({ password: typedPassword })
+      );
+    });
+
+    it('encodes the uuid in the path', async function() {
+      await client.authorize(unsafeUuid, typedPassword);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/a%2Fb%20c/authorize.json',
+        expectedRequest({ password: typedPassword })
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.authorize(uuid, typedPassword);
+
+      expect(response).toEqual({ ok: true });
+    });
+  });
+
+  describe('#deny', function() {
+    it('posts an empty body to the deny endpoint', async function() {
+      await client.deny(uuid);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/abc-123/deny.json',
+        expectedRequest({})
+      );
+    });
+
+    it('encodes the uuid in the path', async function() {
+      await client.deny(unsafeUuid);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/auth/authorization-requests/a%2Fb%20c/deny.json',
+        expectedRequest({})
+      );
+    });
+
+    it('returns the fetch response', async function() {
+      const response = await client.deny(uuid);
 
       expect(response).toEqual({ ok: true });
     });

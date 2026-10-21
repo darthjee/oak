@@ -31,6 +31,42 @@ export default class AuthorizationRequestsClient {
   }
 
   /**
+   * Lists the current user's open authorization requests.
+   *
+   * @returns {Promise<Response>} fetch response from the mine endpoint
+   */
+  mine() {
+    return this.#post('/auth/authorization-requests/mine.json', {});
+  }
+
+  /**
+   * Authorizes an authorization request, confirming with the user's password.
+   *
+   * @param {string} uuid authorization request identifier
+   * @param {string} password current user's password
+   * @returns {Promise<Response>} fetch response from the authorize endpoint
+   */
+  authorize(uuid, password) {
+    return this.#post(
+      `/auth/authorization-requests/${encodeURIComponent(uuid)}/authorize.json`,
+      { password }
+    );
+  }
+
+  /**
+   * Denies an authorization request.
+   *
+   * @param {string} uuid authorization request identifier
+   * @returns {Promise<Response>} fetch response from the deny endpoint
+   */
+  deny(uuid) {
+    return this.#post(
+      `/auth/authorization-requests/${encodeURIComponent(uuid)}/deny.json`,
+      {}
+    );
+  }
+
+  /**
    * Sends a JSON POST request.
    *
    * @param {string} path request path

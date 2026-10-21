@@ -104,7 +104,7 @@ describe('AppHelper', function() {
     it('renders the Authorizations component for "authorizations" page', function() {
       const html = renderPage('authorizations');
 
-      expect(html).toContain('<h1>Authorizations</h1>');
+      expect(html).toContain('Loading authorization requests...');
     });
 
     it('uses the provided hash as the page fragment key', function() {
