@@ -60,3 +60,13 @@ Full user management, restricted to admins.
 ## Forbidden
 
 `GET /forbidden` no longer exists as a Rails route — `static#forbidden` and its route were removed. `UserRequired` still redirects a non-logged user to the SPA hash target `/#/forbidden` when a protected action is accessed, but React has no page there yet (tracked in [#226](https://github.com/darthjee/oak/issues/226)).
+
+## Authorizations
+
+`#/authorizations` (route key `authorizations`, page `components/pages/Authorizations.jsx`) is an
+SPA-only page with no Rails resource route behind it. It is reached through **Account →
+Authorizations** in the header and is meant for logged-in users. It lists the user's pending
+device-authorization requests through `POST /auth/authorization-requests/mine` (on mount and on
+Refresh, no automatic polling) and authorizes (with the user's password) or denies each one. A
+`401` from any call marks the user logged out and opens the login modal. Endpoints are listed under
+[Device Authorization](utility-routes.md#device-authorization).

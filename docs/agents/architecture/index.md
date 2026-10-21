@@ -5,6 +5,7 @@ Oak is a Rails monolith that serves JSON endpoints and the SPA shell from the sa
 - [Infrastructure](infrastructure.md) — service topology, request routing, and the production proxy configuration (`proxy/prod_configuration/`, server-only `locals.php`).
 - [Photo Storage & Serving](photo-storage.md) — prod on-disk photo layout, static `/photos` and `/snaps` rules, `OAK_PHOTOS_SERVER_URL`, and the prod photo checklist.
 - [Backend Layout](backend-layout.md) — `source/app/` layout, key gems, template rendering pattern.
+- [Device Authorization](device-authorization.md) — "Authorize with logged device" login: roles, flow, status machine, data model, settings, "Keep me signed in", security.
 
 ---
 

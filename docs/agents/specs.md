@@ -41,6 +41,4 @@ When no feature is active, the table below is replaced by the line "No active sp
 
 ## Active specs
 
-| Feature | Epic | Spec |
-|---|---|---|
-| Device authorization | #391 | [specs/authorization.md](specs/authorization.md) |
+No active specs.
