@@ -3,10 +3,14 @@ import { buildSpies, renderStatic } from '../../../support/factories.js';
 import { findButton, findElement } from '../../../support/elementFinder.js';
 import { randomCredential } from '../../../support/testCredentials.js';
 
+const uuid = 'abc-123';
+const rejectionMessage = 'Wrong credentials';
+const typedValue = 'new';
+
 const NOW = new Date('2026-10-21T10:30:00Z');
 
 const buildRequest = (overrides = {}) => ({
-  uuid: 'abc-123',
+  uuid,
   requestIp: '10.0.0.1',
   requestUserAgent: 'curl/8.0',
   createdAt: '2026-10-21T10:25:00Z',
@@ -146,8 +150,8 @@ describe('AuthorizationsHelper', function() {
       findButton(element, 'Deny').props.onClick();
       findButton(element, 'Authorize').props.onClick();
 
-      expect(handlers.onDeny).toHaveBeenCalledWith('abc-123');
-      expect(handlers.onOpenAuthorize).toHaveBeenCalledWith('abc-123');
+      expect(handlers.onDeny).toHaveBeenCalledWith(uuid);
+      expect(handlers.onOpenAuthorize).toHaveBeenCalledWith(uuid);
     });
 
     it('does not render the password form when closed', function() {
@@ -164,7 +168,7 @@ describe('AuthorizationsHelper', function() {
       beforeEach(function() {
         typedPassword = randomCredential();
         rows = {
-          'abc-123': { formOpen: true, password: typedPassword, error: null, submitting: false },
+          [uuid]: { formOpen: true, password: typedPassword, error: null, submitting: false },
         };
       });
 
@@ -181,9 +185,9 @@ describe('AuthorizationsHelper', function() {
       it('wires the password change', function() {
         const input = findElement(render({ rows }), (node) => node.type === 'input');
 
-        input.props.onChange({ target: { value: 'new' } });
+        input.props.onChange({ target: { value: typedValue } });
 
-        expect(handlers.onPasswordChange).toHaveBeenCalledWith('abc-123', 'new');
+        expect(handlers.onPasswordChange).toHaveBeenCalledWith(uuid, typedValue);
       });
 
       it('confirms on submit', function() {
@@ -193,19 +197,19 @@ describe('AuthorizationsHelper', function() {
         form.props.onSubmit(event);
 
         expect(event.preventDefault).toHaveBeenCalled();
-        expect(handlers.onConfirm).toHaveBeenCalledWith('abc-123');
+        expect(handlers.onConfirm).toHaveBeenCalledWith(uuid);
       });
 
       it('wires the cancel button', function() {
         findButton(render({ rows }), 'Cancel').props.onClick();
 
-        expect(handlers.onCancelAuthorize).toHaveBeenCalledWith('abc-123');
+        expect(handlers.onCancelAuthorize).toHaveBeenCalledWith(uuid);
       });
     });
 
     it('disables the row buttons while submitting', function() {
       const element = render({
-        rows: { 'abc-123': { formOpen: false, password: '', error: null, submitting: true } },
+        rows: { [uuid]: { formOpen: false, password: '', error: null, submitting: true } },
       });
 
       expect(findButton(element, 'Deny').props.disabled).toBe(true);
@@ -214,10 +218,10 @@ describe('AuthorizationsHelper', function() {
 
     it('renders the row error', function() {
       const html = renderStatic(render({
-        rows: { 'abc-123': { formOpen: true, password: '', error: 'Wrong password', submitting: false } },
+        rows: { [uuid]: { formOpen: true, password: '', error: rejectionMessage, submitting: false } },
       }));
 
-      expect(html).toContain('Wrong password');
+      expect(html).toContain(rejectionMessage);
     });
   });
 });

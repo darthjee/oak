@@ -8,6 +8,9 @@ import {
 import { flushPromises } from '../../../support/factories.js';
 import { randomCredential } from '../../../support/testCredentials.js';
 
+const uuid = 'abc-123';
+const otherUuid = 'def-456';
+
 describe('AuthorizationsController', function() {
   let context;
   let spies;
@@ -154,42 +157,42 @@ describe('AuthorizationsController', function() {
 
   describe('row state', function() {
     it('returns an empty state for unknown rows', function() {
-      expect(controller.rowState('abc-123')).toEqual({
+      expect(controller.rowState(uuid)).toEqual({
         formOpen: false, password: '', error: null, submitting: false,
       });
     });
 
     it('opens the authorize form', function() {
-      controller.openAuthorize('abc-123');
+      controller.openAuthorize(uuid);
 
-      expect(lastRows()['abc-123'].formOpen).toBe(true);
+      expect(lastRows()[uuid].formOpen).toBe(true);
     });
 
     it('stores the password', function() {
-      controller.openAuthorize('abc-123');
-      controller.setPassword('abc-123', typedPassword);
+      controller.openAuthorize(uuid);
+      controller.setPassword(uuid, typedPassword);
 
-      expect(lastRows()['abc-123']).toEqual({
+      expect(lastRows()[uuid]).toEqual({
         formOpen: true, password: typedPassword, error: null, submitting: false,
       });
     });
 
     it('closes the form and discards the password', function() {
-      controller.openAuthorize('abc-123');
-      controller.setPassword('abc-123', typedPassword);
-      controller.closeAuthorize('abc-123');
+      controller.openAuthorize(uuid);
+      controller.setPassword(uuid, typedPassword);
+      controller.closeAuthorize(uuid);
 
-      expect(lastRows()['abc-123']).toEqual(jasmine.objectContaining({
+      expect(lastRows()[uuid]).toEqual(jasmine.objectContaining({
         formOpen: false, password: '',
       }));
     });
 
     it('keeps rows independent', function() {
-      controller.setPassword('abc-123', typedPassword);
-      controller.setPassword('def-456', otherPassword);
+      controller.setPassword(uuid, typedPassword);
+      controller.setPassword(otherUuid, otherPassword);
 
-      expect(lastRows()['abc-123'].password).toBe(typedPassword);
-      expect(lastRows()['def-456'].password).toBe(otherPassword);
+      expect(lastRows()[uuid].password).toBe(typedPassword);
+      expect(lastRows()[otherUuid].password).toBe(otherPassword);
     });
   });
 
