@@ -1,4 +1,5 @@
 import KindNewHelper from '../../../../assets/js/components/pages/helpers/KindNewHelper.jsx';
+import KindCategoriesEditor from '../../../../assets/js/components/elements/KindCategoriesEditor.jsx';
 import LabeledInput from '../../../../assets/js/components/elements/LabeledInput.jsx';
 import { renderStatic } from '../../../support/factories.js';
 import { itRendersLoadingAndErrorStates } from '../../../support/shared_examples/pageHelperExamples.js';
@@ -82,5 +83,46 @@ describe('KindNewHelper', function() {
 
     expect(html).not.toContain('disabled');
     expect(html).toContain('>Save<');
+  });
+
+  describe('categories editor', function() {
+    const findEditor = (element) => findElement(element, (child) => child.type === KindCategoriesEditor);
+
+    it('renders the categories editor below the name input', function() {
+      const html = renderStatic(KindNewHelper.render(kind, false, noop, noop));
+
+      expect(html.indexOf('Add a Category')).toBeGreaterThan(html.indexOf('kind-new-name'));
+      expect(html).toContain('No categories selected.');
+    });
+
+    it('passes selected categories and editor callbacks', function() {
+      const editorProps = {
+        allCategories: [{ slug: 'books', name: 'Books' }, { slug: 'games', name: 'Games' }],
+        selectedSlug: 'games',
+        onSelectChange: jasmine.createSpy('onSelectChange'),
+        onAddCategory: jasmine.createSpy('onAddCategory'),
+        onRemoveCategory: jasmine.createSpy('onRemoveCategory'),
+      };
+      const kindWithCategories = { name: 'Code', categories: [{ slug: 'books', name: 'Books' }] };
+      const editor = findEditor(KindNewHelper.render(kindWithCategories, false, noop, noop, editorProps));
+
+      expect(editor.props.allCategories).toBe(editorProps.allCategories);
+      expect(editor.props.selectedCategories).toBe(kindWithCategories.categories);
+      expect(editor.props.selectedSlug).toBe('games');
+      expect(editor.props.onSelectChange).toBe(editorProps.onSelectChange);
+      expect(editor.props.onAddCategory).toBe(editorProps.onAddCategory);
+      expect(editor.props.onRemoveCategory).toBe(editorProps.onRemoveCategory);
+    });
+
+    it('defaults editor props when none are given', function() {
+      const editor = findEditor(KindNewHelper.render(kind, false, noop, noop));
+
+      expect(editor.props.allCategories).toEqual([]);
+      expect(editor.props.selectedCategories).toEqual([]);
+      expect(editor.props.selectedSlug).toBe('');
+      expect(() => editor.props.onSelectChange('x')).not.toThrow();
+      expect(() => editor.props.onAddCategory()).not.toThrow();
+      expect(() => editor.props.onRemoveCategory('x')).not.toThrow();
+    });
   });
 });

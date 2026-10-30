@@ -93,18 +93,49 @@ describe('HeaderHelper', function() {
     expect(html).toContain('Electronics');
   });
 
-  it('renders the Kinds link regardless of logged out state', function() {
-    const html = renderToStaticMarkup(HeaderHelper.render(false, [], buildHandlers()));
+  describe('Kinds dropdown', function() {
+    const kindsMenu = (html) => {
+      const start = html.indexOf('>Kinds<');
+      const end = html.indexOf('</ul>', start);
 
-    expect(html).toContain('href="/#/kinds"');
-    expect(html).toContain('Kinds');
-  });
+      return html.slice(start, end);
+    };
 
-  it('renders the Kinds link regardless of logged in state', function() {
-    const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+    it('renders All but not New when logged out', function() {
+      const html = kindsMenu(renderToStaticMarkup(HeaderHelper.render(false, [], buildHandlers())));
 
-    expect(html).toContain('href="/#/kinds"');
-    expect(html).toContain('Kinds');
+      expect(html).toContain('href="/#/kinds"');
+      expect(html).toContain('>All<');
+      expect(html).not.toContain('/#/kinds/new');
+    });
+
+    it('renders New and All when logged in', function() {
+      const html = kindsMenu(renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers())));
+
+      expect(html).toContain('href="/#/kinds/new"');
+      expect(html).toContain('href="/#/kinds"');
+      expect(html.indexOf('>New<')).toBeLessThan(html.indexOf('>All<'));
+    });
+
+    it('renders Kinds as a dropdown toggle', function() {
+      const html = renderToStaticMarkup(HeaderHelper.render(true, [], buildHandlers()));
+
+      expect(html).toMatch(/dropdown-toggle[^>]*>Kinds</);
+    });
+
+    it('does not render New in loading state', function() {
+      const html = kindsMenu(renderToStaticMarkup(HeaderHelper.renderLoading()));
+
+      expect(html).toContain('href="/#/kinds"');
+      expect(html).not.toContain('/#/kinds/new');
+    });
+
+    it('does not render New in error state', function() {
+      const html = kindsMenu(renderToStaticMarkup(HeaderHelper.renderError('boom')));
+
+      expect(html).toContain('href="/#/kinds"');
+      expect(html).not.toContain('/#/kinds/new');
+    });
   });
 
   it('wires the login link and login modal props', function() {

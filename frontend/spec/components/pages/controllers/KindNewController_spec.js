@@ -6,6 +6,9 @@ import {
 } from '../../../support/factories.js';
 
 describe('KindNewController', function() {
+  const CATEGORIES_PATH = '/categories.json?filters[include_empty]=true';
+  const availableCategories = [{ slug: 'books', name: 'Books', snap_url: null }];
+
   let mockClient;
   let mockLocation;
 
@@ -16,6 +19,10 @@ describe('KindNewController', function() {
         return Promise.resolve({ name: '', slug: '' });
       }
 
+      if (path === CATEGORIES_PATH) {
+        return Promise.resolve(availableCategories);
+      }
+
       return Promise.reject(new Error(`Unexpected path: ${path}`));
     }),
     post: jasmine.createSpy('post').and.returnValue(Promise.resolve({ slug: 'my-kind' })),
@@ -24,16 +31,18 @@ describe('KindNewController', function() {
 
   const buildSetters = () => buildSpies(
     'setKind',
+    'setCategories',
     'setLoading',
     'setSaving',
     'setError'
   );
 
   const buildController = (setters, client = null, location = null) => {
-    const { setKind, setLoading, setSaving, setError } = setters;
+    const { setKind, setCategories, setLoading, setSaving, setError } = setters;
 
     return new KindNewController(
       setKind,
+      setCategories,
       setLoading,
       setSaving,
       setError,
@@ -55,7 +64,9 @@ describe('KindNewController', function() {
     await flushPromises();
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/kinds/new.json');
-    expect(setKind).toHaveBeenCalledWith(jasmine.objectContaining({ name: '' }));
+    expect(mockClient.fetch).toHaveBeenCalledWith(CATEGORIES_PATH);
+    expect(setKind).toHaveBeenCalledWith(jasmine.objectContaining({ name: '', categories: [] }));
+    expect(setters.setCategories).toHaveBeenCalledWith(availableCategories);
     expect(setLoading).toHaveBeenCalledWith(false);
     expect(setError).not.toHaveBeenCalled();
 
@@ -111,12 +122,80 @@ describe('KindNewController', function() {
     await buildController(setters).save({ name: 'My Kind' });
 
     expect(mockClient.post).toHaveBeenCalledWith('/kinds.json', {
-      kind: { name: 'My Kind' },
+      kind: { name: 'My Kind', categories: [] },
     });
     expect(mockLocation.hash).toBe('#/kinds/my-kind');
     expect(setters.setSaving).toHaveBeenCalledWith(true);
     expect(setters.setSaving).toHaveBeenCalledWith(false);
     expect(setters.setError).toHaveBeenCalledWith(null);
+  });
+
+  it('keeps categories returned by the new form endpoint', async function() {
+    mockClient = buildMockClient({
+      fetch: jasmine.createSpy('fetch').and.callFake((path) => (
+        path === CATEGORIES_PATH
+          ? Promise.resolve(availableCategories)
+          : Promise.resolve({ name: '', categories: [{ slug: 'books', name: 'Books' }] })
+      )),
+    });
+    const setters = buildSetters();
+    const cleanup = buildController(setters).buildEffect()();
+
+    await flushPromises();
+
+    expect(setters.setKind).toHaveBeenCalledWith(
+      jasmine.objectContaining({ categories: [{ slug: 'books', name: 'Books' }] })
+    );
+
+    cleanup();
+  });
+
+  it('normalizes a non-array categories response to an empty list', async function() {
+    mockClient = buildMockClient({
+      fetch: jasmine.createSpy('fetch').and.callFake((path) => (
+        path === CATEGORIES_PATH ? Promise.resolve({}) : Promise.resolve({ name: '' })
+      )),
+    });
+    const setters = buildSetters();
+    const cleanup = buildController(setters).buildEffect()();
+
+    await flushPromises();
+
+    expect(setters.setCategories).toHaveBeenCalledWith([]);
+    expect(setters.setError).not.toHaveBeenCalled();
+
+    cleanup();
+  });
+
+  it('sets error when loading categories fails', async function() {
+    mockClient = buildMockClient({
+      fetch: jasmine.createSpy('fetch').and.callFake((path) => (
+        path === CATEGORIES_PATH ? Promise.reject(new Error('boom')) : Promise.resolve({ name: '' })
+      )),
+    });
+    const setters = buildSetters();
+    const cleanup = buildController(setters).buildEffect()();
+
+    await flushPromises();
+
+    expect(setters.setError).toHaveBeenCalledWith('Unable to load kind new form.');
+    expect(setters.setCategories).not.toHaveBeenCalled();
+    expect(setters.setLoading).toHaveBeenCalledWith(false);
+
+    cleanup();
+  });
+
+  it('posts selected category slugs on save', async function() {
+    const setters = buildSetters();
+
+    await buildController(setters).save({
+      name: 'My Kind',
+      categories: [{ slug: 'books', name: 'Books' }, { slug: 'games', name: 'Games' }],
+    });
+
+    expect(mockClient.post).toHaveBeenCalledWith('/kinds.json', {
+      kind: { name: 'My Kind', categories: [{ slug: 'books' }, { slug: 'games' }] },
+    });
   });
 
   it('sets error when save fails', async function() {
@@ -162,9 +241,9 @@ describe('KindNewController', function() {
   });
 
   it('defaults client to a new GenericClient when none is provided', function() {
-    const { setKind, setLoading, setSaving, setError } = buildSetters();
+    const { setKind, setCategories, setLoading, setSaving, setError } = buildSetters();
     const controller = new KindNewController(
-      setKind, setLoading, setSaving, setError
+      setKind, setCategories, setLoading, setSaving, setError
     );
 
     expect(controller.client).toBeInstanceOf(GenericClient);

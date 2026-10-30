@@ -46,6 +46,15 @@ describe('GenericClient', function() {
       expect(global.fetch).toHaveBeenCalledWith('/items.json?page=3', { headers: { Accept: 'application/json' } });
     });
 
+    it('joins hash query params with & when the path already has a query', async function() {
+      stubJsonResponse([]);
+
+      const client = new GenericClient(() => '#/items?page=3');
+      await client.fetch('/items.json?filters[a]=1');
+
+      expect(global.fetch).toHaveBeenCalledWith('/items.json?filters[a]=1&page=3', { headers: { Accept: 'application/json' } });
+    });
+
     it('does not append query string when hash has no params', async function() {
       stubJsonResponse([]);
 

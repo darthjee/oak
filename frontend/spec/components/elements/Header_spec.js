@@ -9,4 +9,12 @@ describe('Header', function() {
     expect(html).toContain('Oak');
     expect(html).toContain('Loading navigation...');
   });
+
+  it('renders the Kinds dropdown without New on first render', function() {
+    const html = renderToStaticMarkup(React.createElement(Header));
+
+    expect(html).toContain('Kinds');
+    expect(html).toContain('href="/#/kinds"');
+    expect(html).not.toContain('/#/kinds/new');
+  });
 });

@@ -10,7 +10,7 @@ import KindsHelper from './helpers/KindsHelper.jsx';
 export default function Kinds() {
   const [kinds, setKinds] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, perPage: 10 });
-  const [, setLogged] = useState(false);
+  const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,5 +33,5 @@ export default function Kinds() {
     return KindsHelper.renderError(error);
   }
 
-  return KindsHelper.render(kinds, pagination);
+  return KindsHelper.render(kinds, logged, pagination);
 }

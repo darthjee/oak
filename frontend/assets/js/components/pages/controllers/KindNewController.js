@@ -6,7 +6,7 @@ import KindFormController from './KindFormController.js';
 export default class KindNewController extends KindFormController {
 
   /**
-   * Builds the React effect that loads new kind form data on mount.
+   * Builds the React effect that loads new kind form data and all categories on mount.
    *
    * @returns {Function} effect function that starts loading and returns a cleanup function
    */
@@ -54,8 +54,11 @@ export default class KindNewController extends KindFormController {
   }
 
   #loadData(safeSet) {
-    this.#fetchKind()
-      .then((kind) => safeSet(this.setKind, kind))
+    Promise.all([
+      this.#fetchKind(),
+      this.#fetchCategories(),
+    ])
+      .then(([kind, categories]) => this.applyLoadedData(safeSet, kind, categories))
       .catch((error) => this.#onLoadError(safeSet, error))
       .finally(() => this.finalizeLoad(safeSet));
   }
@@ -64,6 +67,10 @@ export default class KindNewController extends KindFormController {
     return this.client.fetch('/kinds/new.json')
       .then(this.normalizeKind.bind(this))
       .catch(() => { throw new Error('Unable to load kind new form.'); });
+  }
+
+  #fetchCategories() {
+    return this.fetchCategories('Unable to load kind new form.');
   }
 
   #onSaveSuccess(saved) {

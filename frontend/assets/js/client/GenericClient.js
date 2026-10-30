@@ -32,6 +32,7 @@ export default class GenericClient {
 
   /**
    * Builds the full URL by appending hash query params to the given path.
+   * Uses `&` as separator when the path already contains a query string.
    *
    * @param {string} path base path
    * @param {URLSearchParams} [params] query params to append
@@ -39,7 +40,11 @@ export default class GenericClient {
    */
   #buildUrl(path, params = new URLSearchParams()) {
     const query = params.toString();
-    return query ? `${path}?${query}` : path;
+
+    if (!query) return path;
+
+    const separator = path.includes('?') ? '&' : '?';
+    return `${path}${separator}${query}`;
   }
 
   /**

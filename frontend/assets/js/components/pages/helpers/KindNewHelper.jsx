@@ -1,6 +1,7 @@
 import React from 'react';
 import CategoryItemInfoCard from '../../elements/CategoryItemInfoCard.jsx';
 import ErrorContainer from '../../elements/ErrorContainer.jsx';
+import KindCategoriesEditor from '../../elements/KindCategoriesEditor.jsx';
 import LabeledInput from '../../elements/LabeledInput.jsx';
 import LoadingMessage from '../../elements/LoadingMessage.jsx';
 
@@ -34,9 +35,15 @@ export default class KindNewHelper {
    * @param {boolean} saving whether save is currently in progress
    * @param {Function} onFieldChange callback(field, value)
    * @param {Function} onSave callback() when Save button is clicked
+   * @param {Object} [categoriesEditor] categories editor props
+   * @param {Array<Object>} [categoriesEditor.allCategories] all available categories
+   * @param {string} [categoriesEditor.selectedSlug] slug currently chosen in the category select
+   * @param {Function} [categoriesEditor.onSelectChange] callback(slug) when the select changes
+   * @param {Function} [categoriesEditor.onAddCategory] callback() when Add is clicked
+   * @param {Function} [categoriesEditor.onRemoveCategory] callback(slug) when a category is removed
    * @returns {JSX.Element} kind new form content
    */
-  static render(kind, saving, onFieldChange, onSave) {
+  static render(kind, saving, onFieldChange, onSave, categoriesEditor = {}) {
     return (
       <div className='container mt-4'>
         {this.#renderActions(saving, onSave)}
@@ -47,8 +54,31 @@ export default class KindNewHelper {
             value={kind.name || ''}
             onChange={this.#buildFieldChangeHandler(onFieldChange, 'name')}
           />
+          {this.#renderCategoriesEditor(kind, categoriesEditor)}
         </CategoryItemInfoCard>
       </div>
+    );
+  }
+
+  static #renderCategoriesEditor(kind, categoriesEditor) {
+    const noop = () => {};
+    const {
+      allCategories = [],
+      selectedSlug = '',
+      onSelectChange = noop,
+      onAddCategory = noop,
+      onRemoveCategory = noop,
+    } = categoriesEditor;
+
+    return (
+      <KindCategoriesEditor
+        allCategories={allCategories}
+        selectedCategories={kind.categories || []}
+        selectedSlug={selectedSlug}
+        onSelectChange={onSelectChange}
+        onAddCategory={onAddCategory}
+        onRemoveCategory={onRemoveCategory}
+      />
     );
   }
 
