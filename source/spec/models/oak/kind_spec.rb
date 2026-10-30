@@ -85,6 +85,35 @@ RSpec.describe Oak::Kind do
   describe 'associations' do
     subject(:kind) { create(:oak_kind, name:) }
 
+    describe '#categories' do
+      context 'when there are no linked categories' do
+        it 'returns an empty collection' do
+          expect(kind.categories).to be_empty
+        end
+      end
+
+      context 'when there are linked categories' do
+        let!(:category) { create(:oak_category) }
+
+        before do
+          create(:oak_category) # unlinked category
+          create(:oak_category_kind, category:, kind:)
+        end
+
+        it 'returns the linked categories' do
+          expect(kind.categories).to eq([category])
+        end
+      end
+    end
+
+    describe '#category_kinds' do
+      before { create(:oak_category_kind, kind:) }
+
+      it 'destroys the links when the kind is destroyed' do
+        expect { kind.destroy }.to change(Oak::CategoryKind, :count).by(-1)
+      end
+    end
+
     describe '#main_photo' do
       context 'when there are no items' do
         it 'returns nil' do

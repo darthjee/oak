@@ -10,5 +10,9 @@ module Oak
     has_many :items, class_name: 'Oak::Item', dependent: :destroy
     has_one :sample_item, -> { order(:id) }, class_name: 'Oak::Item', inverse_of: :kind
     has_one :main_photo, -> { where(ready: true).order(:id) }, class_name: 'Oak::Photo', through: :sample_item
+
+    # Association with categories through category_kinds
+    has_many :category_kinds, class_name: 'Oak::CategoryKind', dependent: :destroy
+    has_many :categories, through: :category_kinds, source: :category
   end
 end
