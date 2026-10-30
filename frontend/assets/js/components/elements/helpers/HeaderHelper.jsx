@@ -13,7 +13,7 @@ export default class HeaderHelper {
   static renderLoading() {
     return this.#renderShell(
       this.#renderCategories(false, []),
-      this.#renderKindsLink(),
+      this.#renderKinds(false),
       <span className='navbar-text text-muted'>Loading navigation...</span>
     );
   }
@@ -27,7 +27,7 @@ export default class HeaderHelper {
   static renderError(error) {
     return this.#renderShell(
       this.#renderCategories(false, []),
-      this.#renderKindsLink(),
+      this.#renderKinds(false),
       <span className='navbar-text text-danger'>{`Navigation unavailable: ${error}`}</span>
     );
   }
@@ -43,13 +43,13 @@ export default class HeaderHelper {
   static render(logged, categories, handlers) {
     return this.#renderShell(
       this.#renderCategories(logged, categories),
-      this.#renderKindsLink(),
+      this.#renderKinds(logged),
       this.#renderAuth(logged, handlers),
       this.#renderLoginModal(handlers)
     );
   }
 
-  static #renderShell(categoriesMenu, kindsLink, authMenu, modal) {
+  static #renderShell(categoriesMenu, kindsMenu, authMenu, modal) {
     return (
       <div className='flex-column align-items-center bg-light border-bottom shadow-sm'>
         <nav className='navbar navbar-expand-sm navbar-light bg-light'>
@@ -67,7 +67,7 @@ export default class HeaderHelper {
           </button>
           <div className='collapse navbar-collapse' id='navbarSupportedContent'>
             {categoriesMenu}
-            {kindsLink}
+            {kindsMenu}
             {authMenu}
           </div>
         </nav>
@@ -77,18 +77,24 @@ export default class HeaderHelper {
   }
 
   /**
-   * Renders the always-visible Kinds navigation link.
+   * Renders the Kinds dropdown with a "New" entry (logged users only) and an "All" entry.
    *
-   * @returns {JSX.Element} nav item linking to the kinds list
+   * @param {boolean} logged whether the current user is logged in
+   * @returns {JSX.Element} dropdown nav item for kinds
    */
-  static #renderKindsLink() {
-    return (
-      <ul className='navbar-nav'>
-        <li className='nav-item p-2'>
-          <a className='nav-link' href='/#/kinds'>Kinds</a>
-        </li>
-      </ul>
-    );
+  static #renderKinds(logged) {
+    const links = [
+      logged ? (
+        <a key='new' className='dropdown-item' href='/#/kinds/new'>
+          New
+        </a>
+      ) : null,
+      <a key='all' className='dropdown-item' href='/#/kinds'>
+        All
+      </a>,
+    ].filter(Boolean);
+
+    return this.#renderDropdown('Kinds', links);
   }
 
   static #renderCategories(logged, categories) {
@@ -110,6 +116,17 @@ export default class HeaderHelper {
       ...categoryLinks,
     ].filter(Boolean);
 
+    return this.#renderDropdown('Categories', links);
+  }
+
+  /**
+   * Renders a navbar dropdown with the given title and entries.
+   *
+   * @param {string} title dropdown toggle label
+   * @param {Array<JSX.Element>} links dropdown entries
+   * @returns {JSX.Element} dropdown nav item
+   */
+  static #renderDropdown(title, links) {
     return (
       <ul className='navbar-nav dropdown'>
         <li className='nav-item p-2'>
@@ -120,7 +137,7 @@ export default class HeaderHelper {
             data-bs-toggle='dropdown'
             aria-expanded='false'
           >
-            Categories
+            {title}
           </a>
           <div className='dropdown-menu'>{links}</div>
         </li>
