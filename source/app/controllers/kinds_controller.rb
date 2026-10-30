@@ -14,9 +14,11 @@ class KindsController < ApplicationController
 
   resource_for Oak::Kind,
                only: %i[new create show edit update],
-               decorator: Oak::Kind::Decorator,
+               decorator: Oak::Kind::FormDecorator,
                id_key: :slug,
                param_key: :slug,
+               build_with: :create_kind,
+               update_with: :update_kind,
                paginated: false
 
   private
@@ -26,6 +28,22 @@ class KindsController < ApplicationController
   end
 
   def kind_params
-    params.require(:kind).permit(:name)
+    params.require(:kind).permit(:name, categories: [:slug])
+  end
+
+  def create_params
+    kind_params.to_h.deep_symbolize_keys.merge(scope: Oak::Kind.all)
+  end
+
+  def update_params
+    kind_params.to_h.deep_symbolize_keys.merge(kind:)
+  end
+
+  def create_kind
+    Oak::Kind::CreateBuilder.build(**create_params)
+  end
+
+  def update_kind
+    Oak::Kind::UpdateBuilder.build(**update_params)
   end
 end
