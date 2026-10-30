@@ -17,7 +17,7 @@ export function getKindEditSlugFromHash(hash = '') {
 export default class KindEditController extends KindFormController {
 
   /**
-   * Builds the React effect that loads kind edit form data on mount.
+   * Builds the React effect that loads kind edit form data and all categories on mount.
    *
    * @returns {Function} effect function that starts loading and returns a cleanup function
    */
@@ -59,8 +59,11 @@ export default class KindEditController extends KindFormController {
   }
 
   #loadData(safeSet, slug) {
-    this.#fetchKind(slug)
-      .then((kind) => safeSet(this.setKind, kind))
+    Promise.all([
+      this.#fetchKind(slug),
+      this.#fetchCategories(),
+    ])
+      .then(([kind, categories]) => this.applyLoadedData(safeSet, kind, categories))
       .catch((error) => this.#onLoadError(safeSet, error))
       .finally(() => this.finalizeLoad(safeSet));
   }
@@ -73,6 +76,10 @@ export default class KindEditController extends KindFormController {
     return this.client.fetch(`/kinds/${slug}/edit.json`)
       .then(this.normalizeKind.bind(this))
       .catch(() => { throw new Error('Unable to load kind edit form.'); });
+  }
+
+  #fetchCategories() {
+    return this.fetchCategories('Unable to load kind edit form.');
   }
 
   #onSaveSuccess(saved, fallbackSlug) {

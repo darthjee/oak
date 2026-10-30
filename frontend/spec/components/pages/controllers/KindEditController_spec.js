@@ -6,6 +6,9 @@ import {
 } from '../../../support/factories.js';
 
 describe('KindEditController', function() {
+  const CATEGORIES_PATH = '/categories.json?filters[include_empty]=true';
+  const availableCategories = [{ slug: 'books', name: 'Books', snap_url: null }];
+
   let mockClient;
   let mockLocation;
 
@@ -16,6 +19,10 @@ describe('KindEditController', function() {
         return Promise.resolve({ slug: 'code', name: 'Code' });
       }
 
+      if (path === CATEGORIES_PATH) {
+        return Promise.resolve(availableCategories);
+      }
+
       return Promise.reject(new Error(`Unexpected path: ${path}`));
     }),
     patch: jasmine.createSpy('patch').and.returnValue(Promise.resolve({ slug: 'code-edited' })),
@@ -24,16 +31,18 @@ describe('KindEditController', function() {
 
   const buildSetters = () => buildSpies(
     'setKind',
+    'setCategories',
     'setLoading',
     'setSaving',
     'setError'
   );
 
   const buildController = (setters, client = null, location = null) => {
-    const { setKind, setLoading, setSaving, setError } = setters;
+    const { setKind, setCategories, setLoading, setSaving, setError } = setters;
 
     return new KindEditController(
       setKind,
+      setCategories,
       setLoading,
       setSaving,
       setError,
@@ -64,7 +73,9 @@ describe('KindEditController', function() {
     await flushPromises();
 
     expect(mockClient.fetch).toHaveBeenCalledWith('/kinds/code/edit.json');
-    expect(setters.setKind).toHaveBeenCalledWith({ slug: 'code', name: 'Code' });
+    expect(mockClient.fetch).toHaveBeenCalledWith(CATEGORIES_PATH);
+    expect(setters.setKind).toHaveBeenCalledWith({ slug: 'code', name: 'Code', categories: [] });
+    expect(setters.setCategories).toHaveBeenCalledWith(availableCategories);
     expect(setters.setLoading).toHaveBeenCalledWith(false);
     expect(setters.setError).not.toHaveBeenCalled();
 
@@ -95,7 +106,7 @@ describe('KindEditController', function() {
 
     await flushPromises();
 
-    expect(mockClient.fetch).not.toHaveBeenCalled();
+    expect(mockClient.fetch.calls.allArgs()).toEqual([[CATEGORIES_PATH]]);
     expect(setters.setError).toHaveBeenCalledWith('Unable to load kind edit form.');
     expect(setters.setLoading).toHaveBeenCalledWith(false);
 
@@ -108,12 +119,47 @@ describe('KindEditController', function() {
     await buildController(setters).save({ name: 'Code Edited' });
 
     expect(mockClient.patch).toHaveBeenCalledWith('/kinds/code', {
-      kind: { name: 'Code Edited' },
+      kind: { name: 'Code Edited', categories: [] },
     });
     expect(mockLocation.hash).toBe('#/kinds/code-edited');
     expect(setters.setSaving).toHaveBeenCalledWith(true);
     expect(setters.setSaving).toHaveBeenCalledWith(false);
     expect(setters.setError).toHaveBeenCalledWith(null);
+  });
+
+  it('sets error when loading categories fails', async function() {
+    mockClient = buildMockClient({
+      fetch: jasmine.createSpy('fetch').and.callFake((path) => (
+        path === CATEGORIES_PATH
+          ? Promise.reject(new Error('boom'))
+          : Promise.resolve({ slug: 'code', name: 'Code' })
+      )),
+    });
+    const setters = buildSetters();
+    const cleanup = buildController(setters).buildEffect()();
+
+    await flushPromises();
+
+    expect(setters.setError).toHaveBeenCalledWith('Unable to load kind edit form.');
+    expect(setters.setKind).not.toHaveBeenCalled();
+    expect(setters.setLoading).toHaveBeenCalledWith(false);
+
+    cleanup();
+  });
+
+  it('patches selected category slugs, sending an empty list when none are selected', async function() {
+    const setters = buildSetters();
+    const controller = buildController(setters);
+
+    await controller.save({ name: 'Code', categories: [{ slug: 'books', name: 'Books' }] });
+    await controller.save({ name: 'Code', categories: [] });
+
+    expect(mockClient.patch.calls.argsFor(0)).toEqual([
+      '/kinds/code', { kind: { name: 'Code', categories: [{ slug: 'books' }] } },
+    ]);
+    expect(mockClient.patch.calls.argsFor(1)).toEqual([
+      '/kinds/code', { kind: { name: 'Code', categories: [] } },
+    ]);
   });
 
   it('uses current slug when save response has no slug', async function() {
@@ -154,8 +200,8 @@ describe('KindEditController', function() {
   });
 
   it('defaults client to a new GenericClient when none is provided', function() {
-    const { setKind, setLoading, setSaving, setError } = buildSetters();
-    const controller = new KindEditController(setKind, setLoading, setSaving, setError);
+    const { setKind, setCategories, setLoading, setSaving, setError } = buildSetters();
+    const controller = new KindEditController(setKind, setCategories, setLoading, setSaving, setError);
 
     expect(controller.client).toBeInstanceOf(GenericClient);
   });

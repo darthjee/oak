@@ -9,15 +9,17 @@ export default class KindFormController extends BasePageController {
    * Creates a new KindFormController instance.
    *
    * @param {Function} setKind state setter for kind data
+   * @param {Function} setCategories state setter for all available categories
    * @param {Function} setLoading state setter for loading status
    * @param {Function} setSaving state setter for saving status
    * @param {Function} setError state setter for error message
    * @param {GenericClient|null} [client] optional client instance
    * @param {Object|null} [locationTarget] optional location target used for redirects
    */
-  constructor(setKind, setLoading, setSaving, setError, client = null, locationTarget = null) {
+  constructor(setKind, setCategories, setLoading, setSaving, setError, client = null, locationTarget = null) {
     super();
     this.setKind = setKind;
+    this.setCategories = setCategories;
     this.setLoading = setLoading;
     this.setSaving = setSaving;
     this.setError = setError;
@@ -36,6 +38,31 @@ export default class KindFormController extends BasePageController {
   }
 
   /**
+   * Adds a category to the kind categories list if not already present.
+   *
+   * @param {Object|null} category category object with slug and name to add
+   */
+  onAddCategory(category) {
+    if (!category || !category.slug) {
+      return;
+    }
+
+    this.setKind((current) => this.#appendCategory(current, category));
+  }
+
+  /**
+   * Removes the category with the given slug from the kind categories list.
+   *
+   * @param {string} slug slug of the category to remove
+   */
+  onRemoveCategory(slug) {
+    this.setKind((current) => ({
+      ...current,
+      categories: (current.categories || []).filter((c) => c.slug !== slug),
+    }));
+  }
+
+  /**
    * Normalizes kind fields used by form pages.
    *
    * @param {Object} kind raw kind response
@@ -45,6 +72,7 @@ export default class KindFormController extends BasePageController {
     return {
       ...kind,
       name: kind.name || '',
+      categories: Array.isArray(kind.categories) ? kind.categories : [],
     };
   }
 
@@ -58,8 +86,33 @@ export default class KindFormController extends BasePageController {
     return {
       kind: {
         name: kind.name || '',
+        categories: (kind.categories || []).map(({ slug }) => ({ slug })),
       },
     };
+  }
+
+  /**
+   * Fetches all available categories (including empty ones) and normalizes the response.
+   *
+   * @param {string} loadErrorMessage error message used when request fails
+   * @returns {Promise<Object[]>} categories list
+   */
+  fetchCategories(loadErrorMessage) {
+    return this.client.fetch('/categories.json?filters[include_empty]=true')
+      .then((categories) => (Array.isArray(categories) ? categories : []))
+      .catch(() => { throw new Error(loadErrorMessage); });
+  }
+
+  /**
+   * Applies loaded kind and categories data to state setters.
+   *
+   * @param {Function} safeSet guarded setter helper
+   * @param {Object} kind normalized kind data
+   * @param {Object[]} categories available categories list
+   */
+  applyLoadedData(safeSet, kind, categories) {
+    safeSet(this.setKind, kind);
+    safeSet(this.setCategories, categories);
   }
 
   /**
@@ -83,5 +136,15 @@ export default class KindFormController extends BasePageController {
    */
   finalizeLoad(safeSet) {
     safeSet(this.setLoading, false);
+  }
+
+  #appendCategory(current, category) {
+    const categories = current.categories || [];
+
+    if (categories.some((c) => c.slug === category.slug)) {
+      return current;
+    }
+
+    return { ...current, categories: [...categories, category] };
   }
 }
